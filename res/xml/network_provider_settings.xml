@@ -66,7 +66,8 @@
     <PreferenceCategory
         android:key="wifi_category"
         android:title="@string/wifi_settings">
-        <com.android.settingslib.RestrictedSwitchPreference
+        <!-- Tally: lights once Wi-Fi reports enabled (WifiSwitchPreference) -->
+        <com.android.settings.widget.TallyRestrictedSwitchPreference
             android:key="main_toggle_wifi"
             android:title="@string/wifi_settings_primary_switch_title"
             settings:keywords="@string/keywords_wifi"

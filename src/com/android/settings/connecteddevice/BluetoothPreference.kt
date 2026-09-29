@@ -36,6 +36,7 @@ import com.android.settings.network.SatelliteWarningDialogActivity
 import com.android.settings.restriction.PreferenceRestrictionMixin
 import com.android.settings.widget.MainSwitchBarMetadata
 import com.android.settings.widget.MainSwitchBarPreference
+import com.android.settings.widget.TallyConfirmedSwitch
 import com.android.settingslib.RestrictedPreferenceHelper
 import com.android.settingslib.RestrictedPreferenceHelperProvider
 import com.android.settingslib.WirelessUtils
@@ -116,6 +117,9 @@ class BluetoothPreference(private val bluetoothDataStore: BluetoothDataStore) :
     override fun bind(preference: Preference, metadata: PreferenceMetadata) {
         super.bind(preference, metadata)
         preference.onPreferenceChangeListener = this
+        // Tally: the switch lights once the adapter reports Bluetooth on, not while it turns on.
+        (preference as? TallyConfirmedSwitch)?.confirmedOn =
+            bluetoothDataStore.bluetoothAdapter?.state == BluetoothAdapter.STATE_ON
     }
 
     override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
