@@ -16,9 +16,13 @@
 
 package com.android.settings.widget;
 
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
@@ -26,8 +30,29 @@ import com.android.settings.R;
 import com.android.settings.flags.Flags;
 import com.android.settingslib.widget.SettingsThemeHelper;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Helper for homepage preference to manage layout. */
 public class HomepagePreferenceLayoutHelper {
+
+    /**
+     * Tally: the state lamp beside a homepage entry's summary. It shows only what the entry's
+     * controller already reads, and only beside the summary that says it in words.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LAMP_NONE, LAMP_OFF, LAMP_ON})
+    public @interface LampState {}
+
+    /** No lamp. */
+    public static final int LAMP_NONE = 0;
+    /** The outline ring: off. */
+    public static final int LAMP_OFF = 1;
+    /** The lit disc: on. */
+    public static final int LAMP_ON = 2;
+
+    private final Preference mPreference;
+    private @LampState int mLampState = LAMP_NONE;
 
     private View mIcon;
     private View mText;
@@ -44,9 +69,20 @@ public class HomepagePreferenceLayoutHelper {
     public interface HomepagePreferenceLayout {
         /** Returns a {@link HomepagePreferenceLayoutHelper}  */
         HomepagePreferenceLayoutHelper getHelper();
+
+        /** Tally: sets the entry's state lamp and redraws the entry if it changed. */
+        void setLampState(@LampState int state);
+    }
+
+    /** Tally: sets the state lamp of a homepage entry; does nothing for other preferences. */
+    public static void setLamp(@Nullable Preference preference, @LampState int state) {
+        if (preference instanceof HomepagePreferenceLayout) {
+            ((HomepagePreferenceLayout) preference).setLampState(state);
+        }
     }
 
     public HomepagePreferenceLayoutHelper(Preference preference) {
+        mPreference = preference;
         // Tally: the expressive homepage (the phone's) uses Tally's row.
         preference.setLayoutResource(
                 SettingsThemeHelper.isExpressiveTheme(preference.getContext())
@@ -105,6 +141,19 @@ public class HomepagePreferenceLayoutHelper {
         }
     }
 
+    /**
+     * Tally: stores the state lamp, to be drawn at the next bind.
+     *
+     * @return whether it changed, so the preference redraws its row
+     */
+    public boolean setLampState(@LampState int state) {
+        if (mLampState == state) {
+            return false;
+        }
+        mLampState = state;
+        return true;
+    }
+
     void onBindViewHolder(PreferenceViewHolder holder) {
         mIcon = holder.findViewById(R.id.icon_frame);
         mText = holder.findViewById(R.id.text_frame);
@@ -116,5 +165,36 @@ public class HomepagePreferenceLayoutHelper {
         setIconPaddingStart(mIconPaddingStart);
         setTextPaddingStart(mTextPaddingStart);
         setAlert(mAlertValue);
+        bindLamp(holder);
+    }
+
+    /**
+     * Draws the lamp as the prototype's static glyph (10 dp), which changes at once both ways. A
+     * lamp always carries its words: it shows only beside the controller's own summary, never
+     * beside text that took its place (for example "Controlled by admin"). Screen readers read
+     * the summary; the lamp itself is not announced.
+     */
+    private void bindLamp(PreferenceViewHolder holder) {
+        final View lampView = holder.findViewById(R.id.tally_state_lamp);
+        if (!(lampView instanceof ImageView)) {
+            return;
+        }
+        final View summaryView = holder.findViewById(android.R.id.summary);
+        final CharSequence summary = mPreference.getSummary();
+        final boolean withWords = summaryView instanceof TextView
+                && summaryView.getVisibility() == View.VISIBLE
+                && !TextUtils.isEmpty(summary)
+                && TextUtils.equals(((TextView) summaryView).getText(), summary);
+        final int glyph;
+        if (!withWords || mLampState == LAMP_NONE) {
+            glyph = 0;
+        } else if (mLampState == LAMP_ON) {
+            glyph = R.drawable.tally_lamp_on_10;
+        } else {
+            glyph = R.drawable.tally_lamp_off_10;
+        }
+        final ImageView lamp = (ImageView) lampView;
+        lamp.setImageResource(glyph);
+        lamp.setVisibility(glyph != 0 ? View.VISIBLE : View.GONE);
     }
 }

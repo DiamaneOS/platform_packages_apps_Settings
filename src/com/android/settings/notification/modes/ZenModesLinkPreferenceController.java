@@ -24,10 +24,14 @@ import androidx.preference.PreferenceScreen;
 
 import com.android.settings.Utils;
 import com.android.settings.core.BasePreferenceController;
+import com.android.settings.widget.HomepagePreferenceLayoutHelper;
 import com.android.settingslib.core.lifecycle.LifecycleObserver;
 import com.android.settingslib.core.lifecycle.events.OnStart;
 import com.android.settingslib.core.lifecycle.events.OnStop;
+import com.android.settingslib.notification.modes.ZenMode;
 import com.android.settingslib.notification.modes.ZenModesBackend;
+
+import java.util.List;
 
 public class ZenModesLinkPreferenceController extends BasePreferenceController
         implements LifecycleObserver, OnStart, OnStop {
@@ -77,7 +81,13 @@ public class ZenModesLinkPreferenceController extends BasePreferenceController
     @Override
     public void updateState(Preference preference) {
         try {
-            preference.setSummary(mSummaryBuilder.getModesSummary(mBackend.getModes()));
+            final List<ZenMode> modes = mBackend.getModes();
+            preference.setSummary(mSummaryBuilder.getModesSummary(modes));
+            // Tally: lit while a mode is on, when the summary says which is active.
+            HomepagePreferenceLayoutHelper.setLamp(preference,
+                    modes.stream().anyMatch(ZenMode::isActive)
+                            ? HomepagePreferenceLayoutHelper.LAMP_ON
+                            : HomepagePreferenceLayoutHelper.LAMP_NONE);
         } catch (SecurityException e) {
             // Standard usage should have the correct permissions to read zen state. But if we don't
             // for whatever reason, don't crash.
