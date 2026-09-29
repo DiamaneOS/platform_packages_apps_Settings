@@ -47,9 +47,10 @@ public class HomepagePreferenceLayoutHelper {
     }
 
     public HomepagePreferenceLayoutHelper(Preference preference) {
+        // Tally: the expressive homepage (the phone's) uses Tally's row.
         preference.setLayoutResource(
                 SettingsThemeHelper.isExpressiveTheme(preference.getContext())
-                        ? R.layout.homepage_preference_expressive
+                        ? R.layout.homepage_preference_tally
                         : R.layout.homepage_preference);
     }
 
