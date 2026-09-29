@@ -66,17 +66,36 @@
             android:lineHeight="@dimen/tally_type_item_line_height"
             android:textColor="@color/settingslib_text_color_primary"/>
 
-        <TextView
-            android:id="@android:id/summary"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.Tally.Body"
-            android:lineHeight="@dimen/tally_type_body_line_height"
-            android:textColor="@color/settingslib_text_color_secondary"
-            android:maxLines="4"
-            android:ellipsize="end"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- The state lamp (HomepagePreferenceLayoutHelper.bindLamp): a 10 dp glyph in its
+                 14 dp box, set 2 dp outward so the lamp lines up with the text, 6 dp before the
+                 summary that carries its words. Screen readers read the words, not the lamp. -->
+            <ImageView
+                android:id="@+id/tally_state_lamp"
+                android:layout_width="@dimen/tally_lamp_box_10"
+                android:layout_height="@dimen/tally_lamp_box_10"
+                android:layout_marginStart="-2dp"
+                android:layout_marginEnd="@dimen/tally_space_xs"
+                android:importantForAccessibility="no"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@android:id/summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.Tally.Body"
+                android:lineHeight="@dimen/tally_type_body_line_height"
+                android:textColor="@color/settingslib_text_color_secondary"
+                android:maxLines="4"
+                android:ellipsize="end"/>
+        </LinearLayout>
     </LinearLayout>
 
     <FrameLayout

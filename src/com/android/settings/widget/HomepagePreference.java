@@ -64,6 +64,13 @@ public class HomepagePreference extends Preference implements
         return mHelper;
     }
 
+    @Override
+    public void setLampState(@HomepagePreferenceLayoutHelper.LampState int state) {
+        if (mHelper.setLampState(state)) {
+            notifyChanged();
+        }
+    }
+
     /**
      * Set the alert count to show for this Preference.
      */
