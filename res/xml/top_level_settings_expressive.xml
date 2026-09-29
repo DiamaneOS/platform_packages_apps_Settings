@@ -28,11 +28,11 @@
         android:order="-140"
         android:key="top_level_account_category"/>
 
-    <!-- Connectivity -->
+    <!-- Wireless & networks -->
     <PreferenceCategory
         android:order="-130"
         android:key="top_level_connectivity_category"
-        android:title="@string/tally_homepage_section_connectivity"
+        android:title="@string/wireless_networks_settings_title"
         android:layout="@layout/tally_homepage_section">
         <com.android.settings.widget.HomepagePreference
             android:fragment="com.android.settings.network.NetworkDashboardFragment"
