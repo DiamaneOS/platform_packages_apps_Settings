@@ -16,8 +16,8 @@
   -->
 
 <!-- The Tally Settings homepage, from the prototype's Settings page (design/prototypes/tally,
-     app.css .set-sec and .set-row). Values that are Tally tokens point at the tallytokens
-     library. -->
+     app.css .set-sec, .set-row, .set-top, .set-title and .set-search). Values that are Tally
+     tokens point at the tallytokens library. -->
 <resources>
     <!-- Section cards sit 12 dp from the screen edges, 24 dp apart. -->
     <dimen name="tally_homepage_card_margin">@dimen/tally_space_m</dimen>
@@ -25,4 +25,23 @@
     <!-- Rows and section titles: 16 dp inside the card, so 28 dp from the screen edge. -->
     <dimen name="tally_homepage_row_padding_horizontal">28dp</dimen>
     <dimen name="tally_homepage_row_min_height">64dp</dimen>
+
+    <!-- The page title: a 48 dp bar under the status bar. At rest the title sits 56 dp below
+         the bar's top and the list starts 16 dp under the title; the title stops growing at
+         130 % text (28 sp type, 34 sp line). -->
+    <dimen name="tally_homepage_bar_height">48dp</dimen>
+    <dimen name="tally_homepage_title_margin_horizontal">24dp</dimen>
+    <dimen name="tally_homepage_title_rest_offset">56dp</dimen>
+    <dimen name="tally_homepage_title_gap">16dp</dimen>
+    <dimen name="tally_homepage_title_max_size">36.4dp</dimen>
+    <dimen name="tally_homepage_title_max_line_height">44.2dp</dimen>
+    <!-- Under the last card: its 24 dp gap and this, 72 dp in all, as the prototype's page. -->
+    <dimen name="tally_homepage_list_padding_bottom">48dp</dimen>
+
+    <!-- The search slot at the bottom: 16 dp from the sides, 8 dp under the list and 4 dp above
+         the navigation bar (28 dp from the screen's bottom with gesture navigation), 48 dp tall
+         with 12 dp corners. -->
+    <dimen name="tally_homepage_search_margin_horizontal">@dimen/tally_space_l</dimen>
+    <dimen name="tally_homepage_search_margin_top">@dimen/tally_space_s</dimen>
+    <dimen name="tally_homepage_search_margin_bottom">@dimen/tally_space_xs</dimen>
 </resources>
