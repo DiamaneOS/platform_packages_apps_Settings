@@ -19,11 +19,15 @@ import android.Manifest
 import android.app.settings.SettingsEnums.ACTION_BATTERY_SAVER
 import android.content.Context
 import android.os.PowerManager
+import androidx.preference.Preference
+import androidx.preference.TwoStatePreference
 import com.android.settings.R
 import com.android.settings.contract.KEY_BATTERY_SAVER
 import com.android.settings.fuelgauge.BatterySaverReceiver
 import com.android.settings.fuelgauge.BatterySaverReceiver.BatterySaverListener
 import com.android.settings.metrics.PreferenceActionMetricsProvider
+import com.android.settings.widget.TallyConfirmedSwitch
+import com.android.settings.widget.TallyMainSwitchPreference
 import com.android.settingslib.datastore.AbstractKeyedDataObservable
 import com.android.settingslib.datastore.KeyValueStore
 import com.android.settingslib.datastore.Permissions
@@ -33,6 +37,7 @@ import com.android.settingslib.fuelgauge.BatteryStatus
 import com.android.settingslib.fuelgauge.BatteryUtils
 import com.android.settingslib.metadata.BooleanValuePreference
 import com.android.settingslib.metadata.PreferenceChangeReason
+import com.android.settingslib.metadata.PreferenceMetadata
 import com.android.settingslib.metadata.ReadWritePermit
 import com.android.settingslib.metadata.SensitivityLevel
 import com.android.settingslib.widget.MainSwitchPreferenceBinding
@@ -63,6 +68,16 @@ class BatterySaverPreference :
     override fun tags(context: Context) = arrayOf(KEY_BATTERY_SAVER)
 
     override fun storage(context: Context) = BatterySaverStore(context)
+
+    // Tally: the switch lights once the system reports Battery Saver on: the value each bind reads
+    // (isPowerSaveMode), not the tap that asked for it.
+    override fun createWidget(context: Context): Preference = TallyMainSwitchPreference(context)
+
+    override fun bind(preference: Preference, metadata: PreferenceMetadata) {
+        super.bind(preference, metadata)
+        (preference as? TallyConfirmedSwitch)?.confirmedOn =
+            (preference as? TwoStatePreference)?.isChecked
+    }
 
     override fun getReadPermissions(context: Context) = Permissions.EMPTY
 

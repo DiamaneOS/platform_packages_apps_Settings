@@ -21,6 +21,8 @@ import android.nfc.NfcAdapter;
 
 import androidx.preference.TwoStatePreference;
 
+import com.android.settings.widget.TallySwitchLamp;
+
 /**
  * NfcEnabler is a helper to manage the Nfc on/off checkbox preference. It turns on/off Nfc
  * and ensures the summary of the preference reflects the current state.
@@ -35,6 +37,8 @@ public class NfcEnabler extends BaseNfcEnabler {
 
     @Override
     protected void handleNfcStateChanged(int newState) {
+        // Tally: the switch lights once NFC reports on, not while it turns on.
+        TallySwitchLamp.confirm(mPreference, newState == NfcAdapter.STATE_ON);
         switch (newState) {
             case NfcAdapter.STATE_OFF:
                 mPreference.setChecked(false);
