@@ -60,4 +60,11 @@ public class RestrictedHomepagePreference extends RestrictedTopLevelPreference i
     public HomepagePreferenceLayoutHelper getHelper() {
         return mHelper;
     }
+
+    @Override
+    public void setLampState(@HomepagePreferenceLayoutHelper.LampState int state) {
+        if (mHelper.setLampState(state)) {
+            notifyChanged();
+        }
+    }
 }
