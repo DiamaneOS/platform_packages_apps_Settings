@@ -24,26 +24,28 @@
         android:key="tether_prefs_top_intro"
         settings:searchable="false"/>
 
-    <com.android.settingslib.PrimarySwitchPreference
+    <!-- Tally: these switches light once the system reports tethering on (WifiHotspotScreen,
+         TetherSettings, BluetoothTetherSwitchPreference) -->
+    <com.android.settings.widget.TallyPrimarySwitchPreference
         android:key="wifi_tether"
         android:title="@string/wifi_hotspot_checkbox_text"
         android:summary="@string/wifi_hotspot_off_subtext"
         android:fragment="com.android.settings.wifi.tether.WifiTetherSettings"
         settings:allowDividerAbove="true"/>
 
-    <com.android.settingslib.RestrictedSwitchPreference
+    <com.android.settings.widget.TallyRestrictedSwitchPreference
         android:key="usb_tether_settings"
         android:title="@string/usb_tethering_button_text"
         android:summary="@string/usb_tethering_subtext"
         settings:keywords="@string/keywords_hotspot_tethering" />
 
-    <SwitchPreferenceCompat
+    <com.android.settings.widget.TallySwitchPreferenceCompat
         android:key="enable_bluetooth_tethering"
         android:title="@string/bluetooth_tether_checkbox_text"
         android:summary="@string/bluetooth_tethering_subtext"
         settings:keywords="@string/keywords_hotspot_tethering" />
 
-    <SwitchPreferenceCompat
+    <com.android.settings.widget.TallySwitchPreferenceCompat
         android:key="enable_ethernet_tethering"
         android:title="@string/ethernet_tether_checkbox_text"
         android:summary="@string/ethernet_tethering_subtext"
