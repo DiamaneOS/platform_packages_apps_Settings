@@ -262,6 +262,7 @@ public class SettingsHomepageActivity extends FragmentActivity implements
         mLoadedListeners = new ArraySet<>();
 
         initSearchBarView();
+        TallyHomepageTitle.attach(this);
 
         getLifecycle().addObserver(new HideNonSystemOverlayMixin(this));
         mCategoryMixin = new CategoryMixin(this);
@@ -396,12 +397,9 @@ public class SettingsHomepageActivity extends FragmentActivity implements
                     // Apply the insets paddings to the view.
                     v.setPadding(insets.left, 0, insets.right, insets.bottom);
 
-                    // reset the top padding of search bar container to original top padding
-                    // plus insets top.
+                    // Tally: the title bar sits right under the status bar.
                     View container = findViewById(R.id.app_bar_container);
-                    final int top_padding = getResources().getDimensionPixelSize(
-                            R.dimen.search_bar_container_top_padding);
-                    container.setPadding(container.getPaddingLeft(), top_padding + insets.top,
+                    container.setPadding(container.getPaddingLeft(), insets.top,
                             container.getPaddingRight(), container.getPaddingBottom());
 
                     // Return CONSUMED if you don't want the window insets to keep being

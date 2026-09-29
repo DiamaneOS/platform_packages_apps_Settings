@@ -15,37 +15,54 @@
      limitations under the License.
 -->
 
-<com.google.android.material.card.MaterialCardView
+<!-- Tally: the search slot at the bottom of the homepage (the prototype's .set-search), 48 dp
+     tall with 12 dp corners and a 1 dp outline, the search icon in ink and the hint in the muted
+     colour. The ids and nesting are stock's: SearchFeatureProvider.initSearchToolbar() wires
+     search_action_bar exactly as before and hides its parent, this slot, wherever search is
+     unavailable (before setup is done, in setup flows, or when Settings search is off for
+     the user). -->
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/SearchBarStyle_v2"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/tally_homepage_search_margin_horizontal"
+    android:layout_marginEnd="@dimen/tally_homepage_search_margin_horizontal"
+    android:layout_marginTop="@dimen/tally_homepage_search_margin_top"
+    android:layout_marginBottom="@dimen/tally_homepage_search_margin_bottom"
+    android:background="@drawable/tally_homepage_search_background">
 
     <LinearLayout
         android:id="@+id/search_action_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="72dp"
+        android:minHeight="@dimen/tally_key_height"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
+        android:paddingStart="@dimen/tally_space_l"
+        android:paddingEnd="@dimen/tally_space_l"
+        android:paddingTop="@dimen/tally_space_xs"
+        android:paddingBottom="@dimen/tally_space_xs"
         android:focusedByDefault="true"
-        android:background="@drawable/search_bar_selected_background">
+        android:background="@drawable/tally_homepage_search_ripple">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/tally_icon_size"
+            android:layout_height="@dimen/tally_icon_size"
             android:importantForAccessibility="no"
-            android:src="@drawable/ic_homepage_search" />
+            android:src="@drawable/ic_homepage_search"
+            android:tint="@color/tally_ink"/>
         <TextView
             android:id="@+id/search_bar_title"
-            style="@style/TextAppearance.SearchBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:paddingEnd="8dp"
+            android:layout_marginStart="@dimen/tally_space_m"
+            android:paddingEnd="@dimen/tally_space_s"
+            android:textAppearance="@style/TextAppearance.Tally.Body"
+            android:lineHeight="@dimen/tally_type_body_line_height"
+            android:textColor="@color/tally_ink_muted"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:text="@string/homepage_search"/>
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+</FrameLayout>
