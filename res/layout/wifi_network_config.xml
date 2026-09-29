@@ -448,9 +448,10 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
             </LinearLayout>
 
-            <com.google.android.material.materialswitch.MaterialSwitch
+            <!-- Tally: the Tally switch (a MaterialSwitch), as every expressive switch. -->
+            <com.android.settingslib.widget.TallySwitch
                 android:id="@+id/share_wifi_network"
-                style="@style/SettingslibSwitchStyle.Expressive"
+                style="@style/SettingslibSwitchStyle.Tally"
                 android:theme="@style/Theme.Material3.DynamicColors.DayNight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -492,9 +493,10 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
             </LinearLayout>
 
-            <com.google.android.material.materialswitch.MaterialSwitch
+            <!-- Tally: the Tally switch (a MaterialSwitch), as every expressive switch. -->
+            <com.android.settingslib.widget.TallySwitch
                 android:id="@+id/edit_wifi_network_configuration"
-                style="@style/SettingslibSwitchStyle.Expressive"
+                style="@style/SettingslibSwitchStyle.Tally"
                 android:theme="@style/Theme.Material3.DynamicColors.DayNight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
