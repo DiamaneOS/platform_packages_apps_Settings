@@ -15,69 +15,124 @@
      limitations under the License.
 -->
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<!-- Tally: the page's title at the top, the entries under it, and search at the bottom
+     (owner decision: search at the bottom, for one-handed reach). The title rides up with the
+     list and docks, smaller, in the bar (TallyHomepageTitle). The ids are stock's, so the
+     homepage code finds the same views; the search slot's views are search_bar.xml's. -->
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/settings_homepage_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/main_content_scrollable_container"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="com.android.settings.widget.HomepageAppBarScrollingViewBehavior">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:id="@+id/homepage_container"
+        <!-- The list's viewport, between the bar and the search slot. It clips the list, which
+             would otherwise draw behind the search slot and the navigation bar (Settings' theme
+             turns clipping off, and a view without padding ignores clipToPadding). -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="true"
+            app:layout_behavior="com.android.settings.widget.HomepageAppBarScrollingViewBehavior">
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/main_content_scrollable_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- The top padding leaves room for the title at rest; TallyHomepageTitle keeps it
+                     16 dp under the title at every text size. -->
+                <LinearLayout
+                    android:id="@+id/homepage_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="58dp"
+                    android:paddingBottom="@dimen/tally_homepage_list_padding_bottom"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:id="@+id/suggestion_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="?android:attr/listPreferredItemPaddingStart"
+                        android:layout_marginEnd="?android:attr/listPreferredItemPaddingEnd" />
+
+                    <FrameLayout
+                        android:id="@+id/contextual_cards_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/contextual_card_side_margin"
+                        android:layout_marginEnd="@dimen/contextual_card_side_margin"/>
+
+                    <FrameLayout
+                        android:id="@+id/main_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"/>
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </FrameLayout>
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-8dp"
-            android:orientation="vertical">
+            app:elevation="0dp"
+            android:touchscreenBlocksFocus="false"
+            android:keyboardNavigationCluster="false"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
+            <!-- Its top padding is the status bar's height (SettingsHomepageActivity). -->
             <FrameLayout
-                android:id="@+id/suggestion_content"
+                android:id="@+id/app_bar_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="?android:attr/listPreferredItemPaddingStart"
-                android:layout_marginEnd="?android:attr/listPreferredItemPaddingEnd" />
+                android:background="?android:attr/colorBackground"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
-            <FrameLayout
-                android:id="@+id/contextual_cards_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/contextual_card_side_margin"
-                android:layout_marginEnd="@dimen/contextual_card_side_margin"/>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/tally_homepage_bar_height"
+                    android:clipChildren="false">
 
-            <FrameLayout
-                android:id="@+id/main_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"/>
+                    <TextView
+                        android:id="@+id/tally_homepage_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top|start"
+                        android:layout_marginStart="@dimen/tally_homepage_title_margin_horizontal"
+                        android:layout_marginEnd="@dimen/tally_homepage_title_margin_horizontal"
+                        android:translationY="@dimen/tally_homepage_title_rest_offset"
+                        android:text="@string/settings_label"
+                        android:textAppearance="@style/TextAppearance.Tally.Headline"
+                        android:lineHeight="@dimen/tally_type_headline_line_height"
+                        android:textColor="@color/tally_ink"
+                        android:textAlignment="viewStart"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:accessibilityHeading="true"
+                        android:accessibilityTraversalBefore="@id/main_content_scrollable_container"/>
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+                    <View
+                        android:id="@+id/tally_homepage_bar_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/tally_stroke_hairline"
+                        android:layout_gravity="bottom"
+                        android:background="@color/tally_outline_variant"
+                        android:visibility="invisible"/>
+                </FrameLayout>
+            </FrameLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:elevation="0dp"
-        android:touchscreenBlocksFocus="false"
-        android:keyboardNavigationCluster="false">
-        <LinearLayout
-            android:id="@+id/app_bar_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="@dimen/search_bar_container_top_padding"
-            android:paddingBottom="@dimen/settingslib_expressive_space_extrasmall4"
-            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-            android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-            android:background="?android:attr/colorBackground">
-
-            <include layout="@layout/search_bar"/>
-
-        </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <include layout="@layout/search_bar"/>
+</LinearLayout>
