@@ -35,8 +35,9 @@
     <dimen name="tally_homepage_title_gap">16dp</dimen>
     <dimen name="tally_homepage_title_max_size">36.4dp</dimen>
     <dimen name="tally_homepage_title_max_line_height">44.2dp</dimen>
-    <!-- Under the last card: its 24 dp gap and this, 72 dp in all, as the prototype's page. -->
-    <dimen name="tally_homepage_list_padding_bottom">48dp</dimen>
+    <!-- Under the last card: only its 24 dp gap. The list's viewport ends 8 dp above the search
+         slot, so 32 dp separate the last card from search, as on the prototype's page. -->
+    <dimen name="tally_homepage_list_padding_bottom">0dp</dimen>
 
     <!-- The search slot at the bottom: 16 dp from the sides, 8 dp under the list and 4 dp above
          the navigation bar (28 dp from the screen's bottom with gesture navigation), 48 dp tall
