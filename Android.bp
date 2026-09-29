@@ -130,6 +130,7 @@ android_library {
         "com.android.extensions.appfunctions.impl",
         "device-state-schema",
         "dynamiccolors",
+        "tallytokens",
         "com.android.text.flags-aconfig-java",
     ],
 
