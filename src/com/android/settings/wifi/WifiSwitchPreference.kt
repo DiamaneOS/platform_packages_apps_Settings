@@ -39,6 +39,8 @@ import com.android.settings.network.SatelliteRepository.Companion.isSatelliteOn
 import com.android.settings.network.SatelliteWarningDialogActivity
 import com.android.settings.overlay.FeatureFactory.Companion.featureFactory
 import com.android.settings.restriction.PreferenceRestrictionMixin
+import com.android.settings.widget.TallyConfirmedSwitch
+import com.android.settings.widget.TallyRestrictedSwitchPreference
 import com.android.settings.wifi.utils.isDefaultNetworkWifi
 import com.android.settings.wifi.utils.isWifiEnabled
 import com.android.settings.wifi.utils.wifiManager
@@ -97,11 +99,14 @@ class WifiSwitchPreference(private val scope: CoroutineScope) :
     override val useAdminDisabledSummary: Boolean
         get() = true
 
-    override fun createWidget(context: Context) = RestrictedSwitchPreference(context)
+    // Tally: the switch lights once Wi-Fi reports enabled, not while it is being enabled.
+    override fun createWidget(context: Context): RestrictedSwitchPreference =
+        TallyRestrictedSwitchPreference(context)
 
     override fun bind(preference: Preference, metadata: PreferenceMetadata) {
         super.bind(preference, metadata)
         preference.onPreferenceChangeListener = this
+        (preference as? TallyConfirmedSwitch)?.confirmedOn = preference.context.isWifiEnabled
     }
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {

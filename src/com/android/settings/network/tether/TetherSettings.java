@@ -60,6 +60,7 @@ import com.android.settings.dashboard.RestrictedDashboardFragment;
 import com.android.settings.datausage.DataSaverBackend;
 import com.android.settings.flags.Flags;
 import com.android.settings.search.BaseSearchIndexProvider;
+import com.android.settings.widget.TallySwitchLamp;
 import com.android.settings.wifi.WifiUtils;
 import com.android.settings.wifi.tether.WifiTetherPreferenceController;
 import com.android.settingslib.RestrictedLockUtils;
@@ -491,6 +492,8 @@ public class TetherSettings extends RestrictedDashboardFragment
                     + ", mMassStorageActive : " + mMassStorageActive
                     + ", usbTethered : " + usbTethered);
         }
+        // Tally: the switch lights once USB tethering is reported on, not while it starts.
+        TallySwitchLamp.confirm(mUsbTether, usbTethered);
         if (usbTethered) {
             mUsbTether.setEnabled(!mDataSaverEnabled);
             mUsbTether.setChecked(true);
@@ -580,6 +583,8 @@ public class TetherSettings extends RestrictedDashboardFragment
                     + ", isTethered : " + isTethered);
         }
 
+        // Tally: the switch lights once Ethernet tethering is reported on, not while it starts.
+        TallySwitchLamp.confirm(mEthernetTether, isTethered);
         if (isTethered) {
             mEthernetTether.setEnabled(!mDataSaverEnabled);
             mEthernetTether.setChecked(true);
