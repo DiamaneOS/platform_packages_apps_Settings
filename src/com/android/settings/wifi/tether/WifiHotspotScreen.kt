@@ -28,6 +28,7 @@ import android.os.UserManager
 import android.text.BidiFormatter
 import android.util.Log
 import androidx.fragment.app.Fragment
+import androidx.preference.Preference
 import com.android.settings.R
 import com.android.settings.Settings.WifiTetherSettingsActivity
 import com.android.settings.Utils
@@ -39,6 +40,8 @@ import com.android.settings.flags.Flags
 import com.android.settings.metrics.PreferenceActionMetricsProvider
 import com.android.settings.restriction.PreferenceRestrictionMixin
 import com.android.settings.utils.makeLaunchIntent
+import com.android.settings.widget.TallyConfirmedSwitch
+import com.android.settings.widget.TallyPrimarySwitchPreference
 import com.android.settings.wifi.WifiUtils.canShowWifiHotspot
 import com.android.settings.wifi.utils.tetheringManager
 import com.android.settings.wifi.utils.wifiApState
@@ -178,6 +181,15 @@ open class WifiHotspotScreen(context: Context) :
         get() = SensitivityLevel.MUST_PROVIDE_UNDO
 
     override fun storage(context: Context): KeyValueStore = wifiHotspotStore
+
+    // Tally: the hotspot row's switch lights once the hotspot reports enabled, not while it starts.
+    override fun createWidget(context: Context): Preference = TallyPrimarySwitchPreference(context)
+
+    override fun bind(preference: Preference, metadata: PreferenceMetadata) {
+        super.bind(preference, metadata)
+        (preference as? TallyConfirmedSwitch)?.confirmedOn =
+            preference.context.wifiApState == WifiManager.WIFI_AP_STATE_ENABLED
+    }
 
     @Suppress("UNCHECKED_CAST")
     private class WifiHotspotStore(
