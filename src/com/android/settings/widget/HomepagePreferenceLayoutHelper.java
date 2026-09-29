@@ -189,9 +189,11 @@ public class HomepagePreferenceLayoutHelper {
         if (!withWords || mLampState == LAMP_NONE) {
             glyph = 0;
         } else if (mLampState == LAMP_ON) {
-            glyph = R.drawable.tally_lamp_on_10;
+            // The token library's glyphs: Settings-core uses the resource processor, so a
+            // library's resources are in its own R class.
+            glyph = de.diamaneos.tally.R.drawable.tally_lamp_on_10;
         } else {
-            glyph = R.drawable.tally_lamp_off_10;
+            glyph = de.diamaneos.tally.R.drawable.tally_lamp_off_10;
         }
         final ImageView lamp = (ImageView) lampView;
         lamp.setImageResource(glyph);
