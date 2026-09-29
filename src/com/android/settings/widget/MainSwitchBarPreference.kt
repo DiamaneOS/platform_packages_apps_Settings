@@ -28,7 +28,20 @@ import com.android.settingslib.widget.MainSwitchBar
 
 /** Preference abstraction of the [MainSwitchBar] in settings activity. */
 open class MainSwitchBarPreference(context: Context, private val metadata: MainSwitchBarMetadata) :
-    TwoStatePreference(context), OnCheckedChangeListener, MainSwitchBar.PreChangeListener {
+    TwoStatePreference(context),
+    OnCheckedChangeListener,
+    MainSwitchBar.PreChangeListener,
+    TallyConfirmedSwitch {
+
+    /**
+     * Tally: for a main switch whose change takes effect later, whether the system has confirmed
+     * it; the bar's lamp lights only once it has (see [TallyConfirmedSwitch]).
+     */
+    override var confirmedOn: Boolean? = null
+        set(value) {
+            field = value
+            showConfirmedOn()
+        }
 
     // main switch bar might be null when configuration is just changed
     private val mainSwitchBar: MainSwitchBar?
@@ -69,11 +82,16 @@ open class MainSwitchBarPreference(context: Context, private val metadata: MainS
         mainSwitchBar.addOnSwitchChangeListener(this)
     }
 
+    private fun showConfirmedOn() {
+        TallySwitchLamp.show(mainSwitchBar?.findViewById(android.R.id.switch_widget), confirmedOn)
+    }
+
     override fun onAttached() {
         super.onAttached()
         val mainSwitchBar = mainSwitchBar!!
         mainSwitchBar.setPreChangeListener(this)
         mainSwitchBar.addOnSwitchChangeListener(this)
+        showConfirmedOn()
     }
 
     override fun preChange(isCheck: Boolean) = callChangeListener(isCheck)
@@ -89,6 +107,8 @@ open class MainSwitchBarPreference(context: Context, private val metadata: MainS
         val mainSwitchBar = mainSwitchBar!!
         mainSwitchBar.removeOnSwitchChangeListener(this)
         mainSwitchBar.setPreChangeListener(null)
+        // The activity's bar outlives this page: it lights with its checked state again.
+        TallySwitchLamp.show(mainSwitchBar.findViewById(android.R.id.switch_widget), null)
         super.onDetached()
     }
 
