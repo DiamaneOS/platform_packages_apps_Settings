@@ -15,14 +15,11 @@
   limitations under the License.
   -->
 
-<!-- DiamaneOS's own Settings text for the Tally homepage and About phone. English only for now:
-     where stock Android has a translated string for the same message, the Tally code uses that
-     one instead. -->
+<!-- DiamaneOS's own Settings text for About phone. English only for now: where stock Android has
+     a translated string for the same message, the Tally code uses that one instead (the homepage
+     section titles are stock's: wireless_networks_settings_title, device_dashboard_title,
+     privacy_header, header_category_system). -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Settings homepage: title of the section that holds Network & internet and Connected
-         devices. Shown in capitals. [CHAR LIMIT=40] -->
-    <string name="tally_homepage_section_connectivity">Connectivity</string>
-
     <!-- About phone: the line under the DiamaneOS mark, saying what the system is based on and
          who does not make it. "DiamaneOS", "GrapheneOS" and "Fairphone" are names.
          [CHAR LIMIT=NONE] -->
