@@ -22,4 +22,9 @@
     <!-- Settings homepage: title of the section that holds Network & internet and Connected
          devices. Shown in capitals. [CHAR LIMIT=40] -->
     <string name="tally_homepage_section_connectivity">Connectivity</string>
+
+    <!-- About phone: the line under the DiamaneOS mark, saying what the system is based on and
+         who does not make it. "DiamaneOS", "GrapheneOS" and "Fairphone" are names.
+         [CHAR LIMIT=NONE] -->
+    <string name="tally_about_based_on">DiamaneOS is based on GrapheneOS. It is not made or endorsed by Fairphone.</string>
 </resources>
