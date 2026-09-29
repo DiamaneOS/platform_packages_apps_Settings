@@ -20,7 +20,8 @@
     android:title="@string/battery_saver"
     settings:keywords="@string/keywords_battery_saver">
 
-    <com.android.settingslib.widget.MainSwitchPreference
+    <!-- Tally: lights once Battery Saver is reported on (BatterySaverPreference) -->
+    <com.android.settings.widget.TallyMainSwitchPreference
         android:order="-100"
         android:key="battery_saver"
         android:title="@string/battery_saver_master_switch_title"

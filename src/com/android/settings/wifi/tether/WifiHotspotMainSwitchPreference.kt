@@ -19,9 +19,11 @@ package com.android.settings.wifi.tether
 import android.Manifest
 import android.content.Context
 import android.net.wifi.WifiManager.WIFI_AP_STATE_ENABLED
+import androidx.preference.Preference
 import com.android.settings.R
 import com.android.settings.overlay.FeatureFactory.Companion.featureFactory
 import com.android.settings.widget.MainSwitchBarMetadata
+import com.android.settings.widget.TallyConfirmedSwitch
 import com.android.settings.wifi.utils.wifiApState
 import com.android.settingslib.datastore.AbstractKeyedDataObservable
 import com.android.settingslib.datastore.HandlerExecutor
@@ -29,6 +31,7 @@ import com.android.settingslib.datastore.KeyValueStore
 import com.android.settingslib.datastore.KeyedObserver
 import com.android.settingslib.datastore.Permissions
 import com.android.settingslib.metadata.PreferenceAvailabilityProvider
+import com.android.settingslib.metadata.PreferenceMetadata
 import com.android.settingslib.metadata.preferencesapi.preconditions.PreconditionStability
 import com.android.settingslib.metadata.ReadWritePermit
 import com.android.settingslib.metadata.SensitivityLevel
@@ -57,6 +60,13 @@ class WifiHotspotMainSwitchPreference(private val wifiHotspotStore: KeyValueStor
             !(featureFactory.wifiFeatureProvider.wifiHotspotRepository?.isRestarting ?: false)
 
     override fun storage(context: Context): KeyValueStore = UseWifiHotspotStore(wifiHotspotStore)
+
+    override fun bind(preference: Preference, metadata: PreferenceMetadata) {
+        super.bind(preference, metadata)
+        // Tally: the switch lights once the hotspot reports enabled, not while it starts.
+        (preference as? TallyConfirmedSwitch)?.confirmedOn =
+            preference.context.wifiApState == WIFI_AP_STATE_ENABLED
+    }
 
     override fun getReadPermissions(context: Context) =
         Permissions.allOf(Manifest.permission.ACCESS_WIFI_STATE)
