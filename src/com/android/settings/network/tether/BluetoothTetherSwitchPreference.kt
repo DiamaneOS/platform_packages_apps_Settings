@@ -28,17 +28,23 @@ import android.net.ConnectivityManager
 import android.net.TetheringManager
 import android.os.Handler
 import android.os.Looper
+import androidx.preference.Preference
+import androidx.preference.TwoStatePreference
 import com.android.settings.R
 import com.android.settings.datausage.DataSaverBackend
+import com.android.settings.widget.TallyConfirmedSwitch
+import com.android.settings.widget.TallySwitchPreferenceCompat
 import com.android.settingslib.datastore.AbstractKeyedDataObservable
 import com.android.settingslib.datastore.KeyValueStore
 import com.android.settingslib.datastore.Permissions
 import com.android.settingslib.metadata.PreferenceAvailabilityProvider
 import com.android.settingslib.metadata.preferencesapi.preconditions.PreconditionStability
 import com.android.settingslib.metadata.PreferenceChangeReason
+import com.android.settingslib.metadata.PreferenceMetadata
 import com.android.settingslib.metadata.ReadWritePermit
 import com.android.settingslib.metadata.SensitivityLevel
 import com.android.settingslib.metadata.SwitchPreference
+import com.android.settingslib.preference.SwitchPreferenceBinding
 import com.android.settingslib.spa.flow.broadcastReceiverFlow
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.CoroutineScope
@@ -55,10 +61,21 @@ class BluetoothTetherSwitchPreference(
         purpose = R.string.enable_bluetooth_tethering_purpose,
         title = R.string.bluetooth_tether_checkbox_text,
     ),
+    SwitchPreferenceBinding,
     PreferenceAvailabilityProvider {
 
     override val summary: Int
         get() = R.string.bluetooth_tethering_subtext
+
+    // Tally: the switch lights once the system reports Bluetooth tethering on: the value each
+    // bind reads (BluetoothPan.isTetheringOn), not the tap that asked for it.
+    override fun createWidget(context: Context): Preference = TallySwitchPreferenceCompat(context)
+
+    override fun bind(preference: Preference, metadata: PreferenceMetadata) {
+        super.bind(preference, metadata)
+        (preference as? TallyConfirmedSwitch)?.confirmedOn =
+            (preference as? TwoStatePreference)?.isChecked
+    }
 
     override val keywords: Int
         get() = R.string.keywords_hotspot_tethering
