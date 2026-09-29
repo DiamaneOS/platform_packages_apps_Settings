@@ -122,7 +122,8 @@
                 android:gravity="center_vertical"
                 android:contentDescription="@string/bluetooth_pairing_phonebook_toggle_text"
                 android:switchMinWidth="48dp" />
-            <com.google.android.material.materialswitch.MaterialSwitch
+            <!-- Tally: the Tally switch (a MaterialSwitch), as every expressive switch. -->
+            <com.android.settingslib.widget.TallySwitch
                 android:theme="@style/Theme.Material3.DynamicColors.DayNight"
                 android:id="@+id/phonebook_sharing_message_confirm_pin_expressive"
                 android:layout_width="wrap_content"
@@ -133,7 +134,7 @@
                 android:switchMinWidth="48dp"
                 android:focusable="true"
                 android:clickable="true"
-                style="@style/SettingslibSwitchStyle.Expressive" />
+                style="@style/SettingslibSwitchStyle.Tally" />
         </LinearLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
