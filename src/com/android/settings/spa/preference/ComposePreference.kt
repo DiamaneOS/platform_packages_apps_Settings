@@ -20,12 +20,14 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.android.settings.R
 import com.android.settingslib.spa.framework.theme.SettingsTheme
+import com.android.settingslib.spa.widget.preference.LocalHostRowStyle
 import com.android.settingslib.widget.GroupSectionDividerMixin
 import com.android.settingslib.widget.NormalPaddingMixin
 
@@ -68,11 +70,15 @@ constructor(
         holder.isDividerAllowedAbove = false
         holder.isDividerAllowedBelow = false
 
+        // Tally: a row in a section card is drawn as the Tally view rows around it (a group
+        // section handles its own layout and keeps Spa's).
+        val hostRowStyle =
+            if (this is GroupSectionDividerMixin) null else tallyHostRowStyle(context)
         (holder.itemView as ComposeView).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 SettingsTheme {
-                    content()
+                    CompositionLocalProvider(LocalHostRowStyle provides hostRowStyle) { content() }
                 }
             }
         }
