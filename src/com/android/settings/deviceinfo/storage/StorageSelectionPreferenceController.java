@@ -132,9 +132,10 @@ public class StorageSelectionPreferenceController extends BasePreferenceControll
 
         @Override
         public View getDropDownView(int position, View view, ViewGroup parent) {
-            if (view == null) {
-                view = getDefaultDropDownView(position, view, parent);
-            }
+            // The base adapter marks only the current entry (its check and colour, and its
+            // selected state for screen readers); building the view here alone left the check
+            // showing on every entry.
+            view = super.getDropDownView(position, view, parent);
             asTextView(view).setText(getItem(position).getDescription());
             return view;
         }
