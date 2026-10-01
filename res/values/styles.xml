@@ -78,6 +78,12 @@
         <item name="android:dropDownVerticalOffset">@dimen/min_tap_target_size</item>
     </style>
 
+    <!-- Tally: the shape of a key (r8) for Material buttons in Settings' own forms. -->
+    <style name="TallyKeyShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
     <style name="Theme.Network" parent="@style/Theme.Material3.DynamicColors.DayNight">
         <item name="textInputStyle">@style/Widget.Network.TextInputLayout</item>
     </style>
@@ -448,8 +454,9 @@
     </style>
     <style name="ActionSecondaryButton" parent="android:Widget.DeviceDefault.Button"/>
 
+    <!-- Tally: the OS's own keys are r8, not pills. -->
     <style name="RoundedCornerThemeOverlay">
-        <item name="android:buttonCornerRadius">24dp</item>
+        <item name="android:buttonCornerRadius">8dp</item>
         <item name="android:paddingHorizontal">16dp</item>
         <item name="android:colorControlHighlight">@color/ripple_material_inverse</item>
     </style>
