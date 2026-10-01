@@ -17,6 +17,7 @@
 
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/Theme.Network"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -40,7 +41,8 @@
                             style="?attr/materialButtonOutlinedStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.SettingsLib.LabelLarge.Emphasized"/>
+                            android:textAppearance="@style/TextAppearance.SettingsLib.LabelLarge.Emphasized"
+                            app:shapeAppearance="@style/TallyKeyShape"/>
 
                         <Space
                             android:layout_width="8dp"
@@ -51,7 +53,8 @@
                             style="@style/Widget.Material3.Button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.SettingsLib.LabelLarge.Emphasized"/>
+                            android:textAppearance="@style/TextAppearance.SettingsLib.LabelLarge.Emphasized"
+                            app:shapeAppearance="@style/TallyKeyShape"/>
                 </LinearLayout>
         </LinearLayout>
 </androidx.core.widget.NestedScrollView>
