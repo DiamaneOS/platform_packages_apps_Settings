@@ -644,6 +644,13 @@
     "type": "unknown"
   },
   {
+    "preference_key": "vendor_security_key",
+    "file_name": "FirmwareVersionScreen.kt",
+    "screen_key": "firmware_version",
+    "writable": "False",
+    "type": "unknown"
+  },
+  {
     "preference_key": "module_version",
     "file_name": "FirmwareVersionScreen.kt",
     "screen_key": "firmware_version",

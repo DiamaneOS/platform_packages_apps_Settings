@@ -24,4 +24,10 @@
          who does not make it. "DiamaneOS", "GrapheneOS" and "Fairphone" are names.
          [CHAR LIMIT=NONE] -->
     <string name="tally_about_based_on">DiamaneOS is based on GrapheneOS. It is not made or endorsed by Fairphone.</string>
+    <!-- About phone > Android version: label of the vendor security patch level, the date of
+         the last security update of the device maker's vendor software, shown under "Android
+         security update" in the same date format. [CHAR LIMIT=60] -->
+    <string name="tally_vendor_security_patch">Vendor security update</string>
+    <!-- What the vendor security update row reports, for the preferences API; not shown. -->
+    <string name="tally_vendor_security_patch_purpose" translatable="false">The date of the last vendor security update</string>
 </resources>
