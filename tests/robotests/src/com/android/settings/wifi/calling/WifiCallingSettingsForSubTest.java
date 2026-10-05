@@ -93,6 +93,8 @@ public class WifiCallingSettingsForSubTest {
     private static final String TEST_EMERGENCY_ADDRESS_CARRIER_APP =
             "com.android.settings/.wifi.calling.TestEmergencyAddressCarrierApp";
     private static final String PREFERENCE_EMERGENCY_ADDRESS = "emergency_address_key";
+    // Qualcomm's "IMS preferred" mode, which AOSP has no constant or label for.
+    private static final int WFC_MODE_QCOM_IMS_PREFERRED = 10;
 
     private TestFragment mFragment;
     private Context mContext;
@@ -278,6 +280,25 @@ public class WifiCallingSettingsForSubTest {
 
         // Check that WFC roaming preference is hidden.
         verify(mButtonWfcRoamingMode, times(1)).setVisible(false);
+    }
+
+    @Test
+    public void onResume_wfcOff_shouldShowOffSummary() {
+        mQueryImsState.setIsEnabledByUser(false);
+
+        mFragment.onResume();
+
+        verify(mButtonWfcMode).setSummary(
+                mContext.getString(com.android.internal.R.string.wifi_calling_off_summary));
+    }
+
+    @Test
+    public void onResume_wfcOnInModeWithoutLabel_shouldShowOnSummary() {
+        doReturn(WFC_MODE_QCOM_IMS_PREFERRED).when(mImsMmTelManager).getVoWiFiModeSetting();
+
+        mFragment.onResume();
+
+        verify(mButtonWfcMode).setSummary(mContext.getString(R.string.switch_on_text));
     }
 
     @Test

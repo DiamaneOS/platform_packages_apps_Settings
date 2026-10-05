@@ -704,6 +704,11 @@ public class WifiCallingSettingsForSub extends DashboardFragment
                     break;
                 default:
                     Log.e(TAG, "Unexpected WFC mode value: " + wfcMode);
+                    if (wfcMode != ImsMmTelManager.WIFI_MODE_UNKNOWN) {
+                        // Wi-Fi calling is on, in a mode Settings has no label for, such as
+                        // Qualcomm's "IMS preferred" (10) that some carrier configs set.
+                        resId = R.string.switch_on_text;
+                    }
             }
         }
         return getResourcesForSubId().getString(resId);
