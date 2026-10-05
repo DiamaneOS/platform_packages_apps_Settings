@@ -29,6 +29,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.android.settings.R
 import com.android.settings.network.telephony.wificalling.WifiCallingRepository
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.delay
@@ -100,6 +101,37 @@ class WifiCallingPreferenceControllerTest {
     }
 
     @Test
+    fun summary_wifiCallingOff_showsOff() = runBlocking {
+        mockTelecomManager.stub {
+            on { getSimCallManagerForSubscription(SUB_ID) } doReturn null
+        }
+        mockWifiCallingRepository.stub {
+            on { getWiFiCallingMode() } doReturn ImsMmTelManager.WIFI_MODE_UNKNOWN
+        }
+
+        controller.onViewCreated(TestLifecycleOwner())
+        delay(100)
+
+        assertThat(preference.summary)
+            .isEqualTo(context.getString(com.android.internal.R.string.wifi_calling_off_summary))
+    }
+
+    @Test
+    fun summary_modeWithoutLabel_showsOn() = runBlocking {
+        mockTelecomManager.stub {
+            on { getSimCallManagerForSubscription(SUB_ID) } doReturn null
+        }
+        mockWifiCallingRepository.stub {
+            on { getWiFiCallingMode() } doReturn WFC_MODE_QCOM_IMS_PREFERRED
+        }
+
+        controller.onViewCreated(TestLifecycleOwner())
+        delay(100)
+
+        assertThat(preference.summary).isEqualTo(context.getString(R.string.switch_on_text))
+    }
+
+    @Test
     fun summary_hasSimCallManager_summaryIsNull() = runBlocking {
         mockTelecomManager.stub {
             on { getSimCallManagerForSubscription(SUB_ID) } doReturn
@@ -144,5 +176,8 @@ class WifiCallingPreferenceControllerTest {
     private companion object {
         const val TEST_KEY = "test_key"
         const val SUB_ID = 2
+
+        /** Qualcomm's "IMS preferred" mode, which AOSP has no constant or label for. */
+        const val WFC_MODE_QCOM_IMS_PREFERRED = 10
     }
 }

@@ -130,7 +130,12 @@ open class WifiCallingPreferenceController @JvmOverloads constructor(
             ImsMmTelManager.WIFI_MODE_WIFI_PREFERRED ->
                 com.android.internal.R.string.wfc_mode_wifi_preferred_summary
 
-            else -> com.android.internal.R.string.wifi_calling_off_summary
+            ImsMmTelManager.WIFI_MODE_UNKNOWN ->
+                com.android.internal.R.string.wifi_calling_off_summary
+
+            // Wi-Fi calling is on, in a mode Settings has no label for, such as Qualcomm's
+            // "IMS preferred" (10) that some carrier configs set.
+            else -> R.string.switch_on_text
         }
         return resourcesForSub.getString(resId)
     }
