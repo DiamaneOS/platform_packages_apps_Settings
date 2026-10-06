@@ -18,8 +18,7 @@ package com.android.settings.network.telephony;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.ext.PackageId;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.os.UserManager;
 import android.telephony.SubscriptionInfo;
@@ -34,6 +33,7 @@ import com.android.internal.annotations.VisibleForTesting;
 import com.android.settings.R;
 import com.android.settings.SidecarFragment;
 import com.android.settings.network.EnableMultiSimSidecar;
+import com.android.settings.network.GoogleEuiccLpaController;
 import com.android.settings.network.SubscriptionUtil;
 import com.android.settings.network.SwitchToEuiccSubscriptionSidecar;
 import com.android.settings.network.SwitchToRemovableSlotSidecar;
@@ -643,12 +643,7 @@ public class ToggleSubscriptionDialogActivity extends SubscriptionActionDialogAc
     }
 
     private boolean isEsimSupportEnabled() {
-        try {
-            return getPackageManager()
-                    .getApplicationInfo(PackageId.G_EUICC_LPA_NAME, PackageManager.MATCH_SYSTEM_ONLY)
-                    .enabled;
-        } catch (PackageManager.NameNotFoundException e) {
-            return true;
-        }
+        ApplicationInfo lpa = GoogleEuiccLpaController.findLpa(getPackageManager());
+        return lpa == null || lpa.enabled;
     }
 }
