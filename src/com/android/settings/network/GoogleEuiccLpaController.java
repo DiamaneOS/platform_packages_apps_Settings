@@ -1,8 +1,10 @@
 package com.android.settings.network;
 
 import android.Manifest;
+import android.annotation.Nullable;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.ext.PackageId;
 import android.os.PowerManager;
@@ -16,28 +18,44 @@ import com.android.settings.ext.ExtSettingControllerHelper;
 import static java.util.Objects.requireNonNull;
 
 public class GoogleEuiccLpaController extends AbstractTogglePrefController {
-    private static final String PKG_NAME = PackageId.G_EUICC_LPA_NAME;
+    // DiamaneOS: the switch also turns DiamaneOS's own eSIM manager on and off. It controls the
+    // first of these packages that is installed as a system app.
+    private static final String[] LPA_PACKAGES = {
+            "de.diamaneos.euicc",
+            PackageId.G_EUICC_LPA_NAME,
+    };
 
     private final PackageManager packageManager;
+    private final String pkgName;
     private final boolean isPresent;
 
     public GoogleEuiccLpaController(Context context, String key) {
         super(context, key);
         packageManager = context.getPackageManager();
 
-        boolean isPresent = false;
-        try {
-            var ai = packageManager.getApplicationInfo(PKG_NAME, 0);
-            isPresent = ai.isSystemApp();
-        } catch (PackageManager.NameNotFoundException ignored) {}
+        ApplicationInfo lpa = findLpa(packageManager);
+        pkgName = lpa != null ? lpa.packageName : PackageId.G_EUICC_LPA_NAME;
+        this.isPresent = lpa != null;
+    }
 
-        this.isPresent = isPresent;
+    /** The system LPA package behind the eSIM support switch, or null if there is none. */
+    @Nullable
+    public static ApplicationInfo findLpa(PackageManager packageManager) {
+        for (String pkg : LPA_PACKAGES) {
+            try {
+                var ai = packageManager.getApplicationInfo(pkg, PackageManager.MATCH_SYSTEM_ONLY);
+                if (ai.isSystemApp()) {
+                    return ai;
+                }
+            } catch (PackageManager.NameNotFoundException ignored) {}
+        }
+        return null;
     }
 
     @Override
     public boolean isChecked() {
         try {
-            return isPresent && packageManager.getApplicationInfo(PKG_NAME, 0).enabled;
+            return isPresent && packageManager.getApplicationInfo(pkgName, 0).enabled;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
@@ -52,9 +70,10 @@ public class GoogleEuiccLpaController extends AbstractTogglePrefController {
     }
     
     private void setEnabled(boolean isEnabled) {
-        String pkg = PKG_NAME;
+        String pkg = pkgName;
 
-        if (isEnabled) {
+        // Only Google's LPA ever had its Camera permission granted as system-fixed.
+        if (isEnabled && PackageId.G_EUICC_LPA_NAME.equals(pkg)) {
             var permManager = mContext.getSystemService(PermissionManager.class);
             UserHandle user = mContext.getUser();
 
