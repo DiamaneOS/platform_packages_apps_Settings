@@ -335,6 +335,10 @@ public class TopLevelSettings extends DashboardFragment implements SplitLayoutLi
             return mHighlightMixin.onCreateAdapter(this, preferenceScreen, mScrollNeeded);
         }
 
+        // Tally: the expressive homepage (the phone's) draws Tally's section cards.
+        if (SettingsThemeHelper.isExpressiveTheme(getContext())) {
+            return new TallyHomepageAdapter(preferenceScreen);
+        }
         return new RoundCornerPreferenceAdapter(preferenceScreen);
     }
 

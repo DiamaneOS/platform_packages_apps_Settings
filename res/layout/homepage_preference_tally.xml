@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<!-- A Tally homepage row (the prototype's .set-row): a 24 dp icon in the muted colour, the title
+     and summary 16 dp after it, at least 64 dp tall. The card around it is the row's background,
+     set by TallyHomepageAdapter. The ids are homepage_preference_expressive.xml's, so
+     HomepagePreferenceLayoutHelper binds it the same way. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/tally_homepage_row_min_height"
+    android:paddingStart="@dimen/tally_homepage_row_padding_horizontal"
+    android:paddingEnd="@dimen/tally_homepage_row_padding_horizontal"
+    android:paddingTop="@dimen/tally_space_s"
+    android:paddingBottom="@dimen/tally_space_s"
+    android:gravity="center_vertical"
+    android:background="?android:attr/selectableItemBackground"
+    android:clipToPadding="false"
+    android:baselineAligned="false">
+
+    <LinearLayout
+        android:id="@+id/icon_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/tally_space_l"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.preference.internal.PreferenceImageView
+            android:id="@android:id/icon"
+            android:layout_width="@dimen/tally_icon_size"
+            android:layout_height="@dimen/tally_icon_size"
+            android:scaleType="fitCenter"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/text_frame"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@android:id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.Tally.Item"
+            android:lineHeight="@dimen/tally_type_item_line_height"
+            android:textColor="@color/settingslib_text_color_primary"/>
+
+        <TextView
+            android:id="@android:id/summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.Tally.Body"
+            android:lineHeight="@dimen/tally_type_body_line_height"
+            android:textColor="@color/settingslib_text_color_secondary"
+            android:maxLines="4"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/alert_frame"
+        android:minHeight="40dp"
+        android:minWidth="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center|end"
+        android:layout_marginStart="@dimen/tally_space_l">
+
+        <ImageView
+            android:id="@+id/alert_unnumbered"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="center"
+            android:src="@drawable/circle"
+            android:contentDescription="@null"
+            android:tint="@color/settingslib_materialColorPrimary"/>
+
+        <FrameLayout
+            android:id="@+id/alert_numbered_frame"
+            android:minHeight="24dp"
+            android:minWidth="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/alert_number_bg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center"
+                android:src="@drawable/circle"
+                android:contentDescription="@null"
+                android:tint="@color/settingslib_materialColorSecondaryContainer"/>
+
+            <TextView
+                android:id="@+id/alert_number_fg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/settingslib_materialColorOnSecondaryContainer"
+                style="@style/TextAppearance.SettingsLib.TitleMedium" />
+        </FrameLayout>
+
+    </FrameLayout>
+</LinearLayout>
