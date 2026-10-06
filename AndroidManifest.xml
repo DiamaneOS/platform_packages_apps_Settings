@@ -5713,6 +5713,19 @@
                        android:value="@string/menu_key_battery"/>
         </activity>
 
+        <activity android:name="Settings$MomentsSwitchSettingsActivity"
+                  android:exported="true"
+                  android:label="@string/tally_moments_title">
+            <intent-filter>
+                <action android:name="de.diamaneos.settings.MOMENTS_SWITCH_SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
+                       android:value="com.android.settings.gestures.MomentsSwitchSettings" />
+            <meta-data android:name="com.android.settings.HIGHLIGHT_MENU_KEY"
+                       android:value="@string/menu_key_system"/>
+        </activity>
+
         <activity android:name="Settings$PowerMenuSettingsActivity"
                   android:exported="true"
                   android:label="@string/power_menu_setting_name">
