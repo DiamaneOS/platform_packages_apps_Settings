@@ -518,6 +518,7 @@ public class Settings extends SettingsActivity {
     public static class WifiCallingDisclaimerActivity extends SettingsActivity { /* empty */ }
     public static class MobileNetworkListActivity extends SettingsActivity {}
     public static class PowerMenuSettingsActivity extends SettingsActivity {}
+    public static class MomentsSwitchSettingsActivity extends SettingsActivity {}
     public static class MobileNetworkActivity extends SettingsActivity {
         private static final String MOBILE_NETWORK_FRAGMENT_NAME =
                 "com.android.settings.network.telephony.MobileNetworkSettings";
