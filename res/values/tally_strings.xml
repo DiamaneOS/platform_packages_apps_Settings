@@ -42,6 +42,10 @@
     <!-- Network & internet: opens the eSIM manager (profiles, renaming, deleting, notifications)
          below the eSIM support switch. [CHAR LIMIT=40] -->
     <string name="tally_manage_esims">Manage eSIMs</string>
+    <!-- Link text in the footers of Secure app spawning, App info > Hardened memory allocator and
+         Auto reboot: opens GrapheneOS's own documentation of the feature, which DiamaneOS
+         inherits. "GrapheneOS" is a name. [CHAR LIMIT=40] -->
+    <string name="tally_grapheneos_documentation">GrapheneOS documentation</string>
     <!-- Toast when the user taps "Add SIM" while the eSIM support switch on Network & internet
          is off, where nothing would open. "eSIM support" is that switch's title, which is
          English only. A physical SIM needs no "Add SIM". [CHAR LIMIT=NONE] -->
