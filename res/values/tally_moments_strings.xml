@@ -41,10 +41,17 @@
     <string name="tally_moments_action_silent">Silent mode</string>
     <!-- What it does. [CHAR LIMIT=NONE] -->
     <string name="tally_moments_action_silent_summary">Silences calls and notifications</string>
-    <!-- Action: airplane mode, Lockdown or both. [CHAR LIMIT=40] -->
-    <string name="tally_moments_action_offline">Airplane mode or Lockdown</string>
+    <!-- Action: airplane mode. [CHAR LIMIT=40] -->
+    <string name="tally_moments_action_airplane">Airplane mode</string>
     <!-- What it does. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_action_offline_summary">Turns on airplane mode, locks the phone down, or both</string>
+    <string name="tally_moments_action_airplane_summary">Turns on airplane mode</string>
+    <!-- Action: Lockdown. [CHAR LIMIT=40] -->
+    <string name="tally_moments_action_lockdown">Lockdown</string>
+    <!-- What it does. [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_action_lockdown_summary">Locks the phone and turns off fingerprint and face unlock until you enter your PIN, pattern or password. Sliding the switch back does not end it.</string>
+    <!-- Lockdown's summary when the phone has no PIN, pattern or password; the choice is
+         disabled. [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_action_lockdown_needs_lock">Needs a PIN, pattern or password</string>
     <!-- Action: nothing. [CHAR LIMIT=40] -->
     <string name="tally_moments_action_nothing">Nothing</string>
     <!-- What it does. [CHAR LIMIT=NONE] -->
@@ -69,18 +76,6 @@
     <string name="tally_moments_greyscale">Grey screen</string>
     <!-- Its summary. [CHAR LIMIT=NONE] -->
     <string name="tally_moments_greyscale_summary">Shows the screen in shades of grey</string>
-
-    <!-- Heading over the airplane mode and Lockdown options. [CHAR LIMIT=60] -->
-    <string name="tally_moments_offline_header">Airplane mode or Lockdown</string>
-    <!-- Switch: airplane mode. [CHAR LIMIT=40] -->
-    <string name="tally_moments_offline_airplane">Airplane mode</string>
-    <!-- Switch: Lockdown. [CHAR LIMIT=40] -->
-    <string name="tally_moments_offline_lockdown">Lockdown</string>
-    <!-- Its summary. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_offline_lockdown_summary">Locks the phone and turns off fingerprint and face unlock until you enter your PIN, pattern or password. Sliding the switch back does not end it.</string>
-
-    <!-- Lockdown's summary when the phone has no PIN, pattern or password. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_offline_lockdown_needs_lock">Needs a PIN, pattern or password</string>
 
     <!-- Footer. [CHAR LIMIT=NONE] -->
     <string name="tally_moments_footer">Sliding the switch on works on the lock screen too. Sliding it back turns camera and microphone access, airplane mode and paused apps back only after you unlock. Settings you changed yourself meanwhile stay as you set them.</string>
