@@ -70,10 +70,10 @@
     <!-- The note when the action is chosen but the kernel does not block the microphones in this
          boot (it learns the choice at the next start); until then only Android blocks them.
          Owner's wording; keep it. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_kernel_after_restart">Restart your phone to turn on hardware protection for the microphone.</string>
+    <string name="tally_moments_kernel_after_restart">Restart your phone so the switch also locks the microphone off below Android.</string>
     <!-- The note when another action was chosen but the kernel still blocks the microphones
          until the next start. Owner's wording; keep it. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_kernel_until_restart">The microphone stays hardware-muted with the switch down until you restart.</string>
+    <string name="tally_moments_kernel_until_restart">The microphone stays locked off with the switch down until you restart.</string>
     <!-- Title of the note on emergency calls. [CHAR LIMIT=60] -->
     <string name="tally_moments_kernel_emergency_title">Emergency calls</string>
     <!-- Emergency calls while the kernel blocks the microphones. Owner's wording; keep it.
