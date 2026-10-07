@@ -22,6 +22,7 @@ public class AutoRebootPrefController extends IntSettingPrefController {
     @Override
     public void addPrefsBeforeList(RadioButtonPickerFragment2 fragment, PreferenceScreen screen) {
         addFooterPreference(screen, R.string.auto_reboot_footer,
+                R.string.tally_grapheneos_documentation,
                 "https://grapheneos.org/features#auto-reboot");
     }
 
