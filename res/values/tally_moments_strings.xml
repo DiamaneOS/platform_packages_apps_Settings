@@ -39,7 +39,7 @@
     <string name="tally_moments_action_sensors_summary">Turns off camera and microphone access, as the quick settings do. This is a software setting, not a hardware cut-off.</string>
     <!-- The same action's summary on phones whose kernel also turns the microphones off.
          [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_action_sensors_summary_kernel">Turns off camera and microphone access, as the quick settings do. The kernel also turns off the built-in microphones.</string>
+    <string name="tally_moments_action_sensors_summary_kernel">Turns off camera and microphone access, as the quick settings do. The kernel also blocks the built-in cameras and microphones.</string>
     <!-- Action: silent mode. [CHAR LIMIT=40] -->
     <string name="tally_moments_action_silent">Silent mode</string>
     <!-- What it does. [CHAR LIMIT=NONE] -->
@@ -61,19 +61,26 @@
     <string name="tally_moments_action_nothing_summary">The switch does nothing</string>
 
     <!-- Heading over the notes on the kernel's microphone block. [CHAR LIMIT=60] -->
-    <string name="tally_moments_kernel_header">Microphone block in the kernel</string>
+    <string name="tally_moments_kernel_header">Block in the kernel</string>
     <!-- Title of the note on the kernel's microphone block. [CHAR LIMIT=60] -->
     <string name="tally_moments_kernel_title">Built-in microphones</string>
+    <!-- The same title when the kernel also blocks the cameras. [CHAR LIMIT=60] -->
+    <string name="tally_moments_kernel_title_camera">Built-in cameras and microphones</string>
     <!-- The note when the kernel blocks the microphones in this boot and the action is still
          chosen. [CHAR LIMIT=NONE] -->
     <string name="tally_moments_kernel_on">While the switch is down, the kernel mutes the built-in microphones and turns off their power. No app or Android service can turn them back on; only the switch can, at once, also on the lock screen. A change of this choice reaches the kernel after a restart; Android\'s block changes at once.</string>
-    <!-- The note when the action is chosen but the kernel does not block the microphones in this
-         boot (it learns the choice at the next start); until then only Android blocks them.
-         Owner's wording; keep it. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_kernel_after_restart">Restart your phone so the switch also locks the microphone off below Android.</string>
+    <!-- The note when the action is chosen but the kernel does not block the camera and microphone in
+         this boot (it learns the choice at the next start); until then only Android blocks them.
+         Owner's wording, extended to the camera. [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_kernel_after_restart">Restart your phone so the switch also locks the camera and microphone off below Android.</string>
     <!-- The note when another action was chosen but the kernel still blocks the microphones
          until the next start. Owner's wording; keep it. [CHAR LIMIT=NONE] -->
     <string name="tally_moments_kernel_until_restart">The microphone stays locked off with the switch down until you restart.</string>
+    <!-- The same with the cameras blocked too. [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_kernel_until_restart_camera">The camera and microphone stay locked off with the switch down until you restart.</string>
+    <!-- The note when the kernel blocks the cameras and microphones in this boot and the action
+         is still chosen. [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_kernel_on_camera">While the switch is down, the kernel holds the cameras on a test image and mutes the built-in microphones, turning off their power. No app or Android service can undo this; only the switch can, at once, also on the lock screen. A change of this choice reaches the kernel after a restart; Android\'s block changes at once.</string>
     <!-- Title of the note on emergency calls. [CHAR LIMIT=60] -->
     <string name="tally_moments_kernel_emergency_title">Emergency calls</string>
     <!-- Emergency calls while the kernel blocks the microphones. Owner's wording; keep it.

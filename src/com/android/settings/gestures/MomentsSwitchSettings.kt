@@ -242,9 +242,16 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
     // The kernel learns the choice once per boot; Android's block follows at once.
     private fun refreshKernelFloor(action: Int?) {
         val chosen = action == Secure.MOMENTS_ACTION_SENSORS_OFF
-        val enforced = kernelBlocksMic()
-        val note = kernelNoteFor(chosen, enforced)
+        val mask = kernelMask()
+        val enforced = mask and KERNEL_MIC != 0
+        val camera = mask and KERNEL_CAMERA != 0
+        val note = kernelNoteFor(chosen, enforced, camera)
         kernelCategory.isVisible = hasKernelFloor(requireContext()) && note != null
+        // Only a kernel that enforces the microphones alone gets the microphone-only title.
+        kernelNote.setTitle(
+            if (enforced && !camera) R.string.tally_moments_kernel_title
+            else R.string.tally_moments_kernel_title_camera
+        )
         note?.let { kernelNote.setSummary(it) }
     }
 
@@ -310,12 +317,14 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
          * The kernel note for the page, or null for none: [chosen] is "Camera and microphone off",
          * [enforced] whether the kernel blocks the microphones in this boot (its own report).
          */
-        fun kernelNoteFor(chosen: Boolean, enforced: Boolean): Int? =
+        fun kernelNoteFor(chosen: Boolean, enforced: Boolean, camera: Boolean = false): Int? =
             when {
+                chosen && enforced && camera -> R.string.tally_moments_kernel_on_camera
                 chosen && enforced -> R.string.tally_moments_kernel_on
-                // Only Android blocks the microphone until a restart arms the kernel.
+                // Only Android blocks them until a restart arms the kernel.
                 chosen -> R.string.tally_moments_kernel_after_restart
                 // Another choice, but the kernel keeps blocking until the next start.
+                enforced && camera -> R.string.tally_moments_kernel_until_restart_camera
                 enforced -> R.string.tally_moments_kernel_until_restart
                 else -> null
             }
@@ -326,13 +335,13 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
                 .getString(com.android.internal.R.string.config_momentsKernelFloorPath)
                 .isNotEmpty()
 
-        /** Whether the kernel blocks the microphones from the switch in this boot. */
-        fun kernelBlocksMic(): Boolean =
-            SystemProperties.getInt(KERNEL_ENFORCED_PROPERTY, 0) and KERNEL_MIC != 0
+        /** What the kernel blocks from the switch in this boot (1 microphones, 2 cameras). */
+        fun kernelMask(): Int = SystemProperties.getInt(KERNEL_ENFORCED_PROPERTY, 0)
 
         // Set by the input service from the kernel (MomentsKernelFloor).
         private const val KERNEL_ENFORCED_PROPERTY = "diamaneos.privacy_switch.enforced"
         private const val KERNEL_MIC = 1
+        private const val KERNEL_CAMERA = 2
 
         /** Whether this phone has a Moments switch (its framework config names one). */
         fun hasSwitch(context: Context): Boolean =
