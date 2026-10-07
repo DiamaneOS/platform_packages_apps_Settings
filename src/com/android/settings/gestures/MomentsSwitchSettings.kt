@@ -16,8 +16,10 @@
 
 package com.android.settings.gestures
 
+import android.app.KeyguardManager
 import android.app.settings.SettingsEnums
 import android.content.Context
+import android.hardware.SensorPrivacyManager
 import android.os.Bundle
 import android.provider.Settings.Secure
 import androidx.preference.Preference
@@ -145,18 +147,25 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
         refresh()
     }
 
-    // One of the two must stay on, so the action always does something.
+    // One of the two must stay on, so the action always does something. Lockdown counts only
+    // with a screen lock.
     private fun offlineSwitch(key: String, bit: Int) =
         SwitchPreferenceCompat(prefContext).apply {
             this.key = key
             setOnPreferenceChangeListener { _, value ->
                 val flags = offlineFlags()
                 val next = if (value as Boolean) flags or bit else flags and bit.inv()
-                if (next == 0) return@setOnPreferenceChangeListener false
+                val usable =
+                    if (hasScreenLock()) next
+                    else next and Secure.MOMENTS_OFFLINE_LOCKDOWN.inv()
+                if (usable == 0) return@setOnPreferenceChangeListener false
                 putInt(Secure.TALLY_MOMENTS_OFFLINE, next)
                 true
             }
         }
+
+    private fun hasScreenLock() =
+        requireContext().getSystemService(KeyguardManager::class.java)?.isDeviceSecure == true
 
     private fun setAction(value: Int) {
         // Saving a choice is what lets the switch act (SystemUI applies it at once if it is on).
@@ -167,7 +176,13 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
     private fun refresh() {
         val resolver = contentResolver
         val action = Secure.getString(resolver, Secure.TALLY_MOMENTS_ACTION)?.toIntOrNull()
-        for ((a, radio) in radios) radio.isChecked = a.value == action
+        for ((a, radio) in radios) {
+            radio.isChecked = a.value == action
+            // Offered only where the phone has the software camera and microphone toggles.
+            if (a.value == Secure.MOMENTS_ACTION_SENSORS_OFF) {
+                radio.isVisible = hasSensorToggles(requireContext())
+            }
+        }
         momentsCategory.isVisible = action == Secure.MOMENTS_ACTION_MOMENTS
         offlineCategory.isVisible = action == Secure.MOMENTS_ACTION_OFFLINE
 
@@ -182,8 +197,15 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
         greyscale.isChecked = Secure.getInt(resolver, Secure.TALLY_MOMENTS_GREYSCALE, 0) == 1
 
         val flags = offlineFlags()
+        val screenLock = hasScreenLock()
         airplane.isChecked = flags and Secure.MOMENTS_OFFLINE_AIRPLANE != 0
-        lockdown.isChecked = flags and Secure.MOMENTS_OFFLINE_LOCKDOWN != 0
+        // Lockdown needs a PIN, pattern or password, as in the power menu.
+        lockdown.isEnabled = screenLock
+        lockdown.isChecked = screenLock && flags and Secure.MOMENTS_OFFLINE_LOCKDOWN != 0
+        lockdown.setSummary(
+            if (screenLock) R.string.tally_moments_offline_lockdown_summary
+            else R.string.tally_moments_offline_lockdown_needs_lock
+        )
     }
 
     private fun countText(count: Int) =
@@ -234,6 +256,13 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
                     R.string.tally_moments_action_nothing_summary,
                 ),
             )
+
+        /** Whether this phone offers the camera or microphone access toggle. */
+        fun hasSensorToggles(context: Context): Boolean {
+            val manager = context.getSystemService(SensorPrivacyManager::class.java) ?: return false
+            return manager.supportsSensorToggle(SensorPrivacyManager.Sensors.CAMERA) ||
+                manager.supportsSensorToggle(SensorPrivacyManager.Sensors.MICROPHONE)
+        }
 
         /** Whether this phone has a Moments switch (its framework config names one). */
         fun hasSwitch(context: Context): Boolean =

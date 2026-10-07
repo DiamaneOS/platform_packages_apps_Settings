@@ -79,6 +79,9 @@
     <!-- Its summary. [CHAR LIMIT=NONE] -->
     <string name="tally_moments_offline_lockdown_summary">Locks the phone and turns off fingerprint and face unlock until you enter your PIN, pattern or password. Sliding the switch back does not end it.</string>
 
+    <!-- Lockdown's summary when the phone has no PIN, pattern or password. [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_offline_lockdown_needs_lock">Needs a PIN, pattern or password</string>
+
     <!-- Footer. [CHAR LIMIT=NONE] -->
     <string name="tally_moments_footer">Sliding the switch on works on the lock screen too. Sliding it back turns camera and microphone access, airplane mode and paused apps back only after you unlock. Settings you changed yourself meanwhile stay as you set them.</string>
 
