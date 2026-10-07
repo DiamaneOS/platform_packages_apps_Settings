@@ -37,6 +37,9 @@
     <!-- What it does. Must say plainly that this is a software setting, not a hardware cut-off.
          [CHAR LIMIT=NONE] -->
     <string name="tally_moments_action_sensors_summary">Turns off camera and microphone access, as the quick settings do. This is a software setting, not a hardware cut-off.</string>
+    <!-- The same action's summary on phones whose kernel also turns the microphones off.
+         [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_action_sensors_summary_kernel">Turns off camera and microphone access, as the quick settings do. The kernel also turns off the built-in microphones.</string>
     <!-- Action: silent mode. [CHAR LIMIT=40] -->
     <string name="tally_moments_action_silent">Silent mode</string>
     <!-- What it does. [CHAR LIMIT=NONE] -->
@@ -56,6 +59,25 @@
     <string name="tally_moments_action_nothing">Nothing</string>
     <!-- What it does. [CHAR LIMIT=NONE] -->
     <string name="tally_moments_action_nothing_summary">The switch does nothing</string>
+
+    <!-- Heading over the notes on the kernel's microphone block. [CHAR LIMIT=60] -->
+    <string name="tally_moments_kernel_header">Microphone block in the kernel</string>
+    <!-- Title of the note on the kernel's microphone block. [CHAR LIMIT=60] -->
+    <string name="tally_moments_kernel_title">Built-in microphones</string>
+    <!-- The note when the kernel blocks the microphones in this boot and the action is still
+         chosen. [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_kernel_on">While the switch is down, the kernel mutes the built-in microphones and turns off their power. No app or Android service can turn them back on; only the switch can, at once, also on the lock screen. A change of this choice reaches the kernel after a restart; Android\'s block changes at once.</string>
+    <!-- The note when the action was just chosen: the kernel learns it at the next start.
+         [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_kernel_after_restart">After you restart the phone, the kernel also mutes the built-in microphones and turns off their power while the switch is down. Until then Android blocks them.</string>
+    <!-- The note when another action was chosen but the kernel still blocks the microphones
+         until the next start. [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_kernel_until_restart">Until you restart the phone, the kernel still mutes the built-in microphones while the switch is down.</string>
+    <!-- Title of the note on emergency calls. [CHAR LIMIT=60] -->
+    <string name="tally_moments_kernel_emergency_title">Emergency calls</string>
+    <!-- Emergency calls while the kernel blocks the microphones. Owner's wording; keep it.
+         [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_kernel_emergency">While the switch is down, emergency calls have no microphone.</string>
 
     <!-- Heading over Moments' options. [CHAR LIMIT=60] -->
     <string name="tally_moments_options_header">Moments</string>
