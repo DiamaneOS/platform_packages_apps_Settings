@@ -45,6 +45,14 @@
         settings:enableCopying="true"
         settings:controller="com.android.settings.deviceinfo.firmwareversion.VendorSecurityPatchLevelPreferenceController"/>
 
+    <!-- Fairphone firmware release -->
+    <Preference
+        android:key="firmware_release_key"
+        android:title="@string/tally_firmware_release"
+        android:selectable="false"
+        settings:enableCopying="true"
+        settings:controller="com.android.settings.deviceinfo.firmwareversion.FirmwareReleasePreferenceController"/>
+
     <!-- Mainline module version -->
     <Preference
         android:key="module_version"

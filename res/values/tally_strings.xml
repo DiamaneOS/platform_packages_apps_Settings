@@ -30,4 +30,13 @@
     <string name="tally_vendor_security_patch">Vendor security update</string>
     <!-- What the vendor security update row reports, for the preferences API; not shown. -->
     <string name="tally_vendor_security_patch_purpose" translatable="false">The date of the last vendor security update</string>
+    <!-- About phone > Android version: label of the Fairphone firmware release the phone runs (boot
+         chain, modem and signal processor firmware), shown under "Vendor security update" as a
+         release number such as 16.111.0. "Fairphone" is a name. [CHAR LIMIT=60] -->
+    <string name="tally_firmware_release">Fairphone firmware</string>
+    <!-- About phone > Android version > Fairphone firmware: shown instead of a release number when
+         the firmware parts come from different Fairphone releases. [CHAR LIMIT=60] -->
+    <string name="tally_firmware_release_mixed">Mixed releases</string>
+    <!-- What the Fairphone firmware row reports, for the preferences API; not shown. -->
+    <string name="tally_firmware_release_purpose" translatable="false">The installed Fairphone firmware release</string>
 </resources>
