@@ -91,7 +91,7 @@
          microphone the switch blocks. Owner's wording; keep it. [CHAR LIMIT=NONE] -->
     <string name="tally_moments_sensor_note">Show a note when an app tries to use a blocked camera or microphone</string>
     <!-- Its summary. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_sensor_note_summary">Apps get black frames and silence either way, without an Unblock prompt. Off: nothing shows.</string>
+    <string name="tally_moments_sensor_note_summary">Either way, apps can\'t use the camera and get silence from the microphone, without an Unblock prompt. Off: nothing shows.</string>
 
     <!-- Heading over Moments' options. [CHAR LIMIT=60] -->
     <string name="tally_moments_options_header">Moments</string>
