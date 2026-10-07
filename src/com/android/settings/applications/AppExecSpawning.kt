@@ -57,6 +57,7 @@ class AppDefaultExecSpawningFragment : BoolSettingFragment() {
     override fun makeFooterPref(builder: FooterPreference.Builder): FooterPreference {
         val p = builder.setTitle(R.string.aep_default_exec_spawning_footer).build()
         setFooterPrefLearnMoreUri(p, Uri.parse("https://grapheneos.org/usage#exec-spawning"))
+        p.setLearnMoreText(resText(R.string.tally_grapheneos_documentation))
         return p
     }
 }
