@@ -43,12 +43,9 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
 
     private val radios = mutableListOf<Pair<Action, SelectorWithWidgetPreference>>()
     private lateinit var momentsCategory: PreferenceCategory
-    private lateinit var offlineCategory: PreferenceCategory
     private lateinit var homeApps: Preference
     private lateinit var pausedApps: Preference
     private lateinit var greyscale: SwitchPreferenceCompat
-    private lateinit var airplane: SwitchPreferenceCompat
-    private lateinit var lockdown: SwitchPreferenceCompat
 
     override fun getMetricsCategory() = SettingsEnums.PAGE_UNKNOWN
 
@@ -120,20 +117,6 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
         momentsCategory.addPreference(pausedApps)
         momentsCategory.addPreference(greyscale)
 
-        offlineCategory =
-            PreferenceCategory(context).apply {
-                key = "offline"
-                setTitle(R.string.tally_moments_offline_header)
-            }
-        screen.addPreference(offlineCategory)
-        airplane = offlineSwitch("airplane", Secure.MOMENTS_OFFLINE_AIRPLANE)
-        airplane.setTitle(R.string.tally_moments_offline_airplane)
-        lockdown = offlineSwitch("lockdown", Secure.MOMENTS_OFFLINE_LOCKDOWN)
-        lockdown.setTitle(R.string.tally_moments_offline_lockdown)
-        lockdown.setSummary(R.string.tally_moments_offline_lockdown_summary)
-        offlineCategory.addPreference(airplane)
-        offlineCategory.addPreference(lockdown)
-
         screen.addPreference(
             FooterPreference(context).apply {
                 key = "footer"
@@ -144,25 +127,26 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
 
     override fun onResume() {
         super.onResume()
+        migrateOfflineChoice()
         refresh()
     }
 
-    // One of the two must stay on, so the action always does something. Lockdown counts only
-    // with a screen lock.
-    private fun offlineSwitch(key: String, bit: Int) =
-        SwitchPreferenceCompat(prefContext).apply {
-            this.key = key
-            setOnPreferenceChangeListener { _, value ->
-                val flags = offlineFlags()
-                val next = if (value as Boolean) flags or bit else flags and bit.inv()
-                val usable =
-                    if (hasScreenLock()) next
-                    else next and Secure.MOMENTS_OFFLINE_LOCKDOWN.inv()
-                if (usable == 0) return@setOnPreferenceChangeListener false
-                putInt(Secure.TALLY_MOMENTS_OFFLINE, next)
-                true
-            }
+    // An earlier "airplane mode and/or Lockdown" choice (action 3 with flags) becomes Lockdown
+    // if Lockdown was on and there is a screen lock, else airplane mode; SystemUI reads it the
+    // same way until this runs.
+    private fun migrateOfflineChoice() {
+        val flags = Secure.getString(contentResolver, Secure.TALLY_MOMENTS_OFFLINE)?.toIntOrNull()
+            ?: return
+        val action = Secure.getString(contentResolver, Secure.TALLY_MOMENTS_ACTION)?.toIntOrNull()
+        if (
+            action == Secure.MOMENTS_ACTION_AIRPLANE &&
+                flags and Secure.MOMENTS_OFFLINE_LOCKDOWN != 0 &&
+                hasScreenLock()
+        ) {
+            putInt(Secure.TALLY_MOMENTS_ACTION, Secure.MOMENTS_ACTION_LOCKDOWN)
         }
+        Secure.putString(contentResolver, Secure.TALLY_MOMENTS_OFFLINE, null)
+    }
 
     private fun hasScreenLock() =
         requireContext().getSystemService(KeyguardManager::class.java)?.isDeviceSecure == true
@@ -176,15 +160,24 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
     private fun refresh() {
         val resolver = contentResolver
         val action = Secure.getString(resolver, Secure.TALLY_MOMENTS_ACTION)?.toIntOrNull()
+        val screenLock = hasScreenLock()
         for ((a, radio) in radios) {
             radio.isChecked = a.value == action
-            // Offered only where the phone has the software camera and microphone toggles.
-            if (a.value == Secure.MOMENTS_ACTION_SENSORS_OFF) {
-                radio.isVisible = hasSensorToggles(requireContext())
+            when (a.value) {
+                // Offered only where the phone has the software camera and microphone toggles.
+                Secure.MOMENTS_ACTION_SENSORS_OFF ->
+                    radio.isVisible = hasSensorToggles(requireContext())
+                // Lockdown needs a PIN, pattern or password, as in the power menu.
+                Secure.MOMENTS_ACTION_LOCKDOWN -> {
+                    radio.isEnabled = screenLock
+                    radio.setSummary(
+                        if (screenLock) a.summary
+                        else R.string.tally_moments_action_lockdown_needs_lock
+                    )
+                }
             }
         }
         momentsCategory.isVisible = action == Secure.MOMENTS_ACTION_MOMENTS
-        offlineCategory.isVisible = action == Secure.MOMENTS_ACTION_OFFLINE
 
         val home = MomentsAppsFragment.read(requireContext(), MomentsAppsFragment.LIST_HOME)
         homeApps.summary =
@@ -195,24 +188,10 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
             if (paused.isEmpty()) getString(R.string.tally_moments_paused_apps_none)
             else countText(paused.size)
         greyscale.isChecked = Secure.getInt(resolver, Secure.TALLY_MOMENTS_GREYSCALE, 0) == 1
-
-        val flags = offlineFlags()
-        val screenLock = hasScreenLock()
-        airplane.isChecked = flags and Secure.MOMENTS_OFFLINE_AIRPLANE != 0
-        // Lockdown needs a PIN, pattern or password, as in the power menu.
-        lockdown.isEnabled = screenLock
-        lockdown.isChecked = screenLock && flags and Secure.MOMENTS_OFFLINE_LOCKDOWN != 0
-        lockdown.setSummary(
-            if (screenLock) R.string.tally_moments_offline_lockdown_summary
-            else R.string.tally_moments_offline_lockdown_needs_lock
-        )
     }
 
     private fun countText(count: Int) =
         resources.getQuantityString(R.plurals.tally_moments_apps_count, count, count)
-
-    private fun offlineFlags() =
-        Secure.getInt(contentResolver, Secure.TALLY_MOMENTS_OFFLINE, Secure.MOMENTS_OFFLINE_AIRPLANE)
 
     private fun putInt(key: String, value: Int) {
         Secure.putInt(contentResolver, key, value)
@@ -246,9 +225,14 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
                     R.string.tally_moments_action_silent_summary,
                 ),
                 Action(
-                    Secure.MOMENTS_ACTION_OFFLINE,
-                    R.string.tally_moments_action_offline,
-                    R.string.tally_moments_action_offline_summary,
+                    Secure.MOMENTS_ACTION_AIRPLANE,
+                    R.string.tally_moments_action_airplane,
+                    R.string.tally_moments_action_airplane_summary,
+                ),
+                Action(
+                    Secure.MOMENTS_ACTION_LOCKDOWN,
+                    R.string.tally_moments_action_lockdown,
+                    R.string.tally_moments_action_lockdown_summary,
                 ),
                 Action(
                     Secure.MOMENTS_ACTION_NOTHING,
