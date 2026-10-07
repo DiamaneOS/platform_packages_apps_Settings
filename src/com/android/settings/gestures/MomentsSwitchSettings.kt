@@ -226,14 +226,9 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
     private fun refreshKernelFloor(action: Int?) {
         val chosen = action == Secure.MOMENTS_ACTION_SENSORS_OFF
         val enforced = kernelBlocksMic()
-        kernelCategory.isVisible = hasKernelFloor(requireContext()) && (chosen || enforced)
-        kernelNote.setSummary(
-            when {
-                chosen && enforced -> R.string.tally_moments_kernel_on
-                chosen -> R.string.tally_moments_kernel_after_restart
-                else -> R.string.tally_moments_kernel_until_restart
-            }
-        )
+        val note = kernelNoteFor(chosen, enforced)
+        kernelCategory.isVisible = hasKernelFloor(requireContext()) && note != null
+        note?.let { kernelNote.setSummary(it) }
     }
 
     private fun countText(count: Int) =
@@ -293,6 +288,20 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
             return manager.supportsSensorToggle(SensorPrivacyManager.Sensors.CAMERA) ||
                 manager.supportsSensorToggle(SensorPrivacyManager.Sensors.MICROPHONE)
         }
+
+        /**
+         * The kernel note for the page, or null for none: [chosen] is "Camera and microphone off",
+         * [enforced] whether the kernel blocks the microphones in this boot (its own report).
+         */
+        fun kernelNoteFor(chosen: Boolean, enforced: Boolean): Int? =
+            when {
+                chosen && enforced -> R.string.tally_moments_kernel_on
+                // Only Android blocks the microphone until a restart arms the kernel.
+                chosen -> R.string.tally_moments_kernel_after_restart
+                // Another choice, but the kernel keeps blocking until the next start.
+                enforced -> R.string.tally_moments_kernel_until_restart
+                else -> null
+            }
 
         /** Whether the kernel can block the microphones from the switch (see the framework). */
         fun hasKernelFloor(context: Context): Boolean =
