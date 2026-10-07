@@ -47,6 +47,7 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
     private lateinit var homeApps: Preference
     private lateinit var pausedApps: Preference
     private lateinit var greyscale: SwitchPreferenceCompat
+    private lateinit var sensorNote: SwitchPreferenceCompat
     private lateinit var kernelCategory: PreferenceCategory
     private lateinit var kernelNote: Preference
     private lateinit var emergencyNote: Preference
@@ -102,6 +103,20 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
             }
         kernelCategory.addPreference(kernelNote)
         kernelCategory.addPreference(emergencyNote)
+
+        // Camera and microphone off: a note, or nothing, when an app tries a blocked sensor.
+        // There is no "Unblock" prompt either way while the switch holds the block.
+        sensorNote =
+            SwitchPreferenceCompat(context).apply {
+                key = "sensor_note"
+                setTitle(R.string.tally_moments_sensor_note)
+                setSummary(R.string.tally_moments_sensor_note_summary)
+                setOnPreferenceChangeListener { _, value ->
+                    putInt(Secure.TALLY_MOMENTS_SENSOR_NOTE, if (value as Boolean) 1 else 0)
+                    true
+                }
+            }
+        actions.addPreference(sensorNote)
 
         momentsCategory =
             PreferenceCategory(context).apply {
@@ -209,6 +224,8 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
             }
         }
         momentsCategory.isVisible = action == Secure.MOMENTS_ACTION_MOMENTS
+        sensorNote.isVisible = action == Secure.MOMENTS_ACTION_SENSORS_OFF
+        sensorNote.isChecked = Secure.getInt(resolver, Secure.TALLY_MOMENTS_SENSOR_NOTE, 1) != 0
         refreshKernelFloor(action)
 
         val home = MomentsAppsFragment.read(requireContext(), MomentsAppsFragment.LIST_HOME)

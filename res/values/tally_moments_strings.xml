@@ -80,6 +80,12 @@
          [CHAR LIMIT=NONE] -->
     <string name="tally_moments_kernel_emergency">While the switch is down, emergency calls have no microphone.</string>
 
+    <!-- Switch under "Camera and microphone off": a short note when an app tries a camera or
+         microphone the switch blocks. Owner's wording; keep it. [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_sensor_note">Show a note when an app tries to use a blocked camera or microphone</string>
+    <!-- Its summary. [CHAR LIMIT=NONE] -->
+    <string name="tally_moments_sensor_note_summary">Apps get black frames and silence either way, without an Unblock prompt. Off: nothing shows.</string>
+
     <!-- Heading over Moments' options. [CHAR LIMIT=60] -->
     <string name="tally_moments_options_header">Moments</string>
     <!-- Opens the list of apps Home shows during Moments. [CHAR LIMIT=40] -->
