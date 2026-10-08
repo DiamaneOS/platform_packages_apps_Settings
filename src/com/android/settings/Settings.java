@@ -720,6 +720,14 @@ public class Settings extends SettingsActivity {
         }
     }
 
+    /** DiamaneOS: activity for Display -> Maximum refresh rate. */
+    public static class RefreshRateActivity extends CatalystSettingsActivity {
+        public RefreshRateActivity() {
+            super(com.android.settings.display.RefreshRateScreen.KEY,
+                    com.android.settings.display.RefreshRatePreferenceFragment.class);
+        }
+    }
+
     /** Activity for Display & Touch -> Colors. */
     public static class ColorModeActivity extends CatalystSettingsActivity {
         public ColorModeActivity() {

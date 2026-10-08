@@ -46,4 +46,14 @@
          Auto reboot: opens GrapheneOS's own documentation of the feature, which DiamaneOS
          inherits. "GrapheneOS" is a name. [CHAR LIMIT=40] -->
     <string name="tally_grapheneos_documentation">GrapheneOS documentation</string>
+    <!-- Display > Maximum refresh rate: replaces the Smooth display switch. [CHAR LIMIT=40] -->
+    <string name="tally_refresh_rate_title">Maximum refresh rate</string>
+    <!-- What the Maximum refresh rate setting controls, for the preferences API; not shown. -->
+    <string name="tally_refresh_rate_purpose" translatable="false">The highest refresh rate the screen may use</string>
+    <!-- Summary of Display > Maximum refresh rate, for example "Up to 120 Hz". [CHAR LIMIT=40] -->
+    <string name="tally_refresh_rate_summary">Up to <xliff:g id="refresh_rate" example="120">%1$d</xliff:g> Hz</string>
+    <!-- One choice in Display > Maximum refresh rate, for example "90 Hz". [CHAR LIMIT=20] -->
+    <string name="tally_refresh_rate_option"><xliff:g id="refresh_rate" example="90">%1$d</xliff:g> Hz</string>
+    <!-- Text above the choices in Display > Maximum refresh rate. -->
+    <string name="tally_refresh_rate_intro">The screen lowers its refresh rate when nothing moves, to save battery. A higher maximum makes scrolling and animations smoother and uses more battery.</string>
 </resources>
