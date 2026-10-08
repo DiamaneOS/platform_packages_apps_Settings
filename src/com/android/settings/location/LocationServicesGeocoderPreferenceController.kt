@@ -17,11 +17,8 @@ class LocationServicesGeocoderPreferenceController(ctx: Context, key: String?) :
         addFooterPreference(screen, R.string.geocoder_footer)
     }
 
+    // DiamaneOS: no GrapheneOS server; OpenStreetMap stays the only opt-in.
     override fun getEntries(entries: Entries) {
-        entries.add(
-            R.string.geocoder_enabled_grapheneos_server,
-            GeocoderSettings.GEOCODER_SERVER_GRAPHENEOS
-        )
         entries.add(
             R.string.geocoder_enabled_openstreetmap_server,
             GeocoderSettings.GEOCODER_SERVER_OPENSTREETMAP
