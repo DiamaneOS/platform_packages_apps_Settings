@@ -587,6 +587,14 @@
         </activity>
 
         <activity
+            android:name="Settings$RefreshRateActivity"
+            android:label="@string/tally_refresh_rate_title"
+            android:exported="false">
+            <meta-data android:name="com.android.settings.HIGHLIGHT_MENU_KEY"
+                android:value="@string/menu_key_display"/>
+        </activity>
+
+        <activity
             android:name="Settings$ColorModeActivity"
             android:label="@string/color_mode_title"
             android:exported="true">
