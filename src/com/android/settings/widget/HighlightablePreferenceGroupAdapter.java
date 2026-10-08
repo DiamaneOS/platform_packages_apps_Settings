@@ -469,6 +469,10 @@ public class HighlightablePreferenceGroupAdapter extends SettingsPreferenceGroup
 
         colorAnimation.addListener(
                 new AnimatorListenerAdapter() {
+                    // Tally: cancel() reports a cancel and then an end; the row's own background
+                    // goes back once, so the end does not replace it with stock's.
+                    private boolean mRestored;
+
                     @Override
                     public void onAnimationStart(Animator animation) {
                         super.onAnimationStart(animation);
@@ -478,19 +482,20 @@ public class HighlightablePreferenceGroupAdapter extends SettingsPreferenceGroup
                     @Override
                     public void onAnimationEnd(@NonNull Animator animation) {
                         super.onAnimationEnd(animation);
-                        setNormalBackground(v, backgroundTo);
-
-                        v.setTag(R.id.preference_highlighted, false);
-                        holder.setIsRecyclable(true);
-
-                        if (v.getTag(R.id.active_background_animator) == colorAnimation) {
-                            v.setTag(R.id.active_background_animator, null);
-                        }
+                        restore();
                     }
 
                     @Override
                     public void onAnimationCancel(@NonNull Animator animation) {
                         super.onAnimationCancel(animation);
+                        restore();
+                    }
+
+                    private void restore() {
+                        if (mRestored) {
+                            return;
+                        }
+                        mRestored = true;
                         setNormalBackground(v, backgroundTo);
                         v.setTag(R.id.preference_highlighted, false);
                         holder.setIsRecyclable(true);
