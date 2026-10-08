@@ -29,8 +29,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Looper;
@@ -47,6 +51,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
 import com.android.settings.SettingsPreferenceFragment;
+import com.android.settingslib.widget.DrawableStateLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
 
@@ -64,6 +69,7 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.util.ReflectionHelpers;
+import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 import java.util.concurrent.TimeUnit;
 
@@ -294,6 +300,49 @@ public class HighlightablePreferenceGroupAdapterTest {
                         TimeUnit.MILLISECONDS);
 
         assertThat(mAdapter.mHighlightVisible).isFalse();
+    }
+
+    @Test
+    public void cancelledFadeOut_putsTheRowsOwnBackgroundBack() {
+        final StateRow row = new StateRow(mContext);
+        final Drawable own = new ColorDrawable(Color.RED);
+        row.setBackground(own);
+        mRootView.addView(row);
+        final PreferenceViewHolder holder = PreferenceViewHolder.createInstanceForTests(row);
+        ReflectionHelpers.setField(mAdapter, "mHighlightPosition", 10);
+        mAdapter.updateBackground(holder, 10);
+
+        // The highlight fades out, and a second removal cancels that fade (a cancel, then an end).
+        ReflectionHelpers.callInstanceMethod(mAdapter, "removeHighlightBackground",
+                ClassParameter.from(PreferenceViewHolder.class, holder),
+                ClassParameter.from(boolean.class, true),
+                ClassParameter.from(int.class, 10));
+        final Object fadeOut = row.getTag(R.id.active_background_animator);
+        assertThat(fadeOut).isInstanceOf(ValueAnimator.class);
+        ((ValueAnimator) fadeOut).cancel();
+
+        assertThat(row.getBackground()).isSameInstanceAs(own);
+        assertThat(row.getTag(R.id.preference_highlighted)).isEqualTo(false);
+        assertThat(row.getTag(R.id.active_background_animator)).isNull();
+    }
+
+    /** A row drawn by one of SettingsLib's drawable-state layouts, as a switch row is. */
+    private static class StateRow extends FrameLayout implements DrawableStateLayout {
+        private int[] mExtraDrawableState;
+
+        StateRow(Context context) {
+            super(context);
+        }
+
+        @Override
+        public int[] getExtraDrawableState() {
+            return mExtraDrawableState;
+        }
+
+        @Override
+        public void setExtraDrawableState(int[] state) {
+            mExtraDrawableState = state;
+        }
     }
 
     /**
