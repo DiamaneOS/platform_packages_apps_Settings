@@ -39,6 +39,9 @@
     <string name="tally_firmware_release_mixed">Mixed releases</string>
     <!-- What the Fairphone firmware row reports, for the preferences API; not shown. -->
     <string name="tally_firmware_release_purpose" translatable="false">The installed Fairphone firmware release</string>
+    <!-- Network & internet: opens the eSIM manager (profiles, renaming, deleting, notifications)
+         below the eSIM support switch. [CHAR LIMIT=40] -->
+    <string name="tally_manage_esims">Manage eSIMs</string>
     <!-- Link text in the footers of Secure app spawning, App info > Hardened memory allocator and
          Auto reboot: opens GrapheneOS's own documentation of the feature, which DiamaneOS
          inherits. "GrapheneOS" is a name. [CHAR LIMIT=40] -->

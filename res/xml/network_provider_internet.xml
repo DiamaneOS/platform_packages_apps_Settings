@@ -64,6 +64,17 @@
         settings:controller="com.android.settings.network.GoogleEuiccLpaController"
         settings:userRestriction="no_config_mobile_networks"/>
 
+    <!-- DiamaneOS: the eSIM manager has no launcher icon; this opens it while eSIM support is on. -->
+    <com.android.settingslib.RestrictedPreference
+        android:key="manage_esims"
+        android:title="@string/tally_manage_esims"
+        android:icon="@drawable/ic_sim_card"
+        android:order="-13"
+        settings:controller="com.android.settings.network.ManageEsimsPreferenceController"
+        settings:userRestriction="no_config_mobile_networks">
+        <intent android:action="android.telephony.euicc.action.MANAGE_EMBEDDED_SUBSCRIPTIONS" />
+    </com.android.settingslib.RestrictedPreference>
+
     <com.android.settingslib.RestrictedSwitchPreference
         android:key="airplane_mode_on"
         android:title="@string/airplane_mode"
