@@ -56,4 +56,16 @@
     <string name="tally_refresh_rate_option"><xliff:g id="refresh_rate" example="90">%1$d</xliff:g> Hz</string>
     <!-- Text above the choices in Display > Maximum refresh rate. -->
     <string name="tally_refresh_rate_intro">The screen lowers its refresh rate when nothing moves, to save battery. A higher maximum makes scrolling and animations smoother and uses more battery.</string>
+    <!-- Security & privacy > Exploit protection > Hardware video decoding: entry and page title. [CHAR LIMIT=40] -->
+    <string name="tally_hw_video_decoding_title">Hardware video decoding</string>
+    <!-- Hardware video decoding page: the switch. [CHAR LIMIT=50] -->
+    <string name="tally_hw_video_decoding_main_switch">Use hardware video decoding</string>
+    <!-- Hardware video decoding entry summary: turned on, applies after the next restart. [CHAR LIMIT=40] -->
+    <string name="tally_hw_video_decoding_summary_on_after_restart">Enabled after restart</string>
+    <!-- Hardware video decoding entry summary: turned off, applies after the next restart. [CHAR LIMIT=40] -->
+    <string name="tally_hw_video_decoding_summary_off_after_restart">Disabled after restart</string>
+    <!-- Hardware video decoding switch summary while a change waits for a restart. [CHAR LIMIT=60] -->
+    <string name="tally_hw_video_decoding_restart">Takes effect after you restart the phone</string>
+    <!-- Hardware video decoding page: what the switch trades. -->
+    <string name="tally_hw_video_decoding_footer">Apps decode video with the chip maker\'s hardware decoder instead of only the sandboxed software decoder. This saves battery and plays high-resolution video more smoothly, but a malicious video can then reach the decoder\'s closed code, its driver and its firmware. Off by default. A change takes effect after a restart.</string>
 </resources>
