@@ -28,6 +28,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.android.settings.display.TapToWakePreferenceController;
+
 // LINT.IfChange
 public class DoubleTapScreenPreferenceController extends GesturePreferenceController {
 
@@ -53,7 +55,9 @@ public class DoubleTapScreenPreferenceController extends GesturePreferenceContro
     }
 
     public static boolean isSuggestionComplete(Context context, SharedPreferences prefs) {
-        return isSuggestionComplete(new AmbientDisplayConfiguration(context), prefs);
+        final AmbientDisplayConfiguration config = new AmbientDisplayConfiguration(context);
+        return TapToWakePreferenceController.usesDozeDoubleTap(context, config)
+                || isSuggestionComplete(config, prefs);
     }
 
     @VisibleForTesting
@@ -67,6 +71,10 @@ public class DoubleTapScreenPreferenceController extends GesturePreferenceContro
     public int getAvailabilityStatus() {
         // No hardware support for Double Tap
         if (!getAmbientConfig().doubleTapSensorAvailable()) {
+            return UNSUPPORTED_ON_DEVICE;
+        }
+        // Display > Tap to wake switches the same setting
+        if (TapToWakePreferenceController.usesDozeDoubleTap(mContext, getAmbientConfig())) {
             return UNSUPPORTED_ON_DEVICE;
         }
 
