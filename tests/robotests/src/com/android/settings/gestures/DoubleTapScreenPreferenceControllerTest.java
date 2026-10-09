@@ -122,6 +122,15 @@ public class DoubleTapScreenPreferenceControllerTest {
     }
 
     @Test
+    public void getAvailabilityStatus_tapToWakeUsesDozeDoubleTap_UNSUPPORTED_ON_DEVICE() {
+        when(mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_supportDoubleTapWake)).thenReturn(true);
+        when(mAmbientDisplayConfiguration.doubleTapSensorAvailable()).thenReturn(true);
+
+        assertThat(mController.getAvailabilityStatus()).isEqualTo(UNSUPPORTED_ON_DEVICE);
+    }
+
+    @Test
     public void isSliceableCorrectKey_returnsTrue() {
         final DoubleTapScreenPreferenceController controller =
                 new DoubleTapScreenPreferenceController(mContext, "gesture_double_tap_screen");
