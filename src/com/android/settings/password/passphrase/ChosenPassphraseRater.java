@@ -13,7 +13,8 @@ package com.android.settings.password.passphrase;
  * <p>Rules for an implementation:
  * <ul>
  *   <li>A phrase that does not meet {@link PassphraseFloor} is {@link Rating#BELOW_MINIMUM}.
- *       A rater may be stricter than the floor, never looser.
+ *       A rater may be stricter than the floor, never looser. Such a phrase is not refused: it
+ *       counts as weaker and is set after the risk screen, see {@link OwnPassphraseFeedback}.
  *   <li>The characters are not kept, copied into a String or logged. Every working copy is
  *       wiped before {@link #rate} returns.
  * </ul>
@@ -22,11 +23,11 @@ public interface ChosenPassphraseRater {
 
     /** The coarse rating of a chosen passphrase. */
     enum Rating {
-        /** Too short or too simple to be saved as a passphrase. */
+        /** Too short or too simple to count as a strong passphrase. It counts as weaker. */
         BELOW_MINIMUM,
-        /** Can be saved, but looks like something an attacker would try early. */
+        /** Long enough to count as strong, but looks like something tried early. */
         GUESSABLE,
-        /** Can be saved, and nothing the rater knows makes it easy to guess. */
+        /** Long enough to count as strong, and nothing the rater knows makes it easy to guess. */
         NOT_EASILY_GUESSED,
     }
 

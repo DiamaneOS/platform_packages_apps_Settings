@@ -29,7 +29,7 @@
     <!-- Lock picker. Title of the choice to type a passphrase of one's own. [CHAR LIMIT=40] -->
     <string name="tally_lock_own_passphrase_title">Own passphrase</string>
     <!-- Lock picker. Summary of the own passphrase choice. [CHAR LIMIT=80] -->
-    <string name="tally_lock_own_passphrase_summary">At least 20 characters</string>
+    <string name="tally_lock_own_passphrase_summary">Strong from 20 characters. Shorter counts as weaker</string>
     <!-- Lock picker. Title of the choice of a long PIN that the phone generates.
          [CHAR LIMIT=40] -->
     <string name="tally_lock_random_pin_title">Long random PIN</string>
@@ -152,14 +152,16 @@
         other   {about # billion years}
         }</string>
 
-    <!-- Own passphrase. The least it must be: %1$d characters (20), %2$d different ones (5).
-         [CHAR LIMIT=NONE] -->
-    <string name="tally_passphrase_floor_requirement">Must be at least <xliff:g xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" id="length" example="20">%1$d</xliff:g> characters, not only digits, with at least <xliff:g xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" id="distinct" example="5">%2$d</xliff:g> different characters</string>
+    <!-- Own passphrase. Shown while what is typed does not have the shape of a strong
+         passphrase: %1$d characters (20), %2$d different ones (5). It can still be set, after
+         the risk screen. [CHAR LIMIT=NONE] -->
+    <string name="tally_passphrase_counts_as_weaker">This counts as weaker on this phone, like a PIN: it has fewer than <xliff:g xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" id="length" example="20">%1$d</xliff:g> characters, only digits, or fewer than <xliff:g xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" id="distinct" example="5">%2$d</xliff:g> different characters. You can still use it.</string>
     <!-- Own passphrase. What the check can and cannot tell. [CHAR LIMIT=NONE] -->
-    <string name="tally_passphrase_rating_caveat">The phone only checks length and characters, not what the words mean. That check can be wrong both ways: a short random password is refused although it may be strong, and a long phrase that is easy to guess is accepted. Do not use a quote, a line from a song, or anything about you.</string>
-    <!-- Own passphrase. Result of the check. [CHAR LIMIT=NONE] -->
-    <string name="tally_passphrase_rating_guessable">Looks easy to guess: it repeats itself, runs in order, or uses very few different characters.</string>
-    <string name="tally_passphrase_rating_ok">Long enough.</string>
+    <string name="tally_passphrase_rating_caveat">The phone only checks length and characters, not what the words mean. That check can be wrong both ways: a short random password counts as weaker although it may be hard to guess, and a long phrase that is easy to guess counts as strong. Do not use a quote, a line from a song, or anything about you.</string>
+    <!-- Own passphrase. Result of the check for an entry that is long enough.
+         [CHAR LIMIT=NONE] -->
+    <string name="tally_passphrase_rating_guessable">Long enough to count as strong, but it looks easy to guess: it repeats itself, runs in order, or uses very few different characters.</string>
+    <string name="tally_passphrase_rating_ok">Long enough to count as strong.</string>
 
     <!-- Risk screen shown before a PIN, a pattern or a short password is set. Title.
          [CHAR LIMIT=40] -->

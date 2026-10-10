@@ -143,7 +143,8 @@ public final class GeneratedCredentialPanel {
 
         final TextView advice = root.findViewById(R.id.tally_generated_advice);
         advice.setText(mContext.getString(R.string.tally_generated_advice) + "\n\n"
-                + strongLockNotes(mContext, userId));
+                + mContext.getString(R.string.tally_lock_no_recovery) + "\n\n"
+                + learningPeriodNote(mContext, userId));
 
         mRevealButton.setOnClickListener(v -> {
             if (mState.isRevealed()) {
@@ -191,17 +192,16 @@ public final class GeneratedCredentialPanel {
     }
 
     /**
-     * What a user is told whenever a strong lock is set up: there is no recovery, and the
-     * phone asks for the lock daily at first.
+     * What a user is told when a lock of the strong class is set up: the phone asks for it
+     * daily at first. A weaker lock has no such learning period.
      */
-    public static String strongLockNotes(Context context, int userId) {
+    public static String learningPeriodNote(Context context, int userId) {
         final int learningDays = LearningPeriod.daysRoundedUp(
                 LockCredentialPolicy.LEARNING_PERIOD_MILLIS);
         final long timeout = context.getSystemService(DevicePolicyManager.class)
                 .getRequiredStrongAuthTimeout(null /* admin */, userId);
-        return context.getString(R.string.tally_lock_no_recovery) + "\n\n"
-                + context.getString(R.string.tally_lock_learning, learningDays,
-                        (int) TimeUnit.MILLISECONDS.toHours(timeout));
+        return context.getString(R.string.tally_lock_learning, learningDays,
+                (int) TimeUnit.MILLISECONDS.toHours(timeout));
     }
 
     /** Whether the secret is being shown or can be: the first step, before the typing. */

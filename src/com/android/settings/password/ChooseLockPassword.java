@@ -104,9 +104,9 @@ import com.android.settings.notification.RedactionInterstitial;
 import com.android.settings.password.passphrase.ChosenPassphraseRater;
 import com.android.settings.password.passphrase.GeneratedCredentialPanel;
 import com.android.settings.password.passphrase.LockStrength;
+import com.android.settings.password.passphrase.OwnPassphraseFeedback;
 import com.android.settings.password.passphrase.PassphraseFloor;
 import com.android.settings.password.passphrase.ShapeRater;
-import com.android.settings.password.passphrase.StrengthClass;
 import com.android.settings.password.passphrase.WeakerRiskDialog;
 import com.android.settings.password.passphrase.WeakerRiskGate;
 import com.android.settings.widget.ImeAwareTextInputEditText;
@@ -334,11 +334,12 @@ public class ChooseLockPassword extends SettingsActivity {
         private WeakerRiskGate mRiskGate;
         // The lock settings refused the save for want of the user's agreement to the risk.
         private boolean mSaveRefused;
-        // Whether the password last validated is under the floor for a strong passphrase.
-        private boolean mIsBelowFloor;
+        // The risk dialog is up for a first entry that counts as weaker: agreeing goes on to
+        // the second entry, going back stays here.
+        private boolean mRiskAskedForFirstEntry;
         private final ChosenPassphraseRater mRater = new ShapeRater();
-        // Text about recovery and the learning period; the same for every entry.
-        @Nullable private String mStrongLockNotes;
+        // Text about the learning period; the same for every entry.
+        @Nullable private String mLearningPeriodNote;
 
         /** Used to store the profile type for which pin/password is being set */
         public enum ProfileType {
@@ -970,11 +971,7 @@ public class ChooseLockPassword extends SettingsActivity {
                 mValidationErrors =
                         Collections.singletonList(new PasswordValidationError(RECENTLY_USED));
             }
-            // A password has to meet the floor for a strong passphrase. The lock settings
-            // apply the same check; a shorter password is not offered on this screen.
-            mIsBelowFloor = mIsAlphaMode
-                    && LockStrength.of(credential, false) != StrengthClass.STRONG;
-            return mValidationErrors.isEmpty() && !mIsBelowFloor;
+            return mValidationErrors.isEmpty();
         }
 
         /**
@@ -1016,6 +1013,13 @@ public class ChooseLockPassword extends SettingsActivity {
                     : LockscreenCredential.createPin(passwordText);
             if (mUiStage == Stage.Introduction) {
                 if (validatePassword(mChosenPassword)) {
+                    if (mIsAlphaMode && mRiskGate.isNeededFor(mChosenPassword, false)) {
+                        // Not the shape of a strong passphrase: it counts as weaker on this
+                        // phone, like a PIN. It can be used once the user has read the risk.
+                        mRiskAskedForFirstEntry = true;
+                        mRiskGate.show();
+                        return;
+                    }
                     mFirstPassword = mChosenPassword;
                     mPasswordEntry.setText("");
                     updateStage(Stage.NeedToConfirm);
@@ -1080,13 +1084,6 @@ public class ChooseLockPassword extends SettingsActivity {
         var pvec = new PasswordValidationErrorConverter(getContext(), mIsAlphaMode, mProfileType, mValidationErrors);
         String[] res = pvec.convertErrorCodeToMessages();
         mIsErrorTooShort = pvec.mIsErrorTooShort;
-        if (mIsBelowFloor) {
-            // Shown the way "too short" is: as what is still needed, not as a mistake.
-            mIsErrorTooShort = mIsErrorTooShort || res.length == 0;
-            res = Arrays.copyOf(res, res.length + 1);
-            res[res.length - 1] = getString(R.string.tally_passphrase_floor_requirement,
-                    PassphraseFloor.MIN_LENGTH, PassphraseFloor.MIN_DISTINCT_CHARS);
-        }
         return res;
     }
 
@@ -1286,9 +1283,10 @@ public class ChooseLockPassword extends SettingsActivity {
         }
 
         /**
-         * What the user is told while choosing a passphrase of their own: what the shape check
-         * makes of the entry so far, that the check can be wrong both ways, that there is no
-         * recovery, and that the phone asks for a new passphrase daily at first.
+         * What the user is told while typing a password or passphrase of their own: whether it
+         * counts as strong or as weaker on this phone, that this is a check of its shape which
+         * can be wrong both ways, and that there is no recovery. Only a strong one is asked
+         * for daily at first, so only then is that said.
          */
         private String getOwnPassphraseMessage(LockscreenCredential password) {
             // The characters are ASCII if the entry is valid; anything else fails the floor.
@@ -1297,23 +1295,30 @@ public class ChooseLockPassword extends SettingsActivity {
             for (int i = 0; i < bytes.length; i++) {
                 chars[i] = (char) (bytes[i] & 0xff);
             }
-            final ChosenPassphraseRater.Rating rating = mRater.rate(chars, chars.length);
+            final OwnPassphraseFeedback feedback = OwnPassphraseFeedback.of(
+                    LockStrength.of(password, false), mRater.rate(chars, chars.length));
             Arrays.fill(chars, '\0');
             final StringBuilder message = new StringBuilder();
-            if (rating == ChosenPassphraseRater.Rating.GUESSABLE) {
+            if (feedback.countsAsWeaker) {
+                message.append(getString(R.string.tally_passphrase_counts_as_weaker,
+                        PassphraseFloor.MIN_LENGTH, PassphraseFloor.MIN_DISTINCT_CHARS));
+            } else if (feedback.looksGuessable) {
                 message.append(getString(R.string.tally_passphrase_rating_guessable));
-                message.append("\n\n");
-            } else if (rating == ChosenPassphraseRater.Rating.NOT_EASILY_GUESSED) {
+            } else {
                 message.append(getString(R.string.tally_passphrase_rating_ok));
-                message.append("\n\n");
             }
+            message.append("\n\n");
             message.append(getString(R.string.tally_passphrase_rating_caveat));
             message.append("\n\n");
-            if (mStrongLockNotes == null) {
-                mStrongLockNotes =
-                        GeneratedCredentialPanel.strongLockNotes(getContext(), mUserId);
+            message.append(getString(R.string.tally_lock_no_recovery));
+            if (feedback.learningPeriodApplies) {
+                if (mLearningPeriodNote == null) {
+                    mLearningPeriodNote =
+                            GeneratedCredentialPanel.learningPeriodNote(getContext(), mUserId);
+                }
+                message.append("\n\n");
+                message.append(mLearningPeriodNote);
             }
-            message.append(mStrongLockNotes);
             return message.toString();
         }
 
@@ -1366,7 +1371,16 @@ public class ChooseLockPassword extends SettingsActivity {
         @Override
         public void onWeakerRiskAccepted() {
             mRiskGate.onAccepted();
-            if (mSaveRefused) {
+            if (mRiskAskedForFirstEntry) {
+                // The weaker password may be used: on to the second entry.
+                mRiskAskedForFirstEntry = false;
+                if (mChosenPassword != null && mUiStage == Stage.Introduction
+                        && mSaveAndFinishWorker == null) {
+                    mFirstPassword = mChosenPassword;
+                    mPasswordEntry.setText("");
+                    updateStage(Stage.NeedToConfirm);
+                }
+            } else if (mSaveRefused) {
                 mSaveRefused = false;
                 if (mChosenPassword != null && mSaveAndFinishWorker == null) {
                     startSaveAndFinish();
@@ -1376,6 +1390,14 @@ public class ChooseLockPassword extends SettingsActivity {
 
         @Override
         public void onWeakerRiskDeclined() {
+            if (mRiskAskedForFirstEntry) {
+                // Stay here: the entry is still in the field and can be made longer.
+                mRiskAskedForFirstEntry = false;
+                if (mChosenPassword != null) {
+                    mChosenPassword.zeroize();
+                }
+                return;
+            }
             if (mSaveRefused) {
                 // Nothing was saved. The entry is dropped; the user can pick another lock.
                 mSaveRefused = false;
