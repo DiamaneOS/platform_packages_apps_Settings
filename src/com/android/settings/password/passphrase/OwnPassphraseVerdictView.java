@@ -5,13 +5,9 @@
 package com.android.settings.password.passphrase;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -22,8 +18,10 @@ import com.android.settings.password.passphrase.OwnPassphraseFeedback.Verdict;
 
 /**
  * The line under the entry field that says, while the user types a passphrase or password of
- * their own, what the phone makes of it: strong, or weaker and why. With a link to what that
- * verdict can and cannot tell.
+ * their own, what the phone makes of it: strong, or weaker and why. Under it, a small link to
+ * what that verdict can and cannot tell.
+ *
+ * <p>Weaker is shown in a calm colour, not as an error: a weaker password is allowed.
  *
  * <p>It only ever gets a {@link Verdict}, never the entry itself.
  */
@@ -40,11 +38,10 @@ public final class OwnPassphraseVerdictView {
      * Adds the line to {@code entryContainer}, right after the view that holds
      * {@code entryField}.
      *
-     * @param centered whether the field's text is centred, so that the line is as well
      * @param dialogs where the "How is this judged?" dialog is shown
      */
     public OwnPassphraseVerdictView(LayoutInflater inflater, ViewGroup entryContainer,
-            View entryField, boolean centered, FragmentManager dialogs) {
+            View entryField, FragmentManager dialogs) {
         mContext = entryContainer.getContext();
         mRoot = inflater.inflate(R.layout.tally_own_passphrase_verdict, entryContainer, false);
         // The field itself, or the layout around it that is a child of the container.
@@ -58,12 +55,6 @@ public final class OwnPassphraseVerdictView {
         }
         entryContainer.addView(mRoot, index);
         mVerdict = mRoot.findViewById(R.id.tally_verdict);
-        if (centered) {
-            mVerdict.setGravity(Gravity.CENTER_HORIZONTAL);
-            if (mRoot instanceof LinearLayout) {
-                ((LinearLayout) mRoot).setGravity(Gravity.CENTER_HORIZONTAL);
-            }
-        }
         mRoot.findViewById(R.id.tally_verdict_how).setOnClickListener(v ->
                 InfoDialog.show(dialogs, TAG_HOW, R.string.tally_verdict_how,
                         mContext.getString(R.string.tally_verdict_how_message)));
@@ -83,10 +74,7 @@ public final class OwnPassphraseVerdictView {
         }
         mShown = verdict;
         mVerdict.setText(text(verdict));
-        final ColorStateList color = color(verdict);
-        if (color != null) {
-            mVerdict.setTextColor(color);
-        }
+        mVerdict.setTextColor(mContext.getColor(color(verdict)));
     }
 
     private String text(Verdict verdict) {
@@ -110,22 +98,16 @@ public final class OwnPassphraseVerdictView {
         }
     }
 
-    // Quiet while nothing is typed, the theme's accent for strong, its error colour otherwise.
-    @Nullable
-    private ColorStateList color(Verdict verdict) {
-        final int attr;
-        if (verdict == Verdict.EMPTY) {
-            attr = android.R.attr.textColorSecondary;
-        } else if (verdict == Verdict.STRONG) {
-            attr = android.R.attr.colorAccent;
-        } else {
-            attr = android.R.attr.colorError;
-        }
-        final TypedArray values = mContext.obtainStyledAttributes(new int[] {attr});
-        try {
-            return values.getColorStateList(0);
-        } finally {
-            values.recycle();
+    // Quiet while nothing is typed; a positive colour for strong; a calm warning colour for
+    // everything that is weaker or looks easy to guess.
+    private static int color(Verdict verdict) {
+        switch (verdict) {
+            case EMPTY:
+                return R.color.tally_passphrase_verdict_neutral;
+            case STRONG:
+                return R.color.tally_passphrase_verdict_strong;
+            default:
+                return R.color.tally_passphrase_verdict_weaker;
         }
     }
 }

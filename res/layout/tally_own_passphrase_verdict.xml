@@ -16,8 +16,9 @@
   -->
 
 <!-- Under the entry field of the password screen, while the user chooses a passphrase or
-     password of their own: one line that says what the phone makes of the entry so far, and a
-     link to what that verdict can and cannot tell. Added in code, after the field. -->
+     password of their own: one line that says what the phone makes of the entry so far, and
+     under it a small link to what that verdict can and cannot tell. Both start at the text
+     margin. Added in code, after the field. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tally_verdict_panel"
     android:layout_width="match_parent"
@@ -26,21 +27,16 @@
 
     <TextView
         android:id="@+id/tally_verdict"
+        style="@style/TallyPassphrase.Verdict"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/tally_space_s"
-        android:textSize="14sp"
+        android:layout_marginTop="@dimen/tally_passphrase_gap_small"
         android:accessibilityLiveRegion="polite" />
 
-    <Button
+    <TextView
         android:id="@+id/tally_verdict_how"
-        style="?android:attr/borderlessButtonStyle"
+        style="@style/TallyPassphrase.Link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:textAllCaps="false"
-        android:textSize="14sp"
         android:text="@string/tally_verdict_how" />
 </LinearLayout>

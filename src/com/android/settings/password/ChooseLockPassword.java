@@ -746,7 +746,7 @@ public class ChooseLockPassword extends SettingsActivity {
                         getChildFragmentManager());
             } else if (mIsAlphaMode) {
                 mVerdictView = new OwnPassphraseVerdictView(getLayoutInflater(), container,
-                        mPasswordEntry, !mIsExpressiveStyle, getChildFragmentManager());
+                        mPasswordEntry, getChildFragmentManager());
             }
             if (savedInstanceState == null) {
                 updateStage(Stage.Introduction);
@@ -785,6 +785,9 @@ public class ChooseLockPassword extends SettingsActivity {
                 final SettingsActivity sa = (SettingsActivity) activity;
                 String title = Stage.Introduction.getHint(
                         getContext(), mIsAlphaMode, getStageType(), mProfileType);
+                if (showsOwnPassphraseHeaders()) {
+                    title = getString(R.string.tally_own_passphrase_header);
+                }
                 sa.setTitle(title);
                 mLayout.setHeaderText(title);
             }
@@ -1057,8 +1060,19 @@ public class ChooseLockPassword extends SettingsActivity {
                     }
                     updateStage(Stage.ConfirmWrong);
                     mChosenPassword.zeroize();
+                    if (mGeneratedPanel != null) {
+                        // A wrong entry of the generated passphrase or PIN is not kept for
+                        // correcting: start it again. The header keeps saying what happened.
+                        mPasswordEntry.setText("");
+                    }
                 }
             }
+        }
+
+        // Whether this screen has the headers of the own passphrase: a personal lock, typed
+        // by the user. A profile keeps the stock headers, which name the profile.
+        private boolean showsOwnPassphraseHeaders() {
+            return mVerdictView != null && mProfileType == ProfileType.None;
         }
 
         protected void setNextEnabled(boolean enabled) {
@@ -1245,6 +1259,16 @@ public class ChooseLockPassword extends SettingsActivity {
                 mPasswordRestrictionView.setVisibility(View.VISIBLE);
                 final boolean passwordCompliant = validatePassword(password);
                 String[] messages = convertErrorCodeToMessages();
+                if (mVerdictView != null && length == 0 && mValidationErrors.size() == 1
+                        && mValidationErrors.get(0).errorCode == TOO_SHORT) {
+                    // Nothing is typed yet and the only rule is the least length: not said
+                    // before it is broken. The line under the field says what counts.
+                    messages = new String[0];
+                }
+                if (showsOwnPassphraseHeaders()) {
+                    // Also when coming back from the second entry.
+                    setHeaderText(getString(R.string.tally_own_passphrase_header));
+                }
                 // Update the fulfillment of requirements.
                 mPasswordRequirementAdapter.setRequirements(messages, mIsErrorTooShort);
                 // set the visibility of pin_auto_confirm option accordingly
@@ -1256,8 +1280,7 @@ public class ChooseLockPassword extends SettingsActivity {
                 mPasswordRestrictionView.setVisibility(View.GONE);
                 setHeaderText(mGeneratedPanel != null
                         ? mGeneratedPanel.headerText(mUiStage == Stage.ConfirmWrong)
-                        : mVerdictView != null && mUiStage == Stage.NeedToConfirm
-                                && mProfileType == ProfileType.None
+                        : showsOwnPassphraseHeaders() && mUiStage == Stage.NeedToConfirm
                         ? getString(R.string.tally_own_passphrase_again_header)
                         : mUiStage.getHint(getContext(), mIsAlphaMode, getStageType(),
                                 mProfileType));
@@ -1524,8 +1547,10 @@ public class ChooseLockPassword extends SettingsActivity {
         }
 
         public void afterTextChanged(Editable s) {
-            // Changing the text while error displayed resets to NeedToConfirm state
-            if (mUiStage == Stage.ConfirmWrong) {
+            // Changing the text while error displayed resets to NeedToConfirm state. Not when
+            // the wrong entry was just cleared: the error stays until something is typed.
+            if (mUiStage == Stage.ConfirmWrong
+                    && !(mGeneratedPanel != null && s.length() == 0)) {
                 mUiStage = Stage.NeedToConfirm;
             }
             // Schedule the UI update.
