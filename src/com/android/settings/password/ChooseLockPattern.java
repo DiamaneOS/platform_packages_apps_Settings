@@ -63,6 +63,8 @@ import com.android.settings.core.InstrumentedFragment;
 import com.android.settings.flags.Flags;
 import com.android.settings.msds.MSDLPlayerWrapper;
 import com.android.settings.notification.RedactionInterstitial;
+import com.android.settings.password.passphrase.WeakerRiskDialog;
+import com.android.settings.password.passphrase.WeakerRiskGate;
 
 import com.google.android.collect.Lists;
 import com.google.android.msdl.data.model.MSDLToken;
@@ -187,6 +189,8 @@ public class ChooseLockPattern extends SettingsActivity {
         super.onCreate(savedInstanceState);
         findViewById(R.id.content_parent).setFitsSystemWindows(false);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        // No picture of this screen in recents either.
+        setRecentsScreenshotEnabled(false);
     }
 
     @Override
@@ -202,7 +206,13 @@ public class ChooseLockPattern extends SettingsActivity {
     }
 
     public static class ChooseLockPatternFragment extends InstrumentedFragment
-            implements SaveAndFinishWorker.Listener {
+            implements SaveAndFinishWorker.Listener, SaveAndFinishWorker.RefusalListener,
+            WeakerRiskDialog.Listener {
+
+        // A pattern is weaker on this phone: the user is told before one is drawn.
+        private WeakerRiskGate mRiskGate;
+        // The lock settings refused the save for want of the user's agreement to the risk.
+        private boolean mSaveRefused;
 
         public static final int CONFIRM_EXISTING_REQUEST = 55;
 
@@ -510,6 +520,7 @@ public class ChooseLockPattern extends SettingsActivity {
             mIsManagedProfile = UserManager.get(getActivity()).isManagedProfile(mUserId);
 
             mLockPatternUtils = new LockPatternUtils(getActivity());
+            mRiskGate = new WeakerRiskGate(this, mLockPatternUtils, mUserId, savedInstanceState);
 
             mForFingerprint = intent.getBooleanExtra(
                     ChooseLockSettingsHelper.EXTRA_KEY_FOR_FINGERPRINT, false);
@@ -656,6 +667,9 @@ public class ChooseLockPattern extends SettingsActivity {
                     ChooseLockSettingsHelper.EXTRA_KEY_REQUEST_WRITE_REPAIR_MODE_PW, false);
 
             if (savedInstanceState == null) {
+                if (mRiskGate.isNeededForWeakerLock()) {
+                    mRiskGate.show();
+                }
                 if (confirmCredentials) {
                     // first launch. As a security measure, we're in NeedToConfirm mode until we
                     // know there isn't an existing password or the user confirms their password.
@@ -837,6 +851,7 @@ public class ChooseLockPattern extends SettingsActivity {
             super.onSaveInstanceState(outState);
 
             outState.putInt(KEY_UI_STAGE, mUiStage.ordinal());
+            mRiskGate.onSaveInstanceState(outState);
             if (mChosenPattern != null) {
                 outState.putParcelable(KEY_PATTERN_CHOICE, mChosenPattern);
             }
@@ -971,7 +986,10 @@ public class ChooseLockPattern extends SettingsActivity {
             mSaveAndFinishWorker
                     .setListener(this)
                     .setRequestGatekeeperPasswordHandle(mRequestGatekeeperPassword)
-                    .setRequestWriteRepairModePassword(mRequestWriteRepairModePassword);
+                    .setRequestWriteRepairModePassword(mRequestWriteRepairModePassword)
+                    .setWeakerRiskAccepted(mRiskGate.isAccepted());
+            // The save takes about a second: show that something is happening.
+            setSaveProgressShown(true);
 
             getFragmentManager().beginTransaction().add(mSaveAndFinishWorker,
                     FRAGMENT_TAG_SAVE_AND_FINISH).commit();
@@ -1010,6 +1028,44 @@ public class ChooseLockPattern extends SettingsActivity {
             }
 
             getActivity().finish();
+        }
+
+        private void setSaveProgressShown(boolean shown) {
+            final GlifLayout layout = getActivity().findViewById(R.id.setup_wizard_layout);
+            if (layout != null) {
+                layout.setProgressBarShown(shown);
+            }
+        }
+
+        @Override
+        public void onWeakerRiskAccepted() {
+            mRiskGate.onAccepted();
+            if (mSaveRefused) {
+                mSaveRefused = false;
+                if (mChosenPattern != null && mSaveAndFinishWorker == null) {
+                    startSaveAndFinish();
+                }
+            }
+        }
+
+        @Override
+        public void onWeakerRiskDeclined() {
+            // Nothing was saved. The user can pick another kind of lock.
+            getActivity().finish();
+        }
+
+        @Override
+        public void onChosenLockSaveRefused() {
+            // The lock settings want the user's agreement to the risk first. Nothing was
+            // changed. Show the risk; agreeing saves again.
+            if (mSaveAndFinishWorker != null) {
+                getFragmentManager().beginTransaction().remove(mSaveAndFinishWorker)
+                        .commitAllowingStateLoss();
+                mSaveAndFinishWorker = null;
+            }
+            setSaveProgressShown(false);
+            mSaveRefused = true;
+            mRiskGate.show();
         }
 
         private boolean isPrivateProfile() {
