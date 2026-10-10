@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<!-- Sizes and styles of the lock setup screens (generated passphrase or PIN, own passphrase,
+     the warning for weaker locks). Everything about their look that can be adjusted is in this
+     file, in tally_passphrase_colors.xml and in the tally_passphrase_* drawables and colours.
+     The card follows res/drawable/tally_homepage_row_single.xml. -->
+<resources>
+
+    <!-- The card around the generated secret. -->
+    <dimen name="tally_passphrase_card_padding">16dp</dimen>
+    <!-- Words and digits of the secret. -->
+    <dimen name="tally_passphrase_secret_text_size">20sp</dimen>
+    <dimen name="tally_passphrase_secret_line_extra">6dp</dimen>
+    <!-- Between a word number and its word. -->
+    <dimen name="tally_passphrase_number_gap">12dp</dimen>
+    <!-- Text of controls, the strength row, advice and the verdict. -->
+    <dimen name="tally_passphrase_text_size">14sp</dimen>
+    <dimen name="tally_passphrase_caption_text_size">12sp</dimen>
+    <!-- Controls. -->
+    <dimen name="tally_passphrase_control_height">40dp</dimen>
+    <dimen name="tally_passphrase_touch_height">48dp</dimen>
+    <dimen name="tally_passphrase_control_padding">12dp</dimen>
+    <dimen name="tally_passphrase_icon_gap">8dp</dimen>
+    <dimen name="tally_passphrase_segment_inset">3dp</dimen>
+    <!-- Space between the parts of a screen, and between two paragraphs. -->
+    <dimen name="tally_passphrase_gap">16dp</dimen>
+    <dimen name="tally_passphrase_gap_small">8dp</dimen>
+
+    <!-- Running text under the card: secondary colour. -->
+    <style name="TallyPassphrase.Body" parent="">
+        <item name="android:textAppearance">@style/TextAppearance.Tally.Body</item>
+        <item name="android:textSize">@dimen/tally_passphrase_text_size</item>
+        <item name="android:textColor">@color/tally_ink_muted</item>
+    </style>
+
+    <style name="TallyPassphrase.Caption" parent="TallyPassphrase.Body">
+        <item name="android:textSize">@dimen/tally_passphrase_caption_text_size</item>
+    </style>
+
+    <!-- A word of the passphrase, or the digits of the PIN: primary colour, the UI font. -->
+    <style name="TallyPassphrase.Secret" parent="">
+        <item name="android:textAppearance">@style/TextAppearance.Tally.Item</item>
+        <item name="android:textSize">@dimen/tally_passphrase_secret_text_size</item>
+        <item name="android:lineSpacingExtra">@dimen/tally_passphrase_secret_line_extra</item>
+        <item name="android:textColor">@color/tally_ink</item>
+        <item name="android:fontFeatureSettings">tnum</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:longClickable">false</item>
+        <item name="android:saveEnabled">false</item>
+    </style>
+
+    <!-- The number in front of a word: the same metrics, secondary colour. -->
+    <style name="TallyPassphrase.Secret.Number">
+        <item name="android:textColor">@color/tally_ink_muted</item>
+    </style>
+
+    <!-- A text control that starts exactly at the text margin: no padding at its start, an
+         optional icon in front, the accent colour, paler when disabled. -->
+    <style name="TallyPassphrase.Link" parent="">
+        <item name="android:textAppearance">@style/TextAppearance.Tally.Body</item>
+        <item name="android:textSize">@dimen/tally_passphrase_text_size</item>
+        <item name="android:textColor">@color/tally_passphrase_action</item>
+        <item name="android:drawableTint">@color/tally_passphrase_action</item>
+        <item name="android:drawablePadding">@dimen/tally_passphrase_icon_gap</item>
+        <item name="android:minHeight">@dimen/tally_passphrase_touch_height</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- An outlined button with an icon in front of its label. -->
+    <style name="TallyPassphrase.OutlinedButton" parent="TallyPassphrase.Link">
+        <item name="android:minHeight">@dimen/tally_passphrase_control_height</item>
+        <item name="android:paddingStart">@dimen/tally_passphrase_control_padding</item>
+        <item name="android:paddingEnd">@dimen/tally_passphrase_control_padding</item>
+        <item name="android:background">@drawable/tally_passphrase_outlined_button</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <!-- One choice of the segmented selector: a radio button without its dot. -->
+    <style name="TallyPassphrase.Segment" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:button">@null</item>
+        <item name="android:background">@drawable/tally_passphrase_segment</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">@style/TextAppearance.Tally.Body</item>
+        <item name="android:textSize">@dimen/tally_passphrase_text_size</item>
+        <item name="android:textColor">@color/tally_passphrase_segment_text</item>
+        <item name="android:fontFeatureSettings">tnum</item>
+    </style>
+
+    <!-- The line under the entry field that says what the phone makes of the entry. -->
+    <style name="TallyPassphrase.Verdict" parent="">
+        <item name="android:textAppearance">@style/TextAppearance.Tally.Body</item>
+        <item name="android:textSize">@dimen/tally_passphrase_text_size</item>
+        <item name="android:textColor">@color/tally_ink_muted</item>
+    </style>
+</resources>

@@ -7,84 +7,104 @@ package com.android.settings.password.passphrase;
 import java.util.Arrays;
 
 /**
- * Lays a generated passphrase or PIN out for reading and copying to paper. Works on char arrays
- * only: the caller wipes the result when it is no longer shown.
+ * Lays a generated passphrase or PIN out for reading and copying to paper: the words in one or
+ * two columns with their numbers beside them, a PIN in groups of digits. Hidden, the same
+ * layout is filled with dots, so that showing the secret moves nothing on the screen.
+ *
+ * <p>The numbers and the dots are not secret and are plain strings. The words and digits are
+ * char arrays only: the caller wipes them when they are no longer shown.
  */
 public final class SecretDisplay {
 
     /** Digits of a PIN are shown in groups of this size. */
     public static final int DIGIT_GROUP = 4;
 
+    /** What stands for a hidden word, and for a hidden digit. */
+    static final String WORD_MASK = "••••••";
+    static final char DIGIT_MASK = '•';
+
     private SecretDisplay() {}
 
     /**
-     * One word per line, numbered: "1  abacus", "2  zoom". The words of {@code phrase} are
-     * separated by single spaces.
+     * Number of words in the first column: all of them in one column, the first half rounded
+     * up in two.
      */
-    public static char[] numberedWords(char[] phrase) {
+    static int firstColumnWords(int words, boolean twoColumns) {
+        return twoColumns ? (words + 1) / 2 : words;
+    }
+
+    /**
+     * The words of {@code phrase}, one per line, for the first and the second column. The
+     * words of {@code phrase} are separated by single spaces. With one column the second
+     * array is empty.
+     *
+     * @return two arrays; the caller wipes both
+     */
+    public static char[][] wordColumns(char[] phrase, boolean twoColumns) {
         int words = 1;
         for (char c : phrase) {
             if (c == PassphraseGenerator.SEPARATOR) {
                 words++;
             }
         }
-        // Each word gets its number (one digit up to nine words, two beyond), two spaces, and
-        // a line break in place of its separator.
-        final char[] buffer = new char[phrase.length + words * 4];
-        int length = 0;
-        int number = 1;
-        boolean atWordStart = true;
-        for (char c : phrase) {
-            if (atWordStart) {
-                if (number >= 10) {
-                    buffer[length++] = (char) ('0' + number / 10 % 10);
-                }
-                buffer[length++] = (char) ('0' + number % 10);
-                buffer[length++] = ' ';
-                buffer[length++] = ' ';
-                atWordStart = false;
-            }
-            if (c == PassphraseGenerator.SEPARATOR) {
-                buffer[length++] = '\n';
-                number++;
-                atWordStart = true;
-            } else {
-                buffer[length++] = c;
-            }
-        }
-        final char[] result = Arrays.copyOf(buffer, length);
-        wipe(buffer);
-        return result;
-    }
-
-    /**
-     * The numbered words in two columns, to be shown side by side: the first half, rounded up,
-     * on the left and the rest on the right. Six words give "1 2 3" and "4 5 6".
-     *
-     * @return the left and the right column; the caller wipes both
-     */
-    public static char[][] numberedWordColumns(char[] phrase) {
-        final char[] all = numberedWords(phrase);
-        int lines = 1;
-        for (char c : all) {
-            if (c == '\n') {
-                lines++;
-            }
-        }
-        // The left column ends at the line break after its last word.
-        int breaksToSkip = (lines + 1) / 2;
-        int split = all.length;
-        for (int i = 0; i < all.length; i++) {
-            if (all[i] == '\n' && --breaksToSkip == 0) {
+        final int firstWords = firstColumnWords(words, twoColumns);
+        // Where the first column ends: at the separator after its last word.
+        int split = phrase.length;
+        int seen = 0;
+        for (int i = 0; i < phrase.length; i++) {
+            if (phrase[i] == PassphraseGenerator.SEPARATOR && ++seen == firstWords) {
                 split = i;
                 break;
             }
         }
-        final char[] left = Arrays.copyOf(all, split);
-        final char[] right = split < all.length
-                ? Arrays.copyOfRange(all, split + 1, all.length) : new char[0];
-        wipe(all);
-        return new char[][] {left, right};
+        final char[] first = Arrays.copyOf(phrase, split);
+        final char[] second = split < phrase.length
+                ? Arrays.copyOfRange(phrase, split + 1, phrase.length) : new char[0];
+        for (char[] column : new char[][] {first, second}) {
+            for (int i = 0; i < column.length; i++) {
+                if (column[i] == PassphraseGenerator.SEPARATOR) {
+                    column[i] = '\n';
+                }
+            }
+        }
+        return new char[][] {first, second};
+    }
+
+    /**
+     * The numbers that stand beside the words, one per line, for the first and the second
+     * column: "1", "2", "3" and "4", "5", "6" for six words in two columns.
+     */
+    public static String[] numberColumns(int words, boolean twoColumns) {
+        final int firstWords = firstColumnWords(words, twoColumns);
+        return new String[] {numberLines(1, firstWords), numberLines(firstWords + 1, words)};
+    }
+
+    /** Dots in place of the words, line for line as {@link #wordColumns}. */
+    public static String[] maskColumns(int words, boolean twoColumns) {
+        final int firstWords = firstColumnWords(words, twoColumns);
+        return new String[] {maskLines(firstWords), maskLines(words - firstWords)};
+    }
+
+    private static String numberLines(int from, int to) {
+        final StringBuilder text = new StringBuilder();
+        for (int i = from; i <= to; i++) {
+            if (i > from) {
+                text.append('\n');
+            }
+            text.append(i);
+        }
+        return text.toString();
+    }
+
+    private static String maskLines(int count) {
+        final StringBuilder text = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            if (i > 0) {
+                text.append('\n');
+            }
+            text.append(WORD_MASK);
+        }
+        return text.toString();
     }
 
     /** The digits in groups of {@link #DIGIT_GROUP}, separated by spaces: "1234 5678 9012". */
@@ -101,6 +121,13 @@ public final class SecretDisplay {
             result[length++] = digits[i];
         }
         return result;
+    }
+
+    /** Dots in place of {@code digits} digits, grouped as {@link #groupedDigits}. */
+    public static String maskedDigits(int digits) {
+        final char[] dots = new char[digits];
+        Arrays.fill(dots, DIGIT_MASK);
+        return new String(groupedDigits(dots));
     }
 
     /** Overwrites {@code chars} with zeros. */

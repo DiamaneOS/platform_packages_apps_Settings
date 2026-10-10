@@ -78,16 +78,13 @@ public final class LockStrengthText {
     }
 
     /**
-     * The one line under a generated passphrase or PIN: how many words or digits, and the
-     * estimated time to guess it. "6 words · about 110 billion years to guess (estimate)".
+     * The one row under a generated passphrase or PIN: the estimated time to guess it, said to
+     * be an estimate. "Estimate: about 110 billion years to guess".
      */
-    public static String strengthLine(Context context, boolean passphrase, int count,
-            double entropyBits) {
+    public static String strengthLine(Context context, double entropyBits) {
         final String time = time(context, CredentialStrength.estimateTimeToGuess(
                 entropyBits, PlaceholderGuessingAssumptions.get()));
-        return context.getString(passphrase
-                ? R.string.tally_strength_line_passphrase : R.string.tally_strength_line_pin,
-                count, time);
+        return context.getString(R.string.tally_strength_line, time);
     }
 
     /**

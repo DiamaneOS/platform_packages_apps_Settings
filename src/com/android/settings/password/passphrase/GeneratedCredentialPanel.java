@@ -10,7 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -28,12 +29,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.CharBuffer;
 import java.security.SecureRandom;
+import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The part of the password screen that sets up a passphrase or PIN the phone generates: it
- * shows the secret on request, with one strength line and two lines of advice, and guides the
- * typing back.
+ * The part of the password screen that sets up a passphrase or PIN the phone generates: a card
+ * that shows the secret on request, a choice of how many words, one strength row and two
+ * paragraphs of advice; then it guides the typing back.
  *
  * <p>The password screen keeps its own steps and its entry field. This panel sits above the
  * field, tells the screen when the user may go on, and hands over the credential to compare
@@ -83,20 +85,27 @@ public final class GeneratedCredentialPanel {
     private final int mUserId;
     private final GeneratedSetupState mState = new GeneratedSetupState();
 
+    private static final int[] WORD_CHOICES = {
+        R.id.tally_generated_words_5,
+        R.id.tally_generated_words_6,
+        R.id.tally_generated_words_7,
+        R.id.tally_generated_words_8,
+    };
+
     private final View mEntryContainer;
     private final View mShowSection;
     private final View mTypeSection;
-    private final View mSecretColumns;
+    private final View mGrid;
+    private final TextView mNumbersLeft;
+    private final TextView mNumbersRight;
     private final TextView mSecretLeft;
     private final TextView mSecretRight;
     private final TextView mPlaceholder;
-    private final TextView mWordsCount;
+    private final RadioGroup mWordsChoice;
     private final TextView mStrengthView;
     private final TextView mHintView;
-    private final Button mRevealButton;
-    private final Button mAnotherButton;
-    private final Button mFewerButton;
-    private final Button mMoreButton;
+    private final TextView mRevealButton;
+    private final TextView mAnotherButton;
     private final Runnable mHideWhenTimeIsUp = this::hide;
 
     // The secret: a passphrase or a PIN, by kind. Null while there is none.
@@ -140,27 +149,23 @@ public final class GeneratedCredentialPanel {
         parent.addView(root, parent.indexOfChild(entryContainer));
         mShowSection = root.findViewById(R.id.tally_generated_show_section);
         mTypeSection = root.findViewById(R.id.tally_generated_type_section);
-        mSecretColumns = root.findViewById(R.id.tally_generated_secret_columns);
-        mSecretLeft = root.findViewById(R.id.tally_generated_secret);
-        mSecretRight = root.findViewById(R.id.tally_generated_secret_right);
+        mGrid = root.findViewById(R.id.tally_generated_grid);
+        mNumbersLeft = root.findViewById(R.id.tally_generated_numbers);
+        mNumbersRight = root.findViewById(R.id.tally_generated_numbers_right);
+        mSecretLeft = root.findViewById(R.id.tally_generated_words);
+        mSecretRight = root.findViewById(R.id.tally_generated_words_right);
         mPlaceholder = root.findViewById(R.id.tally_generated_placeholder);
-        mWordsCount = root.findViewById(R.id.tally_generated_words_count);
+        mWordsChoice = root.findViewById(R.id.tally_generated_words_choice);
         mStrengthView = root.findViewById(R.id.tally_generated_strength);
         mHintView = root.findViewById(R.id.tally_generated_hint);
         mRevealButton = root.findViewById(R.id.tally_generated_reveal);
         mAnotherButton = root.findViewById(R.id.tally_generated_another);
-        mFewerButton = root.findViewById(R.id.tally_generated_fewer);
-        mMoreButton = root.findViewById(R.id.tally_generated_more);
 
         // Only accessibility services that are tools for the user get to read the secret.
         mSecretLeft.setAccessibilityDataSensitive(View.ACCESSIBILITY_DATA_SENSITIVE_YES);
         mSecretRight.setAccessibilityDataSensitive(View.ACCESSIBILITY_DATA_SENSITIVE_YES);
         mSecretLeft.setSaveEnabled(false);
         mSecretRight.setSaveEnabled(false);
-
-        final TextView advice = root.findViewById(R.id.tally_generated_advice);
-        advice.setText(mContext.getString(R.string.tally_generated_advice) + "\n"
-                + mContext.getString(R.string.tally_lock_no_recovery));
 
         mRevealButton.setOnClickListener(v -> {
             if (mState.isRevealed()) {
@@ -178,13 +183,31 @@ public final class GeneratedCredentialPanel {
                 .setOnClickListener(v -> mHost.onShowGeneratedCredentialAgain());
 
         if (isPassphrase) {
-            mFewerButton.setOnClickListener(v -> setWords(mWords - 1));
-            mMoreButton.setOnClickListener(v -> setWords(mWords + 1));
+            final NumberFormat format = NumberFormat.getIntegerInstance();
+            for (int i = 0; i < WORD_CHOICES.length; i++) {
+                final int words = PassphraseGenerator.MIN_WORDS + i;
+                final RadioButton choice = root.findViewById(WORD_CHOICES[i]);
+                choice.setText(format.format(words));
+                choice.setContentDescription(
+                        mContext.getString(R.string.tally_generated_words_choice, words));
+            }
+            mWordsChoice.check(WORD_CHOICES[mWords - PassphraseGenerator.MIN_WORDS]);
+            mWordsChoice.setOnCheckedChangeListener((group, checkedId) -> {
+                for (int i = 0; i < WORD_CHOICES.length; i++) {
+                    if (WORD_CHOICES[i] == checkedId) {
+                        setWords(PassphraseGenerator.MIN_WORDS + i);
+                    }
+                }
+            });
             loadGeneratorThenGenerate();
         } else {
-            mFewerButton.setVisibility(View.GONE);
-            mMoreButton.setVisibility(View.GONE);
-            mWordsCount.setVisibility(View.GONE);
+            // A PIN has one length: no choice, and the button stays at the end of its row.
+            mWordsChoice.setVisibility(View.GONE);
+            root.findViewById(R.id.tally_generated_words_caption).setVisibility(View.GONE);
+            root.findViewById(R.id.tally_generated_row_filler).setVisibility(View.VISIBLE);
+            mNumbersLeft.setVisibility(View.GONE);
+            mNumbersRight.setVisibility(View.GONE);
+            mSecretRight.setVisibility(View.GONE);
             generate();
         }
         mConstructed = true;
@@ -470,48 +493,48 @@ public final class GeneratedCredentialPanel {
         }
     }
 
-    // Puts the secret on screen if it is revealed, and a note in its place if it is not.
+    // Fills the card: the secret if it is revealed, dots in the same places if it is not, so
+    // that the card has the same size either way; a note if there is no secret.
     private void renderSecret() {
         clearSecretViews();
         final boolean hasSecret = mPassphrase != null || mPin != null;
         final boolean revealed = mState.isRevealed() && hasSecret;
-        if (revealed) {
-            fillDisplay();
-            mSecretLeft.setText(mDisplayLeft, 0, mDisplayLeft.length);
-            mSecretRight.setText(mDisplayRight, 0, mDisplayRight.length);
-            mSecretRight.setVisibility(mDisplayRight.length > 0 ? View.VISIBLE : View.GONE);
-            mSecretLeft.postDelayed(mHideWhenTimeIsUp, REVEAL_TIMEOUT_MS);
-        } else if (hasSecret) {
-            mPlaceholder.setText(R.string.tally_generated_hidden);
-        } else if (mPreparing) {
-            mPlaceholder.setText(R.string.tally_generated_preparing);
-        } else {
-            mPlaceholder.setText(mBlockedByRules
-                    ? R.string.tally_generated_blocked_by_rules
-                    : R.string.tally_generated_unavailable);
-        }
-        mSecretColumns.setVisibility(revealed ? View.VISIBLE : View.GONE);
-        mPlaceholder.setVisibility(revealed ? View.GONE : View.VISIBLE);
-        mRevealButton.setText(mState.isRevealed()
-                ? R.string.tally_generated_hide : R.string.tally_generated_show);
-        mRevealButton.setEnabled(hasSecret);
-        mAnotherButton.setEnabled(hasSecret);
-    }
-
-    // Lays the secret out for the two views: words in two columns where they fit, in one
-    // column otherwise; a PIN as one line of groups.
-    private void fillDisplay() {
-        if (mPassphrase != null) {
-            final Configuration config = mContext.getResources().getConfiguration();
-            if (config.fontScale <= MAX_FONT_SCALE_FOR_COLUMNS
-                    && config.screenWidthDp >= MIN_WIDTH_DP_FOR_COLUMNS) {
-                final char[][] columns = SecretDisplay.numberedWordColumns(mPassphrase.chars());
+        mGrid.setVisibility(hasSecret ? View.VISIBLE : View.GONE);
+        mPlaceholder.setVisibility(hasSecret ? View.GONE : View.VISIBLE);
+        if (!hasSecret) {
+            if (mPreparing) {
+                mPlaceholder.setText(R.string.tally_generated_preparing);
+            } else {
+                mPlaceholder.setText(mBlockedByRules
+                        ? R.string.tally_generated_blocked_by_rules
+                        : R.string.tally_generated_unavailable);
+            }
+        } else if (mPassphrase != null) {
+            final boolean twoColumns = fitsTwoColumns();
+            final String[] numbers = SecretDisplay.numberColumns(mWords, twoColumns);
+            mNumbersLeft.setText(numbers[0]);
+            mNumbersRight.setText(numbers[1]);
+            mNumbersRight.setVisibility(twoColumns ? View.VISIBLE : View.GONE);
+            mSecretRight.setVisibility(twoColumns ? View.VISIBLE : View.GONE);
+            // Room for the most words a column can have, so that the card does not change
+            // its height with the number of words either.
+            final int lines = SecretDisplay.firstColumnWords(
+                    twoColumns ? PassphraseGenerator.MAX_WORDS : mWords, twoColumns);
+            mNumbersLeft.setMinLines(lines);
+            mSecretLeft.setMinLines(lines);
+            if (revealed) {
+                final char[][] columns =
+                        SecretDisplay.wordColumns(mPassphrase.chars(), twoColumns);
                 mDisplayLeft = columns[0];
                 mDisplayRight = columns[1];
+                mSecretLeft.setText(mDisplayLeft, 0, mDisplayLeft.length);
+                mSecretRight.setText(mDisplayRight, 0, mDisplayRight.length);
             } else {
-                mDisplayLeft = SecretDisplay.numberedWords(mPassphrase.chars());
+                final String[] dots = SecretDisplay.maskColumns(mWords, twoColumns);
+                mSecretLeft.setText(dots[0]);
+                mSecretRight.setText(dots[1]);
             }
-        } else if (mPin != null) {
+        } else if (revealed && mPin != null) {
             // A PIN is digits, one byte each.
             final byte[] bytes = mPin.getCredential();
             final char[] digits = new char[bytes.length];
@@ -520,25 +543,43 @@ public final class GeneratedCredentialPanel {
             }
             mDisplayLeft = SecretDisplay.groupedDigits(digits);
             SecretDisplay.wipe(digits);
+            mSecretLeft.setText(mDisplayLeft, 0, mDisplayLeft.length);
+        } else {
+            mSecretLeft.setText(SecretDisplay.maskedDigits(PIN_LENGTH));
+        }
+        if (revealed) {
+            mSecretLeft.postDelayed(mHideWhenTimeIsUp, REVEAL_TIMEOUT_MS);
+        }
+        // A screen reader says "Hidden" for the dots.
+        final String hidden = hasSecret && !revealed
+                ? mContext.getString(R.string.tally_generated_hidden_description) : null;
+        mSecretLeft.setContentDescription(hidden);
+        mSecretRight.setContentDescription(hidden);
+        mRevealButton.setText(mState.isRevealed()
+                ? R.string.tally_generated_hide : R.string.tally_generated_show);
+        mRevealButton.setEnabled(hasSecret);
+        mAnotherButton.setEnabled(hasSecret);
+        for (int id : WORD_CHOICES) {
+            mWordsChoice.findViewById(id).setEnabled(hasSecret);
         }
     }
 
-    // Strength figures are not secret: they depend on the number of words or digits only.
+    // Two columns of words need room: at a large text size, or on a narrow screen, the words
+    // go in one column.
+    private boolean fitsTwoColumns() {
+        final Configuration config = mContext.getResources().getConfiguration();
+        return config.fontScale <= MAX_FONT_SCALE_FOR_COLUMNS
+                && config.screenWidthDp >= MIN_WIDTH_DP_FOR_COLUMNS;
+    }
+
+    // The strength row is not secret: it depends on the number of words or digits only.
     private void renderStrength() {
         final boolean hasSecret = mPassphrase != null || mPin != null;
         mStrengthView.setVisibility(hasSecret ? View.VISIBLE : View.INVISIBLE);
-        if (mIsPassphrase) {
-            mWordsCount.setText(
-                    mContext.getString(R.string.tally_generated_words_count, mWords));
-            mFewerButton.setEnabled(hasSecret && mWords > PassphraseGenerator.MIN_WORDS);
-            mMoreButton.setEnabled(hasSecret && mWords < PassphraseGenerator.MAX_WORDS);
+        if (hasSecret) {
+            mStrengthView.setText(LockStrengthText.strengthLine(mContext, mIsPassphrase
+                    ? mEntropyBits[mWords]
+                    : CredentialStrength.generatedPinEntropyBits(PIN_LENGTH)));
         }
-        if (!hasSecret) {
-            return;
-        }
-        mStrengthView.setText(mIsPassphrase
-                ? LockStrengthText.strengthLine(mContext, true, mWords, mEntropyBits[mWords])
-                : LockStrengthText.strengthLine(mContext, false, PIN_LENGTH,
-                        CredentialStrength.generatedPinEntropyBits(PIN_LENGTH)));
     }
 }

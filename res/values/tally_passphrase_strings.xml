@@ -64,19 +64,14 @@
     <!-- Setting a strong lock, said once on the last step or after saving. %1$d is a number of
          days (14). [CHAR LIMIT=NONE] -->
     <string name="tally_lock_learning">For <xliff:g id="days" example="14">%1$d</xliff:g> days the phone asks for it once a day, so it sticks.</string>
-    <!-- Generated passphrase. How many words it has, between the buttons that change it.
-         [CHAR LIMIT=20] -->
-    <string name="tally_generated_words_count"><xliff:g id="words" example="6">%1$d</xliff:g> words</string>
-    <!-- Generated passphrase. Spoken names of the buttons for fewer and more words.
+    <!-- Generated passphrase. Small label of the choice of 5 to 8 words. [CHAR LIMIT=12] -->
+    <string name="tally_generated_words_caption">Words</string>
+    <!-- Generated passphrase. Spoken name of one choice: %1$d is 5 to 8. [CHAR LIMIT=NONE] -->
+    <string name="tally_generated_words_choice"><xliff:g id="words" example="6">%1$d</xliff:g> words</string>
+    <!-- Generated passphrase or PIN. Spoken in place of the dots while it is hidden.
          [CHAR LIMIT=NONE] -->
-    <string name="tally_generated_fewer_words">Fewer words</string>
-    <string name="tally_generated_more_words">More words</string>
-    <!-- The signs on those two buttons. -->
-    <string name="tally_generated_minus" translatable="false">−</string>
-    <string name="tally_generated_plus" translatable="false">+</string>
-    <!-- Generated passphrase or PIN. Shown in its place while it is hidden, and until it is
-         ready. [CHAR LIMIT=NONE] -->
-    <string name="tally_generated_hidden">Hidden. Tap Show when no one is watching.</string>
+    <string name="tally_generated_hidden_description">Hidden</string>
+    <!-- Generated passphrase or PIN. Shown in its place until it is ready. [CHAR LIMIT=NONE] -->
     <string name="tally_generated_preparing">Preparing…</string>
     <!-- Generated passphrase or PIN. Buttons. [CHAR LIMIT=24] -->
     <string name="tally_generated_show">Show</string>
@@ -96,11 +91,10 @@
          [CHAR LIMIT=40] -->
     <string name="tally_lock_saving">Saving…</string>
 
-    <!-- The one strength line under a generated passphrase: %1$d words, %2$s a time such as
-         "about 110 billion years". Tapping it opens the details. [CHAR LIMIT=NONE] -->
-    <string name="tally_strength_line_passphrase"><xliff:g id="words" example="6">%1$d</xliff:g> words · <xliff:g id="time" example="about 110 billion years">%2$s</xliff:g> to guess (estimate)</string>
-    <!-- The same line for a generated PIN: %1$d digits. [CHAR LIMIT=NONE] -->
-    <string name="tally_strength_line_pin"><xliff:g id="digits" example="20">%1$d</xliff:g> digits · <xliff:g id="time" example="about 52 million years">%2$s</xliff:g> to guess (estimate)</string>
+    <!-- The one strength row under a generated passphrase or PIN: %1$s is a time such as
+         "about 110 billion years". It has to say that this is an estimate, and to fit one line.
+         Tapping it opens the details. [CHAR LIMIT=50] -->
+    <string name="tally_strength_line">Estimate: <xliff:g id="time" example="about 110 billion years">%1$s</xliff:g> to guess</string>
     <!-- Title of the details behind the strength line. [CHAR LIMIT=40] -->
     <string name="tally_strength_details_title">How this is estimated</string>
     <!-- Details: the exact strength, %1$s a number such as 77.5. [CHAR LIMIT=NONE] -->
@@ -165,7 +159,8 @@
     <string name="tally_verdict_how">How is this judged?</string>
     <!-- Own passphrase. What the verdict can and cannot tell. [CHAR LIMIT=NONE] -->
     <string name="tally_verdict_how_message">The phone only looks at length and characters, not at meaning. So it can be wrong both ways. A short random password counts as weaker. A long quote counts as strong. A weaker password still works, after one warning.</string>
-    <!-- Own passphrase. Header of the second entry. [CHAR LIMIT=40] -->
+    <!-- Own passphrase. Headers of the first and the second entry. [CHAR LIMIT=40] -->
+    <string name="tally_own_passphrase_header">Choose a passphrase</string>
     <string name="tally_own_passphrase_again_header">Type it again</string>
 
     <!-- Warning shown before a PIN, a pattern or a short password is set. Titles.

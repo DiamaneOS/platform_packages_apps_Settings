@@ -11,78 +11,93 @@ import org.junit.Test;
 
 public class SecretDisplayTest {
 
-    private static String numbered(String phrase) {
-        return new String(SecretDisplay.numberedWords(phrase.toCharArray()));
+    private static final String DOTS = "••••••";
+
+    private static String[] words(String phrase, boolean twoColumns) {
+        final char[][] columns = SecretDisplay.wordColumns(phrase.toCharArray(), twoColumns);
+        assertEquals(2, columns.length);
+        return new String[] {new String(columns[0]), new String(columns[1])};
     }
 
     private static String grouped(String digits) {
         return new String(SecretDisplay.groupedDigits(digits.toCharArray()));
     }
 
-    @Test
-    public void numberedWords_oneWordPerLine() {
-        assertEquals("1  abacus\n2  zoom\n3  abdomen\n4  yoyo\n5  zoology",
-                numbered("abacus zoom abdomen yoyo zoology"));
-        assertEquals("1  abacus", numbered("abacus"));
+    private static int lineCount(String text) {
+        return text.isEmpty() ? 0 : text.split("\n", -1).length;
     }
 
     @Test
-    public void numberedWords_eightWords() {
-        assertEquals("1  a\n2  b\n3  c\n4  d\n5  e\n6  f\n7  g\n8  h", numbered("a b c d e f g h"));
+    public void wordColumns_twoColumns_halfOnEachSide() {
+        assertArrayEquals(new String[] {"abacus\nzoom\nabdomen", "yoyo\nzoology\naim"},
+                words("abacus zoom abdomen yoyo zoology aim", true));
+        assertArrayEquals(new String[] {"a\nb\nc\nd", "e\nf\ng\nh"},
+                words("a b c d e f g h", true));
     }
 
     @Test
-    public void numberedWords_twoDigitNumbers() {
-        assertEquals("1  a\n2  b\n3  c\n4  d\n5  e\n6  f\n7  g\n8  h\n9  i\n10  j\n11  k",
-                numbered("a b c d e f g h i j k"));
+    public void wordColumns_oddCount_theFirstColumnHasOneMore() {
+        assertArrayEquals(new String[] {"a\nb\nc", "d\ne"}, words("a b c d e", true));
+        assertArrayEquals(new String[] {"a\nb\nc\nd", "e\nf\ng"}, words("a b c d e f g", true));
     }
 
     @Test
-    public void numberedWords_leavesThePhraseAsItWas() {
-        final char[] phrase = "abacus zoom".toCharArray();
-
-        SecretDisplay.numberedWords(phrase);
-
-        assertArrayEquals("abacus zoom".toCharArray(), phrase);
-    }
-
-    private static String[] columns(String phrase) {
-        final char[][] columns = SecretDisplay.numberedWordColumns(phrase.toCharArray());
-        assertEquals(2, columns.length);
-        return new String[] {new String(columns[0]), new String(columns[1])};
+    public void wordColumns_oneColumn_allInTheFirst() {
+        assertArrayEquals(new String[] {"a\nb\nc\nd\ne\nf", ""}, words("a b c d e f", false));
+        assertArrayEquals(new String[] {"abacus", ""}, words("abacus", false));
     }
 
     @Test
-    public void numberedWordColumns_halfOnEachSide() {
-        assertArrayEquals(new String[] {"1  a\n2  b\n3  c", "4  d\n5  e\n6  f"},
-                columns("a b c d e f"));
-        assertArrayEquals(new String[] {"1  a\n2  b\n3  c\n4  d", "5  e\n6  f\n7  g\n8  h"},
-                columns("a b c d e f g h"));
+    public void wordColumns_oneOrTwoWords() {
+        assertArrayEquals(new String[] {"abacus", ""}, words("abacus", true));
+        assertArrayEquals(new String[] {"abacus", "zoom"}, words("abacus zoom", true));
     }
 
     @Test
-    public void numberedWordColumns_oddCount_theLeftSideHasOneMore() {
-        assertArrayEquals(new String[] {"1  a\n2  b\n3  c", "4  d\n5  e"},
-                columns("a b c d e"));
-        assertArrayEquals(new String[] {"1  a\n2  b\n3  c\n4  d", "5  e\n6  f\n7  g"},
-                columns("a b c d e f g"));
+    public void wordColumns_leavesThePhraseAsItWas() {
+        final char[] phrase = "abacus zoom abdomen".toCharArray();
+
+        SecretDisplay.wordColumns(phrase, true);
+
+        assertArrayEquals("abacus zoom abdomen".toCharArray(), phrase);
     }
 
     @Test
-    public void numberedWordColumns_oneWord_rightSideEmpty() {
-        assertArrayEquals(new String[] {"1  abacus", ""}, columns("abacus"));
-        assertArrayEquals(new String[] {"1  abacus", "2  zoom"}, columns("abacus zoom"));
+    public void numberColumns_countOn() {
+        assertArrayEquals(new String[] {"1\n2\n3", "4\n5\n6"},
+                SecretDisplay.numberColumns(6, true));
+        assertArrayEquals(new String[] {"1\n2\n3", "4\n5"}, SecretDisplay.numberColumns(5, true));
+        assertArrayEquals(new String[] {"1\n2\n3\n4", "5\n6\n7\n8"},
+                SecretDisplay.numberColumns(8, true));
+        assertArrayEquals(new String[] {"1\n2\n3\n4\n5\n6", ""},
+                SecretDisplay.numberColumns(6, false));
     }
 
     @Test
-    public void numberedWordColumns_realWords_nothingLostAndThePhraseUntouched() {
-        final char[] phrase = "abacus zoom abdomen yoyo zoology aim".toCharArray();
+    public void maskColumns_dotsInPlaceOfEveryWord() {
+        assertArrayEquals(new String[] {DOTS + "\n" + DOTS + "\n" + DOTS, DOTS + "\n" + DOTS},
+                SecretDisplay.maskColumns(5, true));
+        assertArrayEquals(new String[] {DOTS + "\n" + DOTS, ""},
+                SecretDisplay.maskColumns(2, false));
+    }
 
-        final char[][] columns = SecretDisplay.numberedWordColumns(phrase);
-
-        assertEquals("1  abacus\n2  zoom\n3  abdomen", new String(columns[0]));
-        assertEquals("4  yoyo\n5  zoology\n6  aim", new String(columns[1]));
-        assertArrayEquals("abacus zoom abdomen yoyo zoology aim".toCharArray(), phrase);
+    @Test
+    public void hiddenAndShown_haveTheSameLinesInEveryColumn() {
+        // So that the card keeps its size when the secret is shown or hidden.
+        final String[] phrases = {"a b c d e", "a b c d e f", "a b c d e f g",
+                "a b c d e f g h"};
+        for (String phrase : phrases) {
+            final int count = phrase.split(" ").length;
+            for (boolean twoColumns : new boolean[] {true, false}) {
+                final String[] shown = words(phrase, twoColumns);
+                final String[] hidden = SecretDisplay.maskColumns(count, twoColumns);
+                final String[] numbers = SecretDisplay.numberColumns(count, twoColumns);
+                for (int column = 0; column < 2; column++) {
+                    assertEquals(lineCount(shown[column]), lineCount(hidden[column]));
+                    assertEquals(lineCount(shown[column]), lineCount(numbers[column]));
+                }
+            }
+        }
     }
 
     @Test
@@ -93,6 +108,16 @@ public class SecretDisplayTest {
         assertEquals("1234 5", grouped("12345"));
         assertEquals("1", grouped("1"));
         assertEquals("", grouped(""));
+    }
+
+    @Test
+    public void maskedDigits_sameShapeAsTheDigits() {
+        final String dots = SecretDisplay.maskedDigits(20);
+
+        assertEquals("•••• •••• •••• "
+                + "•••• ••••", dots);
+        assertEquals(grouped("12345678901234567890").length(), dots.length());
+        assertEquals("", SecretDisplay.maskedDigits(0));
     }
 
     @Test
