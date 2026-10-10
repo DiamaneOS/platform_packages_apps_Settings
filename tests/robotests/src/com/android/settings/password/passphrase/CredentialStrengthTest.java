@@ -153,7 +153,7 @@ public class CredentialStrengthTest {
     public void estimateTimeToGuess_passphrases() {
         // Worked by hand from seconds = 7772^words / 2 / guesses per second, 31,557,600 seconds
         // to the year, rounded down to two figures.
-        assertTime("ABOUT 2.9 THOUSANDS_OF_YEARS", 5 * BITS_PER_WORD, FAST_GUESSES);  // 2,995
+        assertTime("ABOUT 2900.0 YEARS", 5 * BITS_PER_WORD, FAST_GUESSES);            // 2,995
         assertTime("ABOUT 14.0 MILLIONS_OF_YEARS", 5 * BITS_PER_WORD, SLOW_GUESSES);  // 1.498e7
         assertTime("ABOUT 23.0 MILLIONS_OF_YEARS", 6 * BITS_PER_WORD, FAST_GUESSES);  // 2.328e7
         assertTime("ABOUT 110.0 BILLIONS_OF_YEARS", 6 * BITS_PER_WORD, SLOW_GUESSES); // 1.164e11
@@ -168,13 +168,14 @@ public class CredentialStrengthTest {
         final GuessingAssumptions oneSlowMachine = new GuessingAssumptions(1 / 30.0, 1, 0.5);
 
         // 6 digits: 500,000 guesses on average.
-        assertTime("LESS_THAN 1.0 SECONDS", 6 * BITS_PER_DIGIT, FAST_GUESSES);        // 0.003 s
-        assertTime("ABOUT 3.3 SECONDS", 6 * BITS_PER_DIGIT, oneFastMachine);          // 3.33 s
-        assertTime("ABOUT 16.0 SECONDS", 6 * BITS_PER_DIGIT, SLOW_GUESSES);           // 16.7 s
+        // Under a minute there is no figure.
+        assertTime("LESS_THAN 1.0 MINUTES", 6 * BITS_PER_DIGIT, FAST_GUESSES);        // 0.003 s
+        assertTime("LESS_THAN 1.0 MINUTES", 6 * BITS_PER_DIGIT, oneFastMachine);      // 3.33 s
+        assertTime("LESS_THAN 1.0 MINUTES", 6 * BITS_PER_DIGIT, SLOW_GUESSES);        // 16.7 s
         assertTime("ABOUT 4.6 HOURS", 6 * BITS_PER_DIGIT, oneSlowMachine);            // 4.63 h
         // 12, 16 and 20 digits at 30,000 guesses a second.
         assertTime("ABOUT 190.0 DAYS", 12 * BITS_PER_DIGIT, SLOW_GUESSES);            // 192.9
-        assertTime("ABOUT 5.2 THOUSANDS_OF_YEARS", 16 * BITS_PER_DIGIT, SLOW_GUESSES); // 5,281
+        assertTime("ABOUT 5200.0 YEARS", 16 * BITS_PER_DIGIT, SLOW_GUESSES);          // 5,281
         assertTime("ABOUT 52.0 MILLIONS_OF_YEARS", 20 * BITS_PER_DIGIT, SLOW_GUESSES); // 5.28e7
     }
 

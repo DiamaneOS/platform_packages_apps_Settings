@@ -24,6 +24,8 @@ public final class StrengthComparison {
         WORDS_6(false),
         WORDS_7(false),
         WORDS_8(false),
+        /** A PIN of twelve digits picked at random. Not offered; shown for comparison. */
+        RANDOM_PIN_12(false),
         /** A PIN of twenty digits that the phone generated. */
         RANDOM_PIN_20(false);
 
@@ -88,6 +90,8 @@ public final class StrengthComparison {
                 return wordsBits(7);
             case WORDS_8:
                 return wordsBits(8);
+            case RANDOM_PIN_12:
+                return CredentialStrength.generatedPinEntropyBits(12);
             case RANDOM_PIN_20:
                 return CredentialStrength.generatedPinEntropyBits(20);
             default:

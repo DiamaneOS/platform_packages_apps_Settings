@@ -7,10 +7,11 @@ package com.android.settings.password.passphrase;
 /**
  * An estimated time to guess a credential, in the only form it may be shown: a wording, an
  * amount of two significant figures and a coarse unit, such as "about 15 million years".
+ * Anything under a minute has no figure at all: the screens word it as "seconds".
  *
  * <p>It is an estimate and has to be shown as one. The amount cannot be read on its own:
  * {@link #describe} hands it out together with the {@link Wording}, and the text a screen builds
- * must carry that wording ("about", "less than", "more than"). The screen also states the
+ * must carry that wording ("about", "more than", or just "seconds"). The screen also states the
  * {@link #assumptions} the estimate rests on.
  *
  * <p>The figure behind it is rough, so more than two figures would claim a precision that is not
@@ -20,7 +21,10 @@ public final class GuessTimeEstimate {
 
     /** How the amount relates to the estimate. A shown time always includes it. */
     public enum Wording {
-        /** Less than the amount: used for "less than 1 second". */
+        /**
+         * Less than the amount: used for everything under one minute, which the screens word
+         * as "seconds". A number of seconds would claim more than is known.
+         */
         LESS_THAN,
         /** About the amount: the estimate, rounded down to two figures. */
         ABOUT,
@@ -33,12 +37,11 @@ public final class GuessTimeEstimate {
 
     /** The unit of the amount. */
     public enum Unit {
-        SECONDS,
         MINUTES,
         HOURS,
         DAYS,
+        /** Up to 990,000 of them: thousands of years are written out, as "450,000 years". */
         YEARS,
-        THOUSANDS_OF_YEARS,
         MILLIONS_OF_YEARS,
         BILLIONS_OF_YEARS,
     }
@@ -48,9 +51,9 @@ public final class GuessTimeEstimate {
         /**
          * @param wording has to be part of the result
          * @param amount two significant figures: one decimal below 10 (4.6), whole from 10
-         *     (15), tens from 100 (190). 1 with {@link Wording#LESS_THAN}, 1000 with
-         *     {@link Wording#MORE_THAN}.
-         * @param unit the unit of the amount
+         *     (15), tens from 100 (190), and for years on to 990,000 (4,600 or 450,000).
+         *     1 with {@link Wording#LESS_THAN}, 1000 with {@link Wording#MORE_THAN}.
+         * @param unit the unit of the amount; minutes with {@link Wording#LESS_THAN}
          */
         T format(Wording wording, double amount, Unit unit);
     }
@@ -89,15 +92,14 @@ public final class GuessTimeEstimate {
         if (!(seconds >= 0)) {
             throw new IllegalArgumentException("seconds must be a number from 0 up");
         }
-        if (seconds < 1) {
-            return new GuessTimeEstimate(assumptions, Wording.LESS_THAN, 1, Unit.SECONDS);
+        if (seconds < MINUTE) {
+            return new GuessTimeEstimate(assumptions, Wording.LESS_THAN, 1, Unit.MINUTES);
         }
         final Unit unit;
         final double value;
-        if (seconds < MINUTE) {
-            unit = Unit.SECONDS;
-            value = seconds;
-        } else if (seconds < HOUR) {
+        // What one of value stands for, in the unit: 1000 for thousands of years.
+        double scale = 1;
+        if (seconds < HOUR) {
             unit = Unit.MINUTES;
             value = seconds / MINUTE;
         } else if (seconds < DAY) {
@@ -110,8 +112,9 @@ public final class GuessTimeEstimate {
             unit = Unit.YEARS;
             value = seconds / YEAR;
         } else if (seconds < 1e6 * YEAR) {
-            unit = Unit.THOUSANDS_OF_YEARS;
+            unit = Unit.YEARS;
             value = seconds / YEAR / 1e3;
+            scale = 1e3;
         } else if (seconds < 1e9 * YEAR) {
             unit = Unit.MILLIONS_OF_YEARS;
             value = seconds / YEAR / 1e6;
@@ -122,7 +125,9 @@ public final class GuessTimeEstimate {
             return new GuessTimeEstimate(
                     assumptions, Wording.MORE_THAN, 1000, Unit.BILLIONS_OF_YEARS);
         }
-        return new GuessTimeEstimate(assumptions, Wording.ABOUT, twoFiguresDown(value), unit);
+        final double amount = scale == 1
+                ? twoFiguresDown(value) : Math.rint(twoFiguresDown(value) * scale);
+        return new GuessTimeEstimate(assumptions, Wording.ABOUT, amount, unit);
     }
 
     // value is from 1 to below 1000.

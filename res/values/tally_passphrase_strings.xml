@@ -92,32 +92,37 @@
     <string name="tally_lock_saving">Saving…</string>
 
     <!-- The one strength row under a generated passphrase or PIN: %1$s is a time such as
-         "about 110 billion years". It has to say that this is an estimate, and to fit one line.
+         "about 3.4 billion years". It has to say that this is an estimate, and to fit one line.
          Tapping it opens the details. [CHAR LIMIT=50] -->
-    <string name="tally_strength_line">Estimate: <xliff:g id="time" example="about 110 billion years">%1$s</xliff:g> to guess</string>
+    <string name="tally_strength_line">Estimate: <xliff:g id="time" example="about 3.4 billion years">%1$s</xliff:g> to guess</string>
     <!-- Title of the details behind the strength line. [CHAR LIMIT=40] -->
     <string name="tally_strength_details_title">How this is estimated</string>
-    <!-- Details: the exact strength, %1$s a number such as 77.5. [CHAR LIMIT=NONE] -->
-    <string name="tally_strength_details_bits">Exactly <xliff:g id="bits" example="77.5">%1$s</xliff:g> bits. Each bit doubles the guesses needed.</string>
-    <!-- Details: what every estimate assumes: %1$s machines (1,000), %2$s guesses a second each
-         (30). [CHAR LIMIT=NONE] -->
-    <string name="tally_strength_assumptions">These are estimates, not promises. They assume the phone\'s storage was copied and its secure area broken. The attacker guesses with <xliff:g id="machines" example="1,000">%1$s</xliff:g> high-end graphics cards, <xliff:g id="rate" example="30">%2$s</xliff:g> guesses a second each.</string>
-    <!-- Details: heading and lines of the comparison. %1$s or %2$s is a time such as "about 16
-         seconds". "At best": a PIN a person picks is easier to guess than a random one.
-         [CHAR LIMIT=NONE] -->
-    <string name="tally_compare_heading">On the same assumptions:</string>
-    <string name="tally_compare_pin6">6-digit PIN, at best: <xliff:g id="time">%1$s</xliff:g></string>
+    <!-- Details: what every estimate rests on, four short sentences shown as four paragraphs.
+         The first: whom the estimate is about. [CHAR LIMIT=NONE] -->
+    <string name="tally_strength_caveat_attacker">Rough estimates for someone who copied the phone\'s storage and broke its secure area. Until then, they get few tries.</string>
+    <!-- The second: the assumed rate. %1$s guesses a second (1,000,000), %2$s graphics cards
+         (10,000), %3$s times faster (1,000). [CHAR LIMIT=NONE] -->
+    <string name="tally_strength_caveat_rate">They assume <xliff:g id="rate" example="1,000,000">%1$s</xliff:g> guesses a second: over <xliff:g id="cards" example="10,000">%2$s</xliff:g> top graphics cards today. A government\'s purpose-built machines could be <xliff:g id="factor" example="1,000">%3$s</xliff:g> times faster.</string>
+    <!-- The third: only for secrets the phone picked. [CHAR LIMIT=NONE] -->
+    <string name="tally_strength_caveat_random">They hold only for a passphrase or PIN the phone picked at random. Your own can be far easier to guess.</string>
+    <!-- The fourth: an average, and it shrinks. [CHAR LIMIT=NONE] -->
+    <string name="tally_strength_caveat_average">The times are averages: an attacker can get lucky, and computers get faster every year.</string>
+    <!-- Details: heading and lines of the comparison. Every line must fit one line of the
+         dialog, about 38 characters. The time is "seconds", or such as "about 5.7 days".
+         The heading says that the PINs and words are random ones, so the lines need not.
+         [CHAR LIMIT=38] -->
+    <string name="tally_compare_heading">If picked at random:</string>
+    <string name="tally_compare_pin6">6-digit PIN: <xliff:g id="time">%1$s</xliff:g></string>
     <string name="tally_compare_words"><xliff:g id="words" example="6">%1$d</xliff:g> words: <xliff:g id="time">%2$s</xliff:g></string>
-    <string name="tally_compare_random_pin">20-digit PIN: <xliff:g id="time">%1$s</xliff:g></string>
+    <!-- One line for two numbers of words with the same time, such as "7–8 words". -->
+    <string name="tally_compare_words_range"><xliff:g id="words" example="7">%1$d</xliff:g>–<xliff:g id="more_words" example="8">%2$d</xliff:g> words: <xliff:g id="time">%3$s</xliff:g></string>
+    <string name="tally_compare_random_pin"><xliff:g id="digits" example="20">%1$d</xliff:g>-digit PIN: <xliff:g id="time">%2$s</xliff:g></string>
 
-    <!-- An estimated time to guess. Always with "about", "less than" or "more than": it is an
-         estimate. # is a number of two figures such as 4.6, 15 or 190. [CHAR LIMIT=NONE] -->
-    <string name="tally_guess_time_less_than_second">less than 1 second</string>
+    <!-- An estimated time to guess. Always with "about" or "more than": it is an estimate.
+         # is a number of two figures such as 4.6, 15, 190 or, for years, 450,000. Anything
+         under a minute is "seconds", with no number. [CHAR LIMIT=NONE] -->
+    <string name="tally_guess_time_under_minute">seconds</string>
     <string name="tally_guess_time_more_than_trillion">more than a trillion years</string>
-    <string name="tally_guess_time_seconds">{count, plural,
-        =1      {about # second}
-        other   {about # seconds}
-        }</string>
     <string name="tally_guess_time_minutes">{count, plural,
         =1      {about # minute}
         other   {about # minutes}
@@ -133,9 +138,6 @@
     <string name="tally_guess_time_years">{count, plural,
         =1      {about # year}
         other   {about # years}
-        }</string>
-    <string name="tally_guess_time_thousand_years">{count, plural,
-        other   {about # thousand years}
         }</string>
     <string name="tally_guess_time_million_years">{count, plural,
         other   {about # million years}

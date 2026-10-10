@@ -22,7 +22,6 @@ import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.LockscreenCredential;
 import com.android.settings.R;
 import com.android.settings.password.passphrase.GeneratedSetupState.Step;
-import com.android.settings.password.passphrase.StrengthComparison.Choice;
 
 import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
@@ -322,14 +321,8 @@ public final class GeneratedCredentialPanel {
         if (!mSecret.hasSecret()) {
             return;
         }
-        final String details = mIsPassphrase
-                ? LockStrengthText.details(mContext, mSecret.entropyBits(), Choice.PIN_6_DIGITS,
-                        Choice.WORDS_5, Choice.WORDS_6, Choice.WORDS_7, Choice.WORDS_8,
-                        Choice.RANDOM_PIN_20)
-                : LockStrengthText.details(mContext, mSecret.entropyBits(),
-                        Choice.PIN_6_DIGITS, Choice.WORDS_5, Choice.WORDS_6,
-                        Choice.RANDOM_PIN_20);
-        InfoDialog.show(mDialogs, TAG_DETAILS, R.string.tally_strength_details_title, details);
+        InfoDialog.show(mDialogs, TAG_DETAILS, R.string.tally_strength_details_title,
+                LockStrengthText.details(mContext));
     }
 
     private void hide() {
