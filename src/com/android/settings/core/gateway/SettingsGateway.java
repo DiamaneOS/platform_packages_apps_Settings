@@ -378,6 +378,7 @@ public class SettingsGateway {
             StorageDashboardFragment.class.getName(),
             SystemDashboardFragment.class.getName(),
             NetworkDashboardFragment.class.getName(),
+            com.android.settings.network.DownloadServersFragment.class.getName(),
             ConnectedDeviceDashboardFragment.class.getName(),
             UsbDetailsFragment.class.getName(),
             AppDashboardFragment.class.getName(),
