@@ -5,9 +5,8 @@
 package com.android.settings.password.passphrase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
-
-import com.android.settings.password.passphrase.GuessTime.Scale;
 
 import org.junit.Test;
 
@@ -128,7 +127,7 @@ public class CredentialStrengthTest {
         final double seconds = CredentialStrength.secondsToGuess(5000, FAST_GUESSES);
 
         assertEquals(Double.POSITIVE_INFINITY, seconds, 0.0);
-        assertEquals(Scale.BEYOND_BILLIONS_OF_YEARS, GuessTime.fromSeconds(seconds).scale);
+        assertTime("MORE_THAN 1000.0 BILLIONS_OF_YEARS", 5000, FAST_GUESSES);
     }
 
     @Test
@@ -141,40 +140,42 @@ public class CredentialStrengthTest {
                 () -> CredentialStrength.secondsToGuess(Double.POSITIVE_INFINITY, FAST_GUESSES));
     }
 
-    private static void assertTime(Scale scale, int amount, double bits,
+    private static void assertTime(String expected, double bits,
             GuessingAssumptions assumptions) {
-        final GuessTime time = CredentialStrength.timeToGuess(bits, assumptions);
-        assertEquals(scale, time.scale);
-        assertEquals(amount, time.amount);
+        final GuessTimeEstimate estimate =
+                CredentialStrength.estimateTimeToGuess(bits, assumptions);
+        assertEquals(expected,
+                estimate.describe((wording, amount, unit) -> wording + " " + amount + " " + unit));
+        assertSame(assumptions, estimate.assumptions);
     }
 
     @Test
-    public void timeToGuess_passphrases() {
+    public void estimateTimeToGuess_passphrases() {
         // Worked by hand from seconds = 7772^words / 2 / guesses per second, 31,557,600 seconds
-        // to the year, rounded down to one figure.
-        assertTime(Scale.THOUSANDS_OF_YEARS, 2, 5 * BITS_PER_WORD, FAST_GUESSES);   // 2,995
-        assertTime(Scale.MILLIONS_OF_YEARS, 10, 5 * BITS_PER_WORD, SLOW_GUESSES);   // 1.498e7
-        assertTime(Scale.MILLIONS_OF_YEARS, 20, 6 * BITS_PER_WORD, FAST_GUESSES);   // 2.328e7
-        assertTime(Scale.BILLIONS_OF_YEARS, 100, 6 * BITS_PER_WORD, SLOW_GUESSES);  // 1.164e11
-        assertTime(Scale.BILLIONS_OF_YEARS, 100, 7 * BITS_PER_WORD, FAST_GUESSES);  // 1.809e11
-        assertTime(Scale.BEYOND_BILLIONS_OF_YEARS, 0, 7 * BITS_PER_WORD, SLOW_GUESSES);
-        assertTime(Scale.BEYOND_BILLIONS_OF_YEARS, 0, 8 * BITS_PER_WORD, FAST_GUESSES);
+        // to the year, rounded down to two figures.
+        assertTime("ABOUT 2.9 THOUSANDS_OF_YEARS", 5 * BITS_PER_WORD, FAST_GUESSES);  // 2,995
+        assertTime("ABOUT 14.0 MILLIONS_OF_YEARS", 5 * BITS_PER_WORD, SLOW_GUESSES);  // 1.498e7
+        assertTime("ABOUT 23.0 MILLIONS_OF_YEARS", 6 * BITS_PER_WORD, FAST_GUESSES);  // 2.328e7
+        assertTime("ABOUT 110.0 BILLIONS_OF_YEARS", 6 * BITS_PER_WORD, SLOW_GUESSES); // 1.164e11
+        assertTime("ABOUT 180.0 BILLIONS_OF_YEARS", 7 * BITS_PER_WORD, FAST_GUESSES); // 1.809e11
+        assertTime("MORE_THAN 1000.0 BILLIONS_OF_YEARS", 7 * BITS_PER_WORD, SLOW_GUESSES);
+        assertTime("MORE_THAN 1000.0 BILLIONS_OF_YEARS", 8 * BITS_PER_WORD, FAST_GUESSES);
     }
 
     @Test
-    public void timeToGuess_pins() {
+    public void estimateTimeToGuess_pins() {
         final GuessingAssumptions oneFastMachine = new GuessingAssumptions(1 / 1.5e5, 1, 0.5);
         final GuessingAssumptions oneSlowMachine = new GuessingAssumptions(1 / 30.0, 1, 0.5);
 
         // 6 digits: 500,000 guesses on average.
-        assertTime(Scale.UNDER_A_SECOND, 0, 6 * BITS_PER_DIGIT, FAST_GUESSES);      // 0.003 s
-        assertTime(Scale.SECONDS, 3, 6 * BITS_PER_DIGIT, oneFastMachine);           // 3.3 s
-        assertTime(Scale.SECONDS, 10, 6 * BITS_PER_DIGIT, SLOW_GUESSES);            // 16.7 s
-        assertTime(Scale.HOURS, 4, 6 * BITS_PER_DIGIT, oneSlowMachine);             // 4.6 h
+        assertTime("LESS_THAN 1.0 SECONDS", 6 * BITS_PER_DIGIT, FAST_GUESSES);        // 0.003 s
+        assertTime("ABOUT 3.3 SECONDS", 6 * BITS_PER_DIGIT, oneFastMachine);          // 3.33 s
+        assertTime("ABOUT 16.0 SECONDS", 6 * BITS_PER_DIGIT, SLOW_GUESSES);           // 16.7 s
+        assertTime("ABOUT 4.6 HOURS", 6 * BITS_PER_DIGIT, oneSlowMachine);            // 4.63 h
         // 12, 16 and 20 digits at 30,000 guesses a second.
-        assertTime(Scale.DAYS, 100, 12 * BITS_PER_DIGIT, SLOW_GUESSES);             // 193 days
-        assertTime(Scale.THOUSANDS_OF_YEARS, 5, 16 * BITS_PER_DIGIT, SLOW_GUESSES); // 5.3e3
-        assertTime(Scale.MILLIONS_OF_YEARS, 50, 20 * BITS_PER_DIGIT, SLOW_GUESSES); // 5.3e7
+        assertTime("ABOUT 190.0 DAYS", 12 * BITS_PER_DIGIT, SLOW_GUESSES);            // 192.9
+        assertTime("ABOUT 5.2 THOUSANDS_OF_YEARS", 16 * BITS_PER_DIGIT, SLOW_GUESSES); // 5,281
+        assertTime("ABOUT 52.0 MILLIONS_OF_YEARS", 20 * BITS_PER_DIGIT, SLOW_GUESSES); // 5.28e7
     }
 
     @Test

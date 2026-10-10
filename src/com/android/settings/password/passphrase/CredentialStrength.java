@@ -12,7 +12,8 @@ import java.math.MathContext;
  * Strength figures for generated credentials.
  *
  * <p>Entropy is exact, because a generated credential is one of a known number of equally likely
- * values. The time to guess is an estimate that is only as good as the assumptions passed in.
+ * values. The time to guess is an estimate that is only as good as the assumptions passed in. It
+ * is only given out as a {@link GuessTimeEstimate}, which cannot be shown as a bare number.
  *
  * <p>Nothing here rates a credential a person chose: see {@link ChosenPassphraseRater}.
  */
@@ -67,8 +68,11 @@ public final class CredentialStrength {
     /**
      * Estimated seconds an attacker needs to guess a credential of the given entropy, under the
      * given assumptions. Can be infinite when the number is too large for a double.
+     *
+     * <p>Not public: a bare number of seconds invites a display without "about". Screens use
+     * {@link #estimateTimeToGuess}.
      */
-    public static double secondsToGuess(double entropyBits, GuessingAssumptions assumptions) {
+    static double secondsToGuess(double entropyBits, GuessingAssumptions assumptions) {
         if (!(entropyBits >= 0) || Double.isInfinite(entropyBits)) {
             throw new IllegalArgumentException("entropy must be a number from 0 up");
         }
@@ -80,9 +84,15 @@ public final class CredentialStrength {
         return Math.pow(2, log2Seconds);
     }
 
-    /** {@link #secondsToGuess} on the coarse scale that is fit to show. */
-    public static GuessTime timeToGuess(double entropyBits, GuessingAssumptions assumptions) {
-        return GuessTime.fromSeconds(secondsToGuess(entropyBits, assumptions));
+    /**
+     * Estimates the time an attacker needs to guess a credential of the given entropy:
+     * {@code 2^entropyBits} values, of which the assumed share is tried at the assumed speed.
+     *
+     * @return the estimate on a coarse scale, with the wording it has to be shown with
+     */
+    public static GuessTimeEstimate estimateTimeToGuess(double entropyBits,
+            GuessingAssumptions assumptions) {
+        return GuessTimeEstimate.of(secondsToGuess(entropyBits, assumptions), assumptions);
     }
 
     private static double log2(double value) {
