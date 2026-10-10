@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/download_servers_title">
+    <ListPreference android:key="download_server" android:persistent="false"
+        android:title="@string/download_server_title"
+        android:entries="@array/download_server_entries"
+        android:entryValues="@array/download_server_values"
+        app:useSimpleSummaryProvider="true" />
+    <SwitchPreferenceCompat android:key="download_fallback" android:persistent="false"
+        android:title="@string/download_fallback_title"
+        android:summary="@string/download_fallback_summary" />
+    <com.android.settingslib.widget.FooterPreference android:key="download_scope"
+        android:title="@string/download_servers_scope" android:selectable="false" />
+    <com.android.settingslib.widget.FooterPreference android:key="download_status"
+        android:selectable="false" app:isPreferenceVisible="false" />
+</PreferenceScreen>

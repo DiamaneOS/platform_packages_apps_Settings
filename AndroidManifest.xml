@@ -289,6 +289,18 @@
                 android:value="com.android.settings.shortcut.CreateShortcut" />
         </activity>
 
+        <activity android:name=".Settings$DownloadServersActivity"
+            android:label="@string/download_servers_title" android:exported="true">
+            <intent-filter>
+                <action android:name="de.diamaneos.settings.DOWNLOAD_SERVERS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
+                android:value="com.android.settings.network.DownloadServersFragment" />
+            <meta-data android:name="com.android.settings.HIGHLIGHT_MENU_KEY"
+                android:value="@string/menu_key_network" />
+        </activity>
+
         <!-- Wireless Controls -->
         <activity
             android:name=".Settings$NetworkDashboardActivity"

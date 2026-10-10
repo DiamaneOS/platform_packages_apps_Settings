@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="download_servers_title">Download servers</string>
+    <string name="download_servers_summary">OS and Apps downloads</string>
+    <string name="download_server_title">Preferred server</string>
+    <string name="download_fallback_title">Use the other server if unavailable</string>
+    <string name="download_fallback_summary">Off by default. Try the other server if a connection fails or the server is temporarily unavailable.</string>
+    <string name="download_servers_scope">Europe is the default. The selected server sees your IP address for OS and Apps downloads. Canada is optional. Enabling fallback lets the other region receive failed requests and see your IP address.</string>
+    <string name="download_servers_main_user_only">Change these settings from the main user.</string>
+    <string name="download_servers_unavailable">Download server settings are unavailable. Try opening this page again.</string>
+    <string-array name="download_server_entries">
+        <item>Europe (primary)</item>
+        <item>Canada</item>
+    </string-array>
+    <string-array name="download_server_values" translatable="false">
+        <item>primary_eu</item>
+        <item>canada</item>
+    </string-array>
+</resources>
