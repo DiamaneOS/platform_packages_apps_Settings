@@ -16,8 +16,8 @@ import java.util.Random;
  * draw, and a draw that is thrown away tells nothing about the next one. Nothing is reduced with
  * a remainder, so there is no modulo bias.
  *
- * <p>For the 7,776 words of the EFF large list: 13 bits, 8,192 values, 416 thrown away, so about
- * one draw in twenty is repeated.
+ * <p>For the 7,772 words a passphrase is drawn from: 13 bits, 8,192 values, 420 thrown away, so
+ * about one draw in twenty is repeated.
  */
 final class UniformIndex {
 

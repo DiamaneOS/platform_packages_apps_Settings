@@ -16,7 +16,8 @@ import java.util.Random;
 
 public class UniformIndexTest {
 
-    private static final int EFF = WordList.EFF_LARGE_SIZE;
+    // The number of words a passphrase is drawn from.
+    private static final int EFF = WordList.EFF_LARGE_LETTERS_ONLY_SIZE;
 
     /** Hands out every possible content of the buffer exactly once, then stops the test loop. */
     private static final class EveryValueOnce extends Random {
@@ -60,13 +61,14 @@ public class UniformIndexTest {
         final long[] counts = countOverAllRandomBytes(EFF);
 
         // Two bytes, 65,536 values. 13 bits are kept, so each index is hit by 8 values, and
-        // the 416 * 8 values from 7,776 up are thrown away.
+        // the 420 * 8 values from 7,772 up are thrown away.
         long accepted = 0;
         for (long count : counts) {
             assertEquals(8, count);
             accepted += count;
         }
-        assertEquals(65536 - 416 * 8, accepted);
+        assertEquals(7772, counts.length);
+        assertEquals(65536 - 420 * 8, accepted);
     }
 
     @Test
@@ -140,7 +142,7 @@ public class UniformIndexTest {
     @Test
     public void uniformityCheck_catchesModuloBias() {
         // The same sample size with the mistake this class exists to avoid: 13 random bits
-        // reduced with a remainder, which makes the first 416 words twice as likely.
+        // reduced with a remainder, which makes the first 420 words twice as likely.
         final Random random = new SeededRandom(20261010);
         final byte[] buffer = new byte[2];
         final long[] counts = new long[EFF];

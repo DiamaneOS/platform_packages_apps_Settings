@@ -27,7 +27,7 @@ public final class CredentialStrength {
      * the generator can return, each equally likely.
      *
      * @param words number of words in the phrase
-     * @param listSize number of words in the list
+     * @param listSize number of words the phrase is drawn from
      * @param rejected number of word sequences the generator never returns, see
      *     {@link PassphraseFloor#countRejected}
      */

@@ -21,20 +21,27 @@ import org.junit.Test;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class PassphraseGeneratorTest {
 
     private static final int SEED = 20261010;
 
+    // The list as loaded, and the 7,772 of its words that are drawn.
     private WordList mEff;
-    private Map<String, Integer> mEffIndex;
+    private WordList mDrawn;
+    private Map<String, Integer> mDrawnIndex;
 
     @Before
     public void setUp() throws Exception {
         mEff = PassphraseTestUtils.effLarge();
-        mEffIndex = indexOf(mEff);
+        mDrawn = mEff.lettersOnly();
+        mDrawnIndex = indexOf(mDrawn);
     }
 
     private static Map<String, Integer> indexOf(WordList list) {
@@ -45,8 +52,9 @@ public class PassphraseGeneratorTest {
         return index;
     }
 
+    /** What the random source must give for {@code word} to be drawn. */
     private int eff(String word) {
-        return mEffIndex.get(word);
+        return mDrawnIndex.get(word);
     }
 
     /** The indices of the words of a phrase. Fails if it is not words joined by single spaces. */
@@ -60,6 +68,94 @@ public class PassphraseGeneratorTest {
             indices[i] = index.get(words[i]);
         }
         return indices;
+    }
+
+    @Test
+    public void drawnWords_areTheListWithoutTheFourHyphenWords() {
+        final WordList drawn =
+                new PassphraseGenerator(mEff, new SeededRandom(SEED)).drawnWords();
+        final Set<String> kept = new HashSet<>();
+        for (int i = 0; i < drawn.size(); i++) {
+            kept.add(drawn.word(i));
+        }
+        final Set<String> leftOut = new TreeSet<>();
+        for (int i = 0; i < mEff.size(); i++) {
+            if (!kept.contains(mEff.word(i))) {
+                leftOut.add(mEff.word(i));
+            }
+        }
+
+        assertEquals(new TreeSet<>(Arrays.asList("drop-down", "felt-tip", "t-shirt", "yo-yo")),
+                leftOut);
+        assertEquals(7772, kept.size());
+        assertEquals(7772, drawn.size());
+    }
+
+    private static void assertLowercaseLettersAndSingleSpaces(Passphrase phrase) {
+        final char[] chars = phrase.chars();
+        int spaces = 0;
+        for (int i = 0; i < chars.length; i++) {
+            final char c = chars[i];
+            if (c == ' ') {
+                spaces++;
+                // Not at either end, and not after another space.
+                assertTrue(i > 0 && i < chars.length - 1 && chars[i - 1] != ' ');
+            } else {
+                assertTrue("character " + (int) c, c >= 'a' && c <= 'z');
+            }
+        }
+        assertEquals(phrase.wordCount() - 1, spaces);
+    }
+
+    @Test
+    public void generate_isLowercaseLettersAndSingleSpacesOnly() {
+        final PassphraseGenerator seeded = new PassphraseGenerator(mEff, new SeededRandom(SEED));
+        final PassphraseGenerator secure = new PassphraseGenerator(mEff, new SecureRandom());
+
+        for (int words = 5; words <= 8; words++) {
+            for (int i = 0; i < 50_000; i++) {
+                try (Passphrase phrase = seeded.generate(words)) {
+                    assertLowercaseLettersAndSingleSpaces(phrase);
+                }
+            }
+            for (int i = 0; i < 5_000; i++) {
+                try (Passphrase phrase = secure.generate(words)) {
+                    assertLowercaseLettersAndSingleSpaces(phrase);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void generate_listMostlyOfHyphenWords_neverReturnsOne() {
+        final WordList list = WordList.of("drop-down", "felt-tip", "abdomen", "t-shirt", "yo-yo",
+                "zoology", "x-ray", "abacus");
+        final PassphraseGenerator generator =
+                new PassphraseGenerator(list, new SeededRandom(SEED));
+        final Map<String, Integer> index = indexOf(generator.drawnWords());
+        assertEquals(3, generator.drawnWords().size());
+
+        final long[] counts = new long[3];
+        for (int i = 0; i < 30_000; i++) {
+            try (Passphrase phrase = generator.generate(5)) {
+                assertLowercaseLettersAndSingleSpaces(phrase);
+                for (int word : wordsOf(phrase, index)) {
+                    counts[word]++;
+                }
+            }
+        }
+        // The three words that are left are drawn equally often.
+        PassphraseTestUtils.assertUniform("words left", counts);
+    }
+
+    @Test
+    public void generate_lastIndex_isTheLastLetterWord() {
+        final ScriptedRandom random = new ScriptedRandom(7771, 7771, 7771, 7771, 0);
+        final PassphraseGenerator generator = new PassphraseGenerator(mEff, random);
+
+        try (Passphrase phrase = generator.generate(5)) {
+            assertArrayEquals("zoom zoom zoom zoom abacus".toCharArray(), phrase.chars());
+        }
     }
 
     @Test
@@ -94,8 +190,8 @@ public class PassphraseGeneratorTest {
                     assertTrue(PassphraseFloor.isMet(phrase.chars(), phrase.length()));
                     assertTrue(phrase.length() >= 20);
                     int letters = 0;
-                    for (int index : wordsOf(phrase, mEffIndex)) {
-                        letters += mEff.word(index).length();
+                    for (int index : wordsOf(phrase, mDrawnIndex)) {
+                        letters += mDrawn.word(index).length();
                     }
                     assertEquals(letters + words - 1, phrase.length());
                 }
@@ -110,8 +206,8 @@ public class PassphraseGeneratorTest {
         for (int words = 5; words <= 8; words++) {
             try (Passphrase first = generator.generate(words);
                     Passphrase second = generator.generate(words)) {
-                wordsOf(first, mEffIndex);
-                wordsOf(second, mEffIndex);
+                wordsOf(first, mDrawnIndex);
+                wordsOf(second, mDrawnIndex);
                 assertTrue(PassphraseFloor.isMet(first.chars(), first.length()));
                 // Two phrases being equal has a chance of 2^-64 or less.
                 assertNotEquals(new String(first.chars()), new String(second.chars()));
@@ -134,10 +230,11 @@ public class PassphraseGeneratorTest {
         // 100 phrases expected per word and position.
         final PassphraseGenerator generator = new PassphraseGenerator(mEff, new SeededRandom(SEED));
         final int words = PassphraseGenerator.DEFAULT_WORDS;
-        final long[][] counts = new long[words][mEff.size()];
-        for (int i = 0; i < mEff.size() * 100; i++) {
+        final long[][] counts = new long[words][mDrawn.size()];
+        assertEquals(7772, mDrawn.size());
+        for (int i = 0; i < mDrawn.size() * 100; i++) {
             try (Passphrase phrase = generator.generate(words)) {
-                final int[] indices = wordsOf(phrase, mEffIndex);
+                final int[] indices = wordsOf(phrase, mDrawnIndex);
                 for (int position = 0; position < words; position++) {
                     counts[position][indices[position]]++;
                 }
@@ -154,12 +251,12 @@ public class PassphraseGeneratorTest {
         // Five words of three letters and four spaces are 19 characters: under the floor.
         final ScriptedRandom random = new ScriptedRandom(
                 eff("aim"), eff("art"), eff("zap"), eff("zen"), eff("zit"),
-                eff("abacus"), eff("zoom"), eff("abdomen"), eff("yo-yo"), eff("zoology"));
+                eff("abacus"), eff("zoom"), eff("abdomen"), eff("yoyo"), eff("zoology"));
         final PassphraseGenerator generator = new PassphraseGenerator(mEff, random);
 
         try (Passphrase phrase = generator.generate(5)) {
             // Not one word of the first draw is kept.
-            assertArrayEquals("abacus zoom abdomen yo-yo zoology".toCharArray(), phrase.chars());
+            assertArrayEquals("abacus zoom abdomen yoyo zoology".toCharArray(), phrase.chars());
         }
         assertTrue(random.isUsedUp());
     }
@@ -192,9 +289,9 @@ public class PassphraseGeneratorTest {
 
     @Test
     public void generate_indexAtOrAboveTheListSize_isThrownAway() {
-        // 7,776 to 8,191 are not words. They are skipped one by one, not mapped onto words.
+        // 7,772 to 8,191 are not words. They are skipped one by one, not mapped onto words.
         final ScriptedRandom random = new ScriptedRandom(
-                7776, eff("abacus"), 8191, eff("zoom"), eff("abdomen"), 8000, 7999,
+                7772, eff("abacus"), 8191, eff("zoom"), eff("abdomen"), 8000, 7775,
                 eff("zoology"), eff("aim"));
         final PassphraseGenerator generator = new PassphraseGenerator(mEff, random);
 
@@ -290,7 +387,7 @@ public class PassphraseGeneratorTest {
     @Test
     public void generate_wipesItsWorkingMemory() {
         for (int words = 5; words <= 8; words++) {
-            final Scratch scratch = new Scratch(mEff, words);
+            final Scratch scratch = new Scratch(mDrawn, words);
             assertEquals(words, scratch.indices.length);
             assertEquals(2, scratch.random.length);
             assertEquals(words * 9 + words - 1, scratch.chars.length);
@@ -300,7 +397,7 @@ public class PassphraseGeneratorTest {
             try (Passphrase phrase = generator.generate(words, scratch)) {
                 assertWiped(scratch);
                 // The phrase itself is a separate array and is still there.
-                wordsOf(phrase, mEffIndex);
+                wordsOf(phrase, mDrawnIndex);
             }
         }
     }
@@ -375,21 +472,21 @@ public class PassphraseGeneratorTest {
     public void entropyBits_effList() {
         final PassphraseGenerator generator = new PassphraseGenerator(mEff, new SeededRandom(SEED));
 
-        // words * log2(7776), less what the floor costs. Only five words lose anything that
-        // shows in a double: 1.88e-10 bits.
-        assertEquals(64.62406251784077, generator.entropyBits(5), 1e-12);
-        assertEquals(77.54887502163469, generator.entropyBits(6), 1e-12);
-        assertEquals(90.47368752524047, generator.entropyBits(7), 1e-12);
-        assertEquals(103.39850002884625, generator.entropyBits(8), 1e-12);
+        // words * log2(7772), less what the floor costs. Only five words lose anything that
+        // shows in a double: 1.89e-10 bits.
+        assertEquals(64.6203509277381, generator.entropyBits(5), 1e-12);
+        assertEquals(77.5444211135121, generator.entropyBits(6), 1e-12);
+        assertEquals(90.4684912990974, generator.entropyBits(7), 1e-12);
+        assertEquals(103.3925614846828, generator.entropyBits(8), 1e-12);
     }
 
     @Test
     public void rejectionLossBits_effList() {
         final PassphraseGenerator generator = new PassphraseGenerator(mEff, new SeededRandom(SEED));
 
-        assertEquals(1.88132119e-10, generator.rejectionLossBits(5), 1e-18);
-        assertEquals(7.087072e-20, generator.rejectionLossBits(6), 1e-25);
-        assertEquals(2.691074e-23, generator.rejectionLossBits(7), 1e-28);
-        assertEquals(1.116253e-26, generator.rejectionLossBits(8), 1e-31);
+        assertEquals(1.88616744e-10, generator.rejectionLossBits(5), 1e-18);
+        assertEquals(7.067745e-20, generator.rejectionLossBits(6), 1e-25);
+        assertEquals(2.690087e-23, generator.rejectionLossBits(7), 1e-28);
+        assertEquals(1.118094e-26, generator.rejectionLossBits(8), 1e-31);
     }
 }

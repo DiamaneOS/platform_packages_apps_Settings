@@ -12,14 +12,18 @@ import java.util.Random;
  * Makes random passphrases: {@link #MIN_WORDS} to {@link #MAX_WORDS} words from a
  * {@link WordList}, each drawn independently and uniformly, joined by single spaces.
  *
+ * <p><b>Which words.</b> Only words made of a to z: {@link WordList#lettersOnly()}. Of the EFF
+ * list that leaves out drop-down, felt-tip, t-shirt and yo-yo, and 7,772 words are drawn, each
+ * as likely as any other. A phrase is lowercase letters and single spaces, nothing else.
+ *
  * <p><b>Why a space.</b> It is one tap on the largest key of the lock screen keyboard, where a
- * hyphen is on the symbols page. Four words of the EFF list contain a hyphen themselves, so a
- * hyphen could not mark where words end. The separators also count toward the length floor.
+ * hyphen is on the symbols page. With a space, a phrase never needs that page. The separators
+ * also count toward the length floor.
  *
  * <p><b>The floor.</b> A phrase that does not meet {@link PassphraseFloor} is thrown away and all
  * of its words are drawn again. Only a whole new draw keeps every acceptable phrase equally
  * likely; replacing one word or adding one would favour some phrases. With the EFF list this
- * happens to about one 5-word phrase in 7.7 billion (five words of three letters make 19
+ * happens to about one 5-word phrase in 7.6 billion (five words of three letters make 19
  * characters) and costs 1.9e-10 bits; see {@link #rejectionLossBits}.
  *
  * <p><b>Secret handling.</b> The phrase is built in char arrays. Every array that held a part of
@@ -69,11 +73,12 @@ public final class PassphraseGenerator {
     // floor, where giving up beats looping forever.
     private static final int MAX_DRAWS = 100;
 
+    // The words that are drawn: those of the list given that are made of a to z only.
     private final WordList mList;
     private final Random mRandom;
 
     /**
-     * @param list the words to draw from
+     * @param list the word list; its words with a character other than a to z are never drawn
      * @param random the source of randomness; {@code new SecureRandom()} is the right one
      */
     public PassphraseGenerator(WordList list, SecureRandom random) {
@@ -82,8 +87,13 @@ public final class PassphraseGenerator {
 
     /** For tests, which need a source that repeats. Never for a phrase that is used. */
     PassphraseGenerator(WordList list, Random random) {
-        mList = list;
+        mList = list.lettersOnly();
         mRandom = random;
+    }
+
+    /** The words a phrase is drawn from, each equally likely. */
+    public WordList drawnWords() {
+        return mList;
     }
 
     /**
@@ -98,7 +108,7 @@ public final class PassphraseGenerator {
 
     /**
      * {@link #generate(int)} with the working memory passed in, so that a test can see that it
-     * is wiped. {@code scratch} must have been made for this list and word count.
+     * is wiped. {@code scratch} must have been made for {@link #drawnWords} and this word count.
      */
     Passphrase generate(int words, Scratch scratch) {
         checkWords(words);
@@ -140,8 +150,8 @@ public final class PassphraseGenerator {
     }
 
     /**
-     * Bits by which {@link #entropyBits} is below {@code words * log2(list size)}, because
-     * phrases under the floor are never returned.
+     * Bits by which {@link #entropyBits} is below {@code words * log2(number of drawn words)},
+     * because phrases under the floor are never returned.
      */
     public double rejectionLossBits(int words) {
         checkWords(words);

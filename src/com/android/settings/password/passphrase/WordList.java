@@ -26,7 +26,8 @@ import java.util.Set;
  * from them in a char array, see {@link PassphraseGenerator}.
  *
  * <p>No word is the start of another word, and no word contains a space. 7,772 words are
- * lowercase a to z only; four contain a hyphen (drop-down, felt-tip, t-shirt, yo-yo).
+ * lowercase a to z only; four contain a hyphen (drop-down, felt-tip, t-shirt, yo-yo). The file
+ * stays the published list. Passphrases are made from {@link #lettersOnly()}.
  */
 public final class WordList {
 
@@ -35,6 +36,9 @@ public final class WordList {
 
     /** Number of words in the EFF large word list: 6^5. */
     public static final int EFF_LARGE_SIZE = 7776;
+
+    /** Number of words of the EFF large word list that are made of a to z only. */
+    public static final int EFF_LARGE_LETTERS_ONLY_SIZE = 7772;
 
     /**
      * SHA-256 of the list as shipped. The file EFF publishes, with a dice number and a tab in
@@ -108,6 +112,22 @@ public final class WordList {
         return new WordList(words);
     }
 
+    /**
+     * The words of this list that have no character other than a to z, in the same order. Of
+     * the EFF large list that is all but drop-down, felt-tip, t-shirt and yo-yo.
+     *
+     * @throws IllegalArgumentException if no word is left
+     */
+    public WordList lettersOnly() {
+        final List<String> words = new ArrayList<>(mWords.length);
+        for (String word : mWords) {
+            if (isLettersOnly(word)) {
+                words.add(word);
+            }
+        }
+        return new WordList(words.toArray(new String[0]));
+    }
+
     /** Number of words. */
     public int size() {
         return mWords.length;
@@ -142,6 +162,15 @@ public final class WordList {
         for (int i = 1; i < length - 1; i++) {
             final char c = word.charAt(i);
             if (!isLetter(c) && c != '-') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isLettersOnly(String word) {
+        for (int i = 0; i < word.length(); i++) {
+            if (!isLetter(word.charAt(i))) {
                 return false;
             }
         }

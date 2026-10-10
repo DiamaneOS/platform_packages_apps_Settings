@@ -149,8 +149,8 @@ public class PassphraseFloorTest {
     }
 
     @Test
-    public void countRejected_effList_matchesASecondWayOfCounting() throws Exception {
-        final WordList list = PassphraseTestUtils.effLarge();
+    public void countRejected_drawnWords_matchesASecondWayOfCounting() throws Exception {
+        final WordList list = PassphraseTestUtils.effLarge().lettersOnly();
 
         for (int words = PassphraseGenerator.MIN_WORDS; words <= PassphraseGenerator.MAX_WORDS;
                 words++) {
@@ -169,17 +169,26 @@ public class PassphraseFloorTest {
     }
 
     @Test
-    public void countRejected_effList_values() throws Exception {
+    public void countRejected_drawnWords_values() throws Exception {
+        final WordList list = PassphraseTestUtils.effLarge().lettersOnly();
+
+        // 82^5 = 3,707,398,432 too short, 4,027 too plain, 592 both.
+        assertEquals(new BigInteger("3707401867"), PassphraseFloor.countRejected(list, 5));
+        assertEquals(BigInteger.valueOf(10797), PassphraseFloor.countRejected(list, 6));
+        assertEquals(BigInteger.valueOf(31939), PassphraseFloor.countRejected(list, 7));
+        assertEquals(BigInteger.valueOf(103173), PassphraseFloor.countRejected(list, 8));
+        // One or two words are never long enough.
+        assertEquals(BigInteger.valueOf(7772), PassphraseFloor.countRejected(list, 1));
+        assertEquals(BigInteger.valueOf(7772).pow(2), PassphraseFloor.countRejected(list, 2));
+    }
+
+    @Test
+    public void countRejected_wholeEffList_values() throws Exception {
+        // With the four hyphen words, which are not drawn: yo-yo is one of the plain ones.
         final WordList list = PassphraseTestUtils.effLarge();
 
-        // 82^5 = 3,707,398,432 too short, 4,058 too plain, 592 both.
         assertEquals(new BigInteger("3707401898"), PassphraseFloor.countRejected(list, 5));
         assertEquals(BigInteger.valueOf(10860), PassphraseFloor.countRejected(list, 6));
-        assertEquals(BigInteger.valueOf(32066), PassphraseFloor.countRejected(list, 7));
-        assertEquals(BigInteger.valueOf(103428), PassphraseFloor.countRejected(list, 8));
-        // One or two words are never long enough.
-        assertEquals(BigInteger.valueOf(7776), PassphraseFloor.countRejected(list, 1));
-        assertEquals(BigInteger.valueOf(7776).pow(2), PassphraseFloor.countRejected(list, 2));
     }
 
     @Test

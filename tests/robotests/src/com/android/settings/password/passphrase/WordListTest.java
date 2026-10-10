@@ -106,9 +106,7 @@ public class WordListTest {
         assertEquals(9, list.longestWord());
     }
 
-    @Test
-    public void shippedList_noWordStartsAnother() throws Exception {
-        final WordList list = PassphraseTestUtils.effLarge();
+    private static void assertNoWordStartsAnother(WordList list) {
         for (int i = 0; i < list.size(); i++) {
             for (int j = 0; j < list.size(); j++) {
                 if (i != j) {
@@ -116,6 +114,76 @@ public class WordListTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void shippedList_noWordStartsAnother() throws Exception {
+        assertNoWordStartsAnother(PassphraseTestUtils.effLarge());
+    }
+
+    @Test
+    public void lettersOnly_leavesOutExactlyTheFourHyphenWords() throws Exception {
+        final WordList all = PassphraseTestUtils.effLarge();
+        final WordList drawn = all.lettersOnly();
+
+        // The words that are kept, in the order of the list, and the words that are not.
+        final Set<String> leftOut = new TreeSet<>();
+        int next = 0;
+        for (int i = 0; i < all.size(); i++) {
+            final String word = all.word(i);
+            if (next < drawn.size() && word.equals(drawn.word(next))) {
+                next++;
+            } else {
+                leftOut.add(word);
+            }
+        }
+
+        assertEquals(drawn.size(), next);
+        assertEquals(new TreeSet<>(Arrays.asList("drop-down", "felt-tip", "t-shirt", "yo-yo")),
+                leftOut);
+        assertEquals(7772, drawn.size());
+        assertEquals(7772, WordList.EFF_LARGE_LETTERS_ONLY_SIZE);
+    }
+
+    @Test
+    public void lettersOnly_everyWordIsLowercaseLettersOnly() throws Exception {
+        final WordList drawn = PassphraseTestUtils.effLarge().lettersOnly();
+        final Set<String> words = new HashSet<>();
+        for (int i = 0; i < drawn.size(); i++) {
+            assertTrue(drawn.word(i), drawn.word(i).matches("[a-z]+"));
+            words.add(drawn.word(i));
+        }
+
+        assertEquals(7772, words.size());
+    }
+
+    @Test
+    public void lettersOnly_wordLengths() throws Exception {
+        final WordList drawn = PassphraseTestUtils.effLarge().lettersOnly();
+        final int[] byLength = new int[10];
+        for (int i = 0; i < drawn.size(); i++) {
+            byLength[drawn.word(i).length()]++;
+        }
+
+        // The four words left out have 5, 7, 8 and 9 characters. Still 82 of three letters.
+        assertArrayEquals(new int[] {0, 0, 0, 82, 467, 927, 1372, 1590, 1778, 1556}, byLength);
+        assertEquals(9, drawn.longestWord());
+    }
+
+    @Test
+    public void lettersOnly_noWordStartsAnother() throws Exception {
+        assertNoWordStartsAnother(PassphraseTestUtils.effLarge().lettersOnly());
+    }
+
+    @Test
+    public void lettersOnly_goesByTheCharactersNotByAListOfWords() {
+        final WordList drawn = WordList.of("ace", "yo-yo", "a-b", "zoom", "x-ray").lettersOnly();
+
+        assertEquals(2, drawn.size());
+        assertEquals("ace", drawn.word(0));
+        assertEquals("zoom", drawn.word(1));
+        assertThrows(IllegalArgumentException.class,
+                () -> WordList.of("yo-yo", "t-shirt").lettersOnly());
     }
 
     @Test

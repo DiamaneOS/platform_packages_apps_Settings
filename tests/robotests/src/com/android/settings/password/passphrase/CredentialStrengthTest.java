@@ -15,8 +15,8 @@ import java.math.BigInteger;
 
 public class CredentialStrengthTest {
 
-    // log2(7776) = 5 * log2(6) = 5 * 2.584962500721156...
-    private static final double BITS_PER_WORD = 12.92481250360578;
+    // log2(7772): a passphrase is drawn from 7,772 words.
+    private static final double BITS_PER_WORD = 12.924070185585345;
     // log2(10)
     private static final double BITS_PER_DIGIT = 3.321928094887362;
 
@@ -32,20 +32,23 @@ public class CredentialStrengthTest {
 
     @Test
     public void passphraseEntropyBits_nothingRejected_isWordsTimesBitsPerWord() {
-        assertEquals(BITS_PER_WORD, CredentialStrength.passphraseEntropyBits(1, 7776, NONE), 1e-12);
-        assertEquals(64.6240625180289, CredentialStrength.passphraseEntropyBits(5, 7776, NONE),
+        assertEquals(BITS_PER_WORD, CredentialStrength.passphraseEntropyBits(1, 7772, NONE), 1e-12);
+        assertEquals(64.6203509279267, CredentialStrength.passphraseEntropyBits(5, 7772, NONE),
                 1e-12);
-        assertEquals(77.5488750216347, CredentialStrength.passphraseEntropyBits(6, 7776, NONE),
+        assertEquals(77.5444211135121, CredentialStrength.passphraseEntropyBits(6, 7772, NONE),
                 1e-12);
-        assertEquals(90.4736875252405, CredentialStrength.passphraseEntropyBits(7, 7776, NONE),
+        assertEquals(90.4684912990974, CredentialStrength.passphraseEntropyBits(7, 7772, NONE),
                 1e-12);
-        assertEquals(103.3985000288462, CredentialStrength.passphraseEntropyBits(8, 7776, NONE),
+        assertEquals(103.3925614846828, CredentialStrength.passphraseEntropyBits(8, 7772, NONE),
                 1e-12);
+        // The whole EFF list would give log2(7776) = 5 * log2(6) a word.
+        assertEquals(5 * 2.584962500721156,
+                CredentialStrength.passphraseEntropyBits(1, 7776, NONE), 1e-12);
     }
 
     @Test
     public void rejectionLossBits_simpleShares() {
-        assertEquals(0.0, CredentialStrength.rejectionLossBits(5, 7776, NONE), 0.0);
+        assertEquals(0.0, CredentialStrength.rejectionLossBits(5, 7772, NONE), 0.0);
         // Half of the phrases gone: one bit. A quarter gone: log2(4/3).
         assertEquals(1.0, CredentialStrength.rejectionLossBits(3, 2, BigInteger.valueOf(4)), 1e-15);
         assertEquals(0.4150374992788438,
@@ -55,34 +58,34 @@ public class CredentialStrengthTest {
     }
 
     @Test
-    public void rejectionLossBits_fiveEffWords() {
-        // 3,707,401,898 of 7776^5 = 28,430,288,029,929,701,376 phrases are never returned.
-        // The share is 1.30403e-10; divided by ln 2 that is 1.88132119e-10 bits.
-        final BigInteger rejected = new BigInteger("3707401898");
+    public void rejectionLossBits_fiveWords() {
+        // 3,707,401,867 of 7772^5 = 28,357,240,052,037,573,632 phrases are never returned.
+        // The share is 1.30739e-10; divided by ln 2 that is 1.88616744e-10 bits.
+        final BigInteger rejected = new BigInteger("3707401867");
 
-        assertEquals(1.88132119e-10, CredentialStrength.rejectionLossBits(5, 7776, rejected),
+        assertEquals(1.88616744e-10, CredentialStrength.rejectionLossBits(5, 7772, rejected),
                 1e-18);
-        assertEquals(64.62406251784077,
-                CredentialStrength.passphraseEntropyBits(5, 7776, rejected), 1e-12);
+        assertEquals(64.6203509277381,
+                CredentialStrength.passphraseEntropyBits(5, 7772, rejected), 1e-12);
     }
 
     @Test
-    public void rejectionLossBits_sixEffWords_isNotRoundedToZero() {
-        // 10,860 of 7776^6: a share of 4.912384e-20, 7.087072e-20 bits.
+    public void rejectionLossBits_sixWords_isNotRoundedToZero() {
+        // 10,797 of 7772^6: a share of 4.898988e-20, 7.067745e-20 bits.
         final double loss =
-                CredentialStrength.rejectionLossBits(6, 7776, BigInteger.valueOf(10860));
+                CredentialStrength.rejectionLossBits(6, 7772, BigInteger.valueOf(10797));
 
-        assertEquals(7.087072e-20, loss, 1e-25);
+        assertEquals(7.067745e-20, loss, 1e-25);
     }
 
     @Test
     public void rejectionLossBits_refusesBadArguments() {
         assertThrows(IllegalArgumentException.class,
-                () -> CredentialStrength.rejectionLossBits(0, 7776, NONE));
+                () -> CredentialStrength.rejectionLossBits(0, 7772, NONE));
         assertThrows(IllegalArgumentException.class,
                 () -> CredentialStrength.rejectionLossBits(5, 0, NONE));
         assertThrows(IllegalArgumentException.class,
-                () -> CredentialStrength.rejectionLossBits(5, 7776, BigInteger.valueOf(-1)));
+                () -> CredentialStrength.rejectionLossBits(5, 7772, BigInteger.valueOf(-1)));
         // Everything rejected leaves nothing to generate.
         assertThrows(IllegalArgumentException.class,
                 () -> CredentialStrength.rejectionLossBits(2, 2, BigInteger.valueOf(4)));
@@ -114,10 +117,10 @@ public class CredentialStrengthTest {
 
     @Test
     public void secondsToGuess_fiveWords() {
-        // 7776^5 / 2 guesses at 1.5e8 a second: 94,767,626,766 seconds, about 3,003 years.
+        // 7772^5 / 2 guesses at 1.5e8 a second: 94,524,133,507 seconds, about 2,995 years.
         final double seconds = CredentialStrength.secondsToGuess(5 * BITS_PER_WORD, FAST_GUESSES);
 
-        assertEquals(94_767_626_766.0, seconds, 10);
+        assertEquals(94_524_133_507.0, seconds, 10);
     }
 
     @Test
@@ -147,13 +150,13 @@ public class CredentialStrengthTest {
 
     @Test
     public void timeToGuess_passphrases() {
-        // Worked by hand from seconds = 7776^words / 2 / guesses per second, 31,557,600 seconds
+        // Worked by hand from seconds = 7772^words / 2 / guesses per second, 31,557,600 seconds
         // to the year, rounded down to one figure.
-        assertTime(Scale.THOUSANDS_OF_YEARS, 3, 5 * BITS_PER_WORD, FAST_GUESSES);   // 3.0e3
-        assertTime(Scale.MILLIONS_OF_YEARS, 10, 5 * BITS_PER_WORD, SLOW_GUESSES);   // 1.5e7
-        assertTime(Scale.MILLIONS_OF_YEARS, 20, 6 * BITS_PER_WORD, FAST_GUESSES);   // 2.3e7
-        assertTime(Scale.BILLIONS_OF_YEARS, 100, 6 * BITS_PER_WORD, SLOW_GUESSES);  // 1.2e11
-        assertTime(Scale.BILLIONS_OF_YEARS, 100, 7 * BITS_PER_WORD, FAST_GUESSES);  // 1.8e11
+        assertTime(Scale.THOUSANDS_OF_YEARS, 2, 5 * BITS_PER_WORD, FAST_GUESSES);   // 2,995
+        assertTime(Scale.MILLIONS_OF_YEARS, 10, 5 * BITS_PER_WORD, SLOW_GUESSES);   // 1.498e7
+        assertTime(Scale.MILLIONS_OF_YEARS, 20, 6 * BITS_PER_WORD, FAST_GUESSES);   // 2.328e7
+        assertTime(Scale.BILLIONS_OF_YEARS, 100, 6 * BITS_PER_WORD, SLOW_GUESSES);  // 1.164e11
+        assertTime(Scale.BILLIONS_OF_YEARS, 100, 7 * BITS_PER_WORD, FAST_GUESSES);  // 1.809e11
         assertTime(Scale.BEYOND_BILLIONS_OF_YEARS, 0, 7 * BITS_PER_WORD, SLOW_GUESSES);
         assertTime(Scale.BEYOND_BILLIONS_OF_YEARS, 0, 8 * BITS_PER_WORD, FAST_GUESSES);
     }
