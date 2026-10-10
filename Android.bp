@@ -10,6 +10,7 @@ license {
     visibility: [":__subpackages__"],
     license_kinds: [
         "SPDX-license-identifier-Apache-2.0",
+        "SPDX-license-identifier-CC-BY-3.0",
     ],
     license_text: [
         "NOTICE",
@@ -231,4 +232,12 @@ android_library_import {
 filegroup {
     name: "Settings_proguard_flags",
     srcs: ["proguard.flags"],
+}
+
+// The passphrase word list, for tests that read it from the class path. The app reads it from
+// its assets.
+filegroup {
+    name: "Settings_passphrase_wordlist",
+    srcs: ["assets/passphrase/eff_large_wordlist.txt"],
+    path: "assets",
 }
