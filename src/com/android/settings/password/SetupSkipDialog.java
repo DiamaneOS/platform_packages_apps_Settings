@@ -111,7 +111,7 @@ public class SetupSkipDialog extends InstrumentedDialogFragment
                 .setNegativeButton(R.string.cancel_lock_screen_dialog_button_label, this)
                 .setTitle(getSkipSetupTitle(screenLockResId, hasFingerprint,
                         hasFace && isFaceSupported))
-                .setMessage(msgResId);
+                .setMessage(withNoLockWarning(msgResId));
     }
 
     private Context getExpressiveContext() {
@@ -140,9 +140,14 @@ public class SetupSkipDialog extends InstrumentedDialogFragment
                 .setPositiveButton(R.string.skip_anyway_button_label, this)
                 .setNegativeButton(R.string.go_back_button_label, this)
                 .setTitle(R.string.lock_screen_intro_skip_title)
-                .setMessage(args.getBoolean(ARG_FRP_SUPPORTED) ?
+                .setMessage(withNoLockWarning(args.getBoolean(ARG_FRP_SUPPORTED) ?
                         R.string.lock_screen_intro_skip_dialog_text_frp :
-                        R.string.lock_screen_intro_skip_dialog_text);
+                        R.string.lock_screen_intro_skip_dialog_text));
+    }
+
+    // First, in plain words, what a phone without a screen lock means. Then the usual text.
+    private String withNoLockWarning(@StringRes int msgResId) {
+        return getString(R.string.tally_lock_none_warning) + "\n\n" + getString(msgResId);
     }
 
     @StringRes
