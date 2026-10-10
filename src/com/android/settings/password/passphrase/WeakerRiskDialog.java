@@ -17,7 +17,6 @@ import androidx.fragment.app.FragmentManager;
 
 import com.android.settings.R;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
-import com.android.settings.password.passphrase.StrengthComparison.Choice;
 
 /**
  * Tells the user, in plain words, what a PIN, a pattern or a short password is worth on this
@@ -29,44 +28,77 @@ import com.android.settings.password.passphrase.StrengthComparison.Choice;
  */
 public class WeakerRiskDialog extends InstrumentedDialogFragment {
 
+    /** The kind of weaker lock the warning is about. It decides the words. */
+    public enum Kind {
+        /** A PIN the user picks. Not agreeing leads to a passphrase. */
+        PIN,
+        /** A pattern. Not agreeing goes back. */
+        PATTERN,
+        /** A password under the shape of a strong passphrase. Not agreeing returns to it. */
+        PASSWORD,
+    }
+
     /** Implemented by the fragment that shows the dialog. */
     public interface Listener {
-        /** The user tapped "I understand". */
+        /** The user tapped the button that starts with "I understand". */
         void onWeakerRiskAccepted();
 
-        /** The user went back without agreeing. */
+        /** The user did not agree: the other button, Back, or a tap outside. */
         void onWeakerRiskDeclined();
     }
 
     private static final String TAG_DIALOG = "tally_weaker_risk";
+    private static final String ARG_KIND = "kind";
 
     /** Shows the dialog, unless it is already there. */
-    public static void show(FragmentManager childFragmentManager) {
-        if (childFragmentManager.findFragmentByTag(TAG_DIALOG) == null) {
-            new WeakerRiskDialog().show(childFragmentManager, TAG_DIALOG);
+    public static void show(FragmentManager childFragmentManager, Kind kind) {
+        if (childFragmentManager.findFragmentByTag(TAG_DIALOG) != null) {
+            return;
         }
+        final Bundle args = new Bundle();
+        args.putString(ARG_KIND, kind.name());
+        final WeakerRiskDialog dialog = new WeakerRiskDialog();
+        dialog.setArguments(args);
+        dialog.show(childFragmentManager, TAG_DIALOG);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        final String message = getString(R.string.tally_weaker_risk_message)
-                + "\n\n"
-                + LockStrengthText.comparison(requireContext(), Choice.PIN_6_DIGITS,
-                        Choice.PATTERN, Choice.WORDS_6)
-                + "\n\n"
-                + getString(R.string.tally_weaker_risk_again);
+        final int title;
+        final int message;
+        final int accept;
+        final int decline;
+        switch (Kind.valueOf(requireArguments().getString(ARG_KIND, Kind.PIN.name()))) {
+            case PATTERN:
+                title = R.string.tally_weaker_risk_title_pattern;
+                message = R.string.tally_weaker_risk_message_pattern;
+                accept = R.string.tally_weaker_risk_accept_pattern;
+                decline = R.string.tally_weaker_risk_decline_pattern;
+                break;
+            case PASSWORD:
+                title = R.string.tally_weaker_risk_title_password;
+                message = R.string.tally_weaker_risk_message_password;
+                accept = R.string.tally_weaker_risk_accept_password;
+                decline = R.string.tally_weaker_risk_decline_password;
+                break;
+            default:
+                title = R.string.tally_weaker_risk_title_pin;
+                message = R.string.tally_weaker_risk_message_pin;
+                accept = R.string.tally_weaker_risk_accept_pin;
+                decline = R.string.tally_weaker_risk_decline_pin;
+                break;
+        }
         return new AlertDialog.Builder(requireActivity())
-                .setTitle(R.string.tally_weaker_risk_title)
+                .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton(R.string.tally_weaker_risk_accept, (dialog, which) -> {
+                .setPositiveButton(accept, (dialog, which) -> {
                     final Listener listener = listener();
                     if (listener != null) {
                         listener.onWeakerRiskAccepted();
                     }
                 })
-                .setNegativeButton(R.string.tally_weaker_risk_decline,
-                        (dialog, which) -> declined())
+                .setNegativeButton(decline, (dialog, which) -> declined())
                 .create();
     }
 

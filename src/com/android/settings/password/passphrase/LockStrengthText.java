@@ -78,16 +78,30 @@ public final class LockStrengthText {
     }
 
     /**
-     * The given lock choices side by side, one per line, each with its estimated time to guess,
-     * followed by the assumptions.
+     * The one line under a generated passphrase or PIN: how many words or digits, and the
+     * estimated time to guess it. "6 words · about 110 billion years to guess (estimate)".
      */
-    public static String comparison(Context context, Choice... choices) {
+    public static String strengthLine(Context context, boolean passphrase, int count,
+            double entropyBits) {
+        final String time = time(context, CredentialStrength.estimateTimeToGuess(
+                entropyBits, PlaceholderGuessingAssumptions.get()));
+        return context.getString(passphrase
+                ? R.string.tally_strength_line_passphrase : R.string.tally_strength_line_pin,
+                count, time);
+    }
+
+    /**
+     * What is behind the strength line: the exact strength, what the estimate assumes, and the
+     * given lock choices side by side on the same assumptions.
+     */
+    public static String details(Context context, double entropyBits, Choice... choices) {
         final StringBuilder text = new StringBuilder();
-        text.append(context.getString(R.string.tally_compare_heading));
+        text.append(context.getString(R.string.tally_strength_details_bits, bits(entropyBits)));
+        text.append("\n\n").append(assumptions(context));
+        text.append("\n\n").append(context.getString(R.string.tally_compare_heading));
         for (Row row : StrengthComparison.rows(PlaceholderGuessingAssumptions.get(), choices)) {
             text.append('\n').append(line(context, row));
         }
-        text.append("\n\n").append(assumptions(context));
         return text.toString();
     }
 
@@ -96,8 +110,6 @@ public final class LockStrengthText {
         switch (row.choice) {
             case PIN_6_DIGITS:
                 return context.getString(R.string.tally_compare_pin6, time);
-            case PATTERN:
-                return context.getString(R.string.tally_compare_pattern, time);
             case RANDOM_PIN_20:
                 return context.getString(R.string.tally_compare_random_pin, time);
             case WORDS_5:
@@ -106,8 +118,11 @@ public final class LockStrengthText {
                 return context.getString(R.string.tally_compare_words, 6, time);
             case WORDS_7:
                 return context.getString(R.string.tally_compare_words, 7, time);
-            default:
+            case WORDS_8:
                 return context.getString(R.string.tally_compare_words, 8, time);
+            default:
+                // A pattern is not offered for new locks, so it has no line.
+                throw new IllegalArgumentException("no text for " + row.choice);
         }
     }
 }

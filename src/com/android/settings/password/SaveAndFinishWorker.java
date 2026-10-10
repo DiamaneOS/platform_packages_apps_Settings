@@ -62,6 +62,8 @@ public class SaveAndFinishWorker extends Fragment {
     private boolean mWeakerRiskAccepted;
     // Set when the lock settings refused the lock because that agreement is missing.
     private boolean mRefused;
+    // Set when the lock was set.
+    private boolean mSaved;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -143,6 +145,7 @@ public class SaveAndFinishWorker extends Fragment {
             return Pair.create(false, null);
         }
 
+        mSaved = true;
         unifyProfileCredentialIfRequested();
 
         @LockPatternUtils.VerifyFlag int flags = 0;
@@ -217,6 +220,11 @@ public class SaveAndFinishWorker extends Fragment {
     public SaveAndFinishWorker setBlocking(boolean blocking) {
         mBlocking = blocking;
         return this;
+    }
+
+    /** Whether the lock was set. False while the save runs and after a failed one. */
+    public boolean wasSaved() {
+        return mSaved;
     }
 
     /**

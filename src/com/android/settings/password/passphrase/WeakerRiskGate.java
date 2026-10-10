@@ -66,9 +66,9 @@ public final class WeakerRiskGate {
                 LockStrength.of(credential, generated), LockStrength.current(mUtils, mUserId));
     }
 
-    /** Shows the risk screen over the fragment. */
-    public void show() {
-        WeakerRiskDialog.show(mFragment.getChildFragmentManager());
+    /** Shows the risk screen over the fragment, worded for the kind of lock. */
+    public void show(WeakerRiskDialog.Kind kind) {
+        WeakerRiskDialog.show(mFragment.getChildFragmentManager(), kind);
     }
 
     /** Saves the answer. Nothing else of this flow belongs in a saved state. */

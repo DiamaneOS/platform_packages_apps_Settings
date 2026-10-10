@@ -668,7 +668,7 @@ public class ChooseLockPattern extends SettingsActivity {
 
             if (savedInstanceState == null) {
                 if (mRiskGate.isNeededForWeakerLock()) {
-                    mRiskGate.show();
+                    mRiskGate.show(WeakerRiskDialog.Kind.PATTERN);
                 }
                 if (confirmCredentials) {
                     // first launch. As a security measure, we're in NeedToConfirm mode until we
@@ -1065,7 +1065,7 @@ public class ChooseLockPattern extends SettingsActivity {
             }
             setSaveProgressShown(false);
             mSaveRefused = true;
-            mRiskGate.show();
+            mRiskGate.show(WeakerRiskDialog.Kind.PATTERN);
         }
 
         private boolean isPrivateProfile() {
