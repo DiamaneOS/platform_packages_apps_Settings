@@ -2,6 +2,7 @@
 package com.android.settings.network;
 
 import android.app.settings.SettingsEnums;
+import java.io.IOException;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.SwitchPreferenceCompat;
@@ -10,7 +11,7 @@ import com.android.settings.dashboard.DashboardFragment;
 import de.diamaneos.downloads.DownloadPolicy;
 import de.diamaneos.downloads.DownloadPolicyClient;
 
-/** Both application links and setup use this page and the same global value. */
+/** Application links use this page and the same global value. */
 public final class DownloadServersFragment extends DashboardFragment {
     @Override public int getMetricsCategory() { return SettingsEnums.SETTINGS_NETWORK_CATEGORY; }
     @Override protected String getLogTag() { return "DownloadServers"; }
@@ -22,10 +23,19 @@ public final class DownloadServersFragment extends DashboardFragment {
     }
 
     private void refresh() {
-        DownloadPolicy policy = DownloadPolicyClient.read(requireContext());
         ListPreference server = findPreference("download_server");
         SwitchPreferenceCompat fallback = findPreference("download_fallback");
         Preference footer = findPreference("download_status");
+        final DownloadPolicy policy;
+        try {
+            policy = DownloadPolicyClient.read(requireContext());
+        } catch (IOException e) {
+            server.setEnabled(false);
+            fallback.setEnabled(false);
+            footer.setVisible(true);
+            footer.setTitle(R.string.download_servers_unavailable);
+            return;
+        }
         boolean writable = DownloadPolicyClient.canWrite(requireContext());
         server.setValue(policy.server);
         fallback.setChecked(policy.fallback);
