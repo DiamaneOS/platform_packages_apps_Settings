@@ -3434,21 +3434,16 @@
             android:enableOnBackInvokedCallback="false"
             android:theme="@style/GlifTheme.Light" />
 
-        <!-- configChanges, here and on ChooseLockPassword: a rotation, a text size or a theme
-             change must not start the choice of a lock again, and nothing typed or generated
-             may be saved to carry it across. So the screen is kept instead of created anew. -->
         <activity android:name=".password.SetupChooseLockPassword"
             android:exported="false"
             android:theme="@style/GlifTheme.Light"
             android:enableOnBackInvokedCallback="false"
-            android:configChanges="mcc|mnc|locale|layoutDirection|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|density|fontScale|fontWeightAdjustment|colorMode|grammaticalGender"
             android:windowSoftInputMode="stateVisible|adjustResize" />
 
         <activity android:name=".password.ChooseLockPassword"
             android:exported="false"
             android:theme="@style/GlifTheme.Light"
             android:enableOnBackInvokedCallback="false"
-            android:configChanges="mcc|mnc|locale|layoutDirection|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|density|fontScale|fontWeightAdjustment|colorMode|grammaticalGender"
             android:windowSoftInputMode="stateVisible|adjustResize"/>
 
         <activity android:name=".password.ChooseBiometricSecondFactorPin"

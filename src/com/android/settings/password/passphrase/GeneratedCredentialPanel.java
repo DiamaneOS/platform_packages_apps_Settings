@@ -6,7 +6,7 @@ package com.android.settings.password.passphrase;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.util.Log;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +23,7 @@ import com.android.internal.widget.LockscreenCredential;
 import com.android.settings.R;
 import com.android.settings.password.passphrase.GeneratedSetupState.Step;
 import com.android.settings.password.passphrase.StrengthComparison.Choice;
-import com.android.settingslib.utils.ThreadUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.CharBuffer;
-import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 
@@ -41,11 +36,14 @@ import java.util.concurrent.TimeUnit;
  * field, tells the screen when the user may go on, and hands over the credential to compare
  * the typed entries with.
  *
- * <p>Secret handling: the secret is held in a {@link Passphrase} or a {@link LockscreenCredential}
- * and in the char arrays the text views show. It is on screen only after "Show", it leaves the
- * screen on "Hide", when the screen is left, after {@link #REVEAL_TIMEOUT_MS}, and when the
- * typing starts, and every array is overwritten when it is no longer needed. Nothing of it is
- * logged, put in a String, or saved: a screen that is created anew makes a new secret.
+ * <p>The secret and the step are not in here but in a {@link GeneratedSecret}, which the
+ * {@link LockSetupHolder} keeps in memory: a screen that is created anew for a rotation gets a
+ * new panel that shows the same secret on the same step, still shown if it was shown.
+ *
+ * <p>Secret handling: the panel only has the char arrays its text views show. The secret is on
+ * screen only after "Show"; it leaves the screen on "Hide", when the screen is left, after
+ * {@link #REVEAL_TIMEOUT_MS} in all, and when the typing starts, and the arrays are overwritten
+ * then. Nothing of it is logged, put in a String, or saved.
  */
 public final class GeneratedCredentialPanel {
 
@@ -61,16 +59,12 @@ public final class GeneratedCredentialPanel {
         boolean isGeneratedCredentialAcceptable(LockscreenCredential credential);
     }
 
-    private static final String TAG = "GeneratedCredential";
     private static final String TAG_DETAILS = "tally_strength_details";
 
     /** How long the secret stays on screen before it is hidden again. */
     static final long REVEAL_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(2);
 
-    private static final int PIN_LENGTH = LockCredentialPolicy.MIN_GENERATED_PIN_LENGTH;
-
-    // A device rule against runs of digits refuses about one random 20-digit PIN in twenty.
-    private static final int MAX_PIN_TRIES = 20;
+    private static final int PIN_LENGTH = GeneratedSecret.PIN_LENGTH;
 
     // Two columns of words need this much room: beyond this text size, or on a narrower
     // screen, the words go in one column.
@@ -81,9 +75,9 @@ public final class GeneratedCredentialPanel {
     private final Host mHost;
     private final FragmentManager mDialogs;
     private final boolean mIsPassphrase;
-    private final LockPatternUtils mUtils;
-    private final int mUserId;
-    private final GeneratedSetupState mState = new GeneratedSetupState();
+    private final GeneratedSecret mSecret;
+    private final GeneratedSetupState mState;
+    private final GeneratedSecret.Screen mScreen;
 
     private static final int[] WORD_CHOICES = {
         R.id.tally_generated_words_5,
@@ -108,41 +102,54 @@ public final class GeneratedCredentialPanel {
     private final TextView mAnotherButton;
     private final Runnable mHideWhenTimeIsUp = this::hide;
 
-    // The secret: a passphrase or a PIN, by kind. Null while there is none.
-    @Nullable private Passphrase mPassphrase;
-    @Nullable private LockscreenCredential mPin;
     // What the two secret views show while the secret is revealed. Wiped when it is hidden.
     private char[] mDisplayLeft = new char[0];
     private char[] mDisplayRight = new char[0];
 
-    @Nullable private PassphraseGenerator mGenerator;
-    private final double[] mEntropyBits = new double[PassphraseGenerator.MAX_WORDS + 1];
-    private int mWords = PassphraseGenerator.DEFAULT_WORDS;
-    private boolean mPreparing;
-    private boolean mBlockedByRules;
     private boolean mDestroyed;
     // The host is not called back before the constructor is done: it has no panel yet.
     private boolean mConstructed;
 
     /**
-     * Adds the panel to the screen, above the entry field, and starts making a secret.
+     * Adds the panel to the screen, above the entry field. The first panel of an activity
+     * starts the making of a secret; a later one shows the secret the holder kept.
      *
      * @param entryContainer the view that holds the entry field; hidden while the secret is
      *     shown
+     * @param holder the activity's holder of what outlives a screen
      * @param isPassphrase a passphrase if true, a PIN otherwise
      * @param userId the user whose lock is set
      * @param dialogs where the details behind the strength line are shown
      */
     public GeneratedCredentialPanel(LayoutInflater inflater, View entryContainer,
-            boolean isPassphrase, LockPatternUtils utils, int userId, Host host,
-            FragmentManager dialogs) {
+            LockSetupHolder holder, boolean isPassphrase, LockPatternUtils utils, int userId,
+            Host host, FragmentManager dialogs) {
         mContext = entryContainer.getContext();
         mHost = host;
         mDialogs = dialogs;
         mIsPassphrase = isPassphrase;
-        mUtils = utils;
-        mUserId = userId;
         mEntryContainer = entryContainer;
+        mSecret = holder.generatedSecret(isPassphrase, mContext);
+        mState = mSecret.state();
+        mScreen = new GeneratedSecret.Screen() {
+            @Override
+            public boolean accepts(LockscreenCredential credential) {
+                return mHost.isGeneratedCredentialAcceptable(credential);
+            }
+
+            @Override
+            public LockscreenCredential newPin(int length) {
+                return utils.generateStrongPin(length, userId);
+            }
+
+            @Override
+            public void onSecretChanged() {
+                if (!mDestroyed) {
+                    render();
+                    notifyHost();
+                }
+            }
+        };
 
         final ViewGroup parent = (ViewGroup) entryContainer.getParent();
         final View root = inflater.inflate(R.layout.tally_generated_credential, parent, false);
@@ -170,14 +177,14 @@ public final class GeneratedCredentialPanel {
         mRevealButton.setOnClickListener(v -> {
             if (mState.isRevealed()) {
                 hide();
-            } else if (mState.reveal()) {
+            } else if (mState.reveal(SystemClock.elapsedRealtime(), REVEAL_TIMEOUT_MS)) {
                 renderSecret();
                 notifyHost();
             }
         });
         mAnotherButton.setText(isPassphrase
                 ? R.string.tally_generated_another : R.string.tally_generated_another_pin);
-        mAnotherButton.setOnClickListener(v -> generate());
+        mAnotherButton.setOnClickListener(v -> mSecret.generate());
         mStrengthView.setOnClickListener(v -> showStrengthDetails());
         root.findViewById(R.id.tally_generated_show_again)
                 .setOnClickListener(v -> mHost.onShowGeneratedCredentialAgain());
@@ -191,15 +198,14 @@ public final class GeneratedCredentialPanel {
                 choice.setContentDescription(
                         mContext.getString(R.string.tally_generated_words_choice, words));
             }
-            mWordsChoice.check(WORD_CHOICES[mWords - PassphraseGenerator.MIN_WORDS]);
+            mWordsChoice.check(WORD_CHOICES[mSecret.words() - PassphraseGenerator.MIN_WORDS]);
             mWordsChoice.setOnCheckedChangeListener((group, checkedId) -> {
                 for (int i = 0; i < WORD_CHOICES.length; i++) {
                     if (WORD_CHOICES[i] == checkedId) {
-                        setWords(PassphraseGenerator.MIN_WORDS + i);
+                        mSecret.setWords(PassphraseGenerator.MIN_WORDS + i);
                     }
                 }
             });
-            loadGeneratorThenGenerate();
         } else {
             // A PIN has one length: no choice, and the button stays at the end of its row.
             mWordsChoice.setVisibility(View.GONE);
@@ -208,8 +214,9 @@ public final class GeneratedCredentialPanel {
             mNumbersLeft.setVisibility(View.GONE);
             mNumbersRight.setVisibility(View.GONE);
             mSecretRight.setVisibility(View.GONE);
-            generate();
         }
+        mSecret.attach(mScreen);
+        render();
         mConstructed = true;
     }
 
@@ -246,7 +253,7 @@ public final class GeneratedCredentialPanel {
      */
     @Nullable
     public LockscreenCredential continueToTypeBack() {
-        final LockscreenCredential credential = newCredential();
+        final LockscreenCredential credential = mSecret.newCredential();
         if (credential == null || !mState.continueToTypeBack()) {
             if (credential != null) {
                 credential.zeroize();
@@ -295,146 +302,34 @@ public final class GeneratedCredentialPanel {
         }
     }
 
-    /** The screen is no longer in front: the secret leaves the screen. */
+    /** The screen is no longer in front, and stays: the secret leaves the screen. */
     public void onPause() {
         hide();
     }
 
-    /** The screen changed its size, orientation or text size without being created anew. */
-    public void onConfigurationChanged() {
-        if (!mDestroyed) {
-            // One or two columns may fit now.
-            renderSecret();
-        }
-    }
-
-    /** The screen is going away: the secret is wiped. */
+    /**
+     * The screen is going away: nothing of the secret stays in its views. The secret itself is
+     * the holder's, which keeps it for a screen that is created anew and overwrites it when the
+     * choice of a lock is over.
+     */
     public void onDestroy() {
         mDestroyed = true;
-        wipeSecret();
-    }
-
-    private void setWords(int words) {
-        if (words < PassphraseGenerator.MIN_WORDS || words > PassphraseGenerator.MAX_WORDS
-                || words == mWords) {
-            return;
-        }
-        mWords = words;
-        generate();
+        clearSecretViews();
+        mSecret.detach(mScreen);
     }
 
     private void showStrengthDetails() {
-        if (mPassphrase == null && mPin == null) {
+        if (!mSecret.hasSecret()) {
             return;
         }
         final String details = mIsPassphrase
-                ? LockStrengthText.details(mContext, mEntropyBits[mWords], Choice.PIN_6_DIGITS,
+                ? LockStrengthText.details(mContext, mSecret.entropyBits(), Choice.PIN_6_DIGITS,
                         Choice.WORDS_5, Choice.WORDS_6, Choice.WORDS_7, Choice.WORDS_8,
                         Choice.RANDOM_PIN_20)
-                : LockStrengthText.details(mContext,
-                        CredentialStrength.generatedPinEntropyBits(PIN_LENGTH),
+                : LockStrengthText.details(mContext, mSecret.entropyBits(),
                         Choice.PIN_6_DIGITS, Choice.WORDS_5, Choice.WORDS_6,
                         Choice.RANDOM_PIN_20);
         InfoDialog.show(mDialogs, TAG_DETAILS, R.string.tally_strength_details_title, details);
-    }
-
-    private void loadGeneratorThenGenerate() {
-        mPreparing = true;
-        render();
-        final Context appContext = mContext.getApplicationContext();
-        ThreadUtils.postOnBackgroundThread(() -> {
-            PassphraseGenerator loaded = null;
-            final double[] bits = new double[mEntropyBits.length];
-            try (InputStream in = appContext.getAssets().open(WordList.EFF_LARGE_ASSET)) {
-                loaded = new PassphraseGenerator(WordList.loadEffLarge(in), new SecureRandom());
-                for (int words = PassphraseGenerator.MIN_WORDS;
-                        words <= PassphraseGenerator.MAX_WORDS; words++) {
-                    bits[words] = loaded.entropyBits(words);
-                }
-            } catch (IOException | RuntimeException e) {
-                // The list is missing or is not the pinned one. No fallback to another list.
-                Log.e(TAG, "The word list cannot be used", e);
-                loaded = null;
-            }
-            final PassphraseGenerator generator = loaded;
-            ThreadUtils.postOnMainThread(() -> {
-                if (mDestroyed) {
-                    return;
-                }
-                mGenerator = generator;
-                System.arraycopy(bits, 0, mEntropyBits, 0, bits.length);
-                mPreparing = false;
-                generate();
-            });
-        });
-    }
-
-    // Makes a new secret in place of the current one.
-    private void generate() {
-        wipeSecret();
-        mBlockedByRules = false;
-        try {
-            if (mIsPassphrase) {
-                generatePassphrase();
-            } else {
-                generatePin();
-            }
-        } catch (RuntimeException e) {
-            // The exception carries nothing of a secret: it comes from the service call or
-            // from a word list that cannot meet the floor.
-            Log.e(TAG, "Nothing could be generated", e);
-            wipeSecret();
-        }
-        if (mPassphrase != null || mPin != null) {
-            mState.onGenerated();
-        }
-        render();
-        notifyHost();
-    }
-
-    private void generatePassphrase() {
-        if (mGenerator == null) {
-            return;
-        }
-        final Passphrase phrase = mGenerator.generate(mWords);
-        boolean accepted = false;
-        try (LockscreenCredential credential =
-                LockscreenCredential.createPassword(CharBuffer.wrap(phrase.chars()))) {
-            // The same check the lock settings service makes, and the device's own rules.
-            accepted = LockStrength.of(credential, false) == StrengthClass.STRONG
-                    && mHost.isGeneratedCredentialAcceptable(credential);
-        } finally {
-            if (!accepted) {
-                phrase.close();
-            }
-        }
-        if (accepted) {
-            mPassphrase = phrase;
-        } else {
-            // Another phrase of letters and spaces would be refused for the same reason.
-            mBlockedByRules = true;
-        }
-    }
-
-    private void generatePin() {
-        for (int i = 0; i < MAX_PIN_TRIES; i++) {
-            // Each call replaces the PIN the service remembers as generated for this user.
-            final LockscreenCredential pin = mUtils.generateStrongPin(PIN_LENGTH, mUserId);
-            if (mHost.isGeneratedCredentialAcceptable(pin)) {
-                mPin = pin;
-                return;
-            }
-            pin.zeroize();
-        }
-        mBlockedByRules = true;
-    }
-
-    @Nullable
-    private LockscreenCredential newCredential() {
-        if (mPassphrase != null) {
-            return LockscreenCredential.createPassword(CharBuffer.wrap(mPassphrase.chars()));
-        }
-        return mPin != null ? mPin.duplicate() : null;
     }
 
     private void hide() {
@@ -447,19 +342,6 @@ public final class GeneratedCredentialPanel {
         if (wasRevealed) {
             notifyHost();
         }
-    }
-
-    private void wipeSecret() {
-        clearSecretViews();
-        if (mPassphrase != null) {
-            mPassphrase.close();
-            mPassphrase = null;
-        }
-        if (mPin != null) {
-            mPin.zeroize();
-            mPin = null;
-        }
-        mState.onSecretGone();
     }
 
     // Takes the secret off the screen and overwrites what the views showed.
@@ -497,54 +379,44 @@ public final class GeneratedCredentialPanel {
     // that the card has the same size either way; a note if there is no secret.
     private void renderSecret() {
         clearSecretViews();
-        final boolean hasSecret = mPassphrase != null || mPin != null;
+        final boolean hasSecret = mSecret.hasSecret();
         final boolean revealed = mState.isRevealed() && hasSecret;
         mGrid.setVisibility(hasSecret ? View.VISIBLE : View.GONE);
         mPlaceholder.setVisibility(hasSecret ? View.GONE : View.VISIBLE);
+        final boolean twoColumns = mIsPassphrase && fitsTwoColumns();
         if (!hasSecret) {
-            if (mPreparing) {
+            if (mSecret.isPreparing()) {
                 mPlaceholder.setText(R.string.tally_generated_preparing);
             } else {
-                mPlaceholder.setText(mBlockedByRules
+                mPlaceholder.setText(mSecret.isBlockedByRules()
                         ? R.string.tally_generated_blocked_by_rules
                         : R.string.tally_generated_unavailable);
             }
-        } else if (mPassphrase != null) {
-            final boolean twoColumns = fitsTwoColumns();
-            final String[] numbers = SecretDisplay.numberColumns(mWords, twoColumns);
+        } else if (mIsPassphrase) {
+            final String[] numbers = SecretDisplay.numberColumns(mSecret.words(), twoColumns);
             mNumbersLeft.setText(numbers[0]);
             mNumbersRight.setText(numbers[1]);
             mNumbersRight.setVisibility(twoColumns ? View.VISIBLE : View.GONE);
             mSecretRight.setVisibility(twoColumns ? View.VISIBLE : View.GONE);
             // The card has the rows this number of words needs: three for 5 and 6 words in
             // two columns, four for 7 and 8. Dots or words, the lines are the same.
-            if (revealed) {
-                final char[][] columns =
-                        SecretDisplay.wordColumns(mPassphrase.chars(), twoColumns);
-                mDisplayLeft = columns[0];
-                mDisplayRight = columns[1];
-                mSecretLeft.setText(mDisplayLeft, 0, mDisplayLeft.length);
-                mSecretRight.setText(mDisplayRight, 0, mDisplayRight.length);
-            } else {
-                final String[] dots = SecretDisplay.maskColumns(mWords, twoColumns);
+            if (!revealed) {
+                final String[] dots = SecretDisplay.maskColumns(mSecret.words(), twoColumns);
                 mSecretLeft.setText(dots[0]);
                 mSecretRight.setText(dots[1]);
             }
-        } else if (revealed && mPin != null) {
-            // A PIN is digits, one byte each.
-            final byte[] bytes = mPin.getCredential();
-            final char[] digits = new char[bytes.length];
-            for (int i = 0; i < bytes.length; i++) {
-                digits[i] = (char) bytes[i];
-            }
-            mDisplayLeft = SecretDisplay.groupedDigits(digits);
-            SecretDisplay.wipe(digits);
-            mSecretLeft.setText(mDisplayLeft, 0, mDisplayLeft.length);
-        } else {
+        } else if (!revealed) {
             mSecretLeft.setText(SecretDisplay.maskedDigits(PIN_LENGTH));
         }
-        if (revealed) {
-            mSecretLeft.postDelayed(mHideWhenTimeIsUp, REVEAL_TIMEOUT_MS);
+        final char[][] shown = revealed ? mSecret.displayColumns(twoColumns) : null;
+        if (shown != null) {
+            mDisplayLeft = shown[0];
+            mDisplayRight = shown[1];
+            mSecretLeft.setText(mDisplayLeft, 0, mDisplayLeft.length);
+            mSecretRight.setText(mDisplayRight, 0, mDisplayRight.length);
+            // Its time on screen runs on when a new screen shows it: it is not given anew.
+            mSecretLeft.postDelayed(mHideWhenTimeIsUp,
+                    mState.revealMillisLeft(SystemClock.elapsedRealtime()));
         }
         // A screen reader says "Hidden" for the dots.
         final String hidden = hasSecret && !revealed
@@ -570,12 +442,10 @@ public final class GeneratedCredentialPanel {
 
     // The strength row is not secret: it depends on the number of words or digits only.
     private void renderStrength() {
-        final boolean hasSecret = mPassphrase != null || mPin != null;
+        final boolean hasSecret = mSecret.hasSecret();
         mStrengthView.setVisibility(hasSecret ? View.VISIBLE : View.INVISIBLE);
         if (hasSecret) {
-            mStrengthView.setText(LockStrengthText.strengthLine(mContext, mIsPassphrase
-                    ? mEntropyBits[mWords]
-                    : CredentialStrength.generatedPinEntropyBits(PIN_LENGTH)));
+            mStrengthView.setText(LockStrengthText.strengthLine(mContext, mSecret.entropyBits()));
         }
     }
 }

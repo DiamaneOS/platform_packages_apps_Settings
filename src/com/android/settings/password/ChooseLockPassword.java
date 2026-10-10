@@ -105,6 +105,8 @@ import com.android.settings.notification.RedactionInterstitial;
 import com.android.settings.password.passphrase.ChosenPassphraseRater;
 import com.android.settings.password.passphrase.FooterOverlap;
 import com.android.settings.password.passphrase.GeneratedCredentialPanel;
+import com.android.settings.password.passphrase.KeptEntry;
+import com.android.settings.password.passphrase.LockSetupHolder;
 import com.android.settings.password.passphrase.LockStrength;
 import com.android.settings.password.passphrase.OwnPassphraseFeedback;
 import com.android.settings.password.passphrase.OwnPassphraseVerdictView;
@@ -121,6 +123,7 @@ import com.google.android.setupcompat.template.FooterButton;
 import com.google.android.setupdesign.GlifLayout;
 import com.google.android.setupdesign.util.ThemeHelper;
 
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -332,7 +335,11 @@ public class ChooseLockPassword extends SettingsActivity {
         private boolean mIsErrorTooShort = true;
         private boolean mIsExpressiveStyle = false;
 
-        // Set while the phone generates the passphrase or PIN instead of the user choosing it.
+        // What is kept in memory, and nowhere else, while the screen is created anew.
+        private LockSetupHolder mHolder;
+        // Whether the phone generates the passphrase or PIN instead of the user choosing it.
+        private boolean mIsGenerated;
+        // The panel for that. Not there while a save from before a recreation is running.
         @Nullable private GeneratedCredentialPanel mGeneratedPanel;
         private WeakerRiskGate mRiskGate;
         // The lock settings refused the save for want of the user's agreement to the risk.
@@ -613,7 +620,9 @@ public class ChooseLockPassword extends SettingsActivity {
             if (mMinMetrics == null) mMinMetrics = new PasswordMetrics(CREDENTIAL_TYPE_NONE);
 
             mTextChangedHandler = new TextChangedHandler();
-            mRiskGate = new WeakerRiskGate(this, mLockPatternUtils, mUserId, savedInstanceState);
+            mHolder = LockSetupHolder.of(getActivity());
+            mIsGenerated = intent.getBooleanExtra(EXTRA_KEY_GENERATED, false);
+            mRiskGate = new WeakerRiskGate(this, mLockPatternUtils, mUserId);
         }
 
         @Override
@@ -739,15 +748,16 @@ public class ChooseLockPassword extends SettingsActivity {
                     ChooseLockSettingsHelper.EXTRA_KEY_REQUEST_WRITE_REPAIR_MODE_PW, false);
             mReturnCredentials = intent.getBooleanExtra(
                     ChooseLockSettingsHelper.EXTRA_KEY_RETURN_CREDENTIALS, false);
-            // Not while a save from before a recreation of the screen is still running: a new
-            // generated PIN would take the place of the one that is being saved.
+            // Not while a save from before a recreation of the screen is still running: after
+            // the process was gone, a new generated PIN would take the place of the one that
+            // is being saved.
             final boolean isSaving = savedInstanceState != null && getFragmentManager()
                     .findFragmentByTag(FRAGMENT_TAG_SAVE_AND_FINISH) != null;
-            if (!isSaving && intent.getBooleanExtra(EXTRA_KEY_GENERATED, false)) {
+            if (!isSaving && mIsGenerated) {
                 mGeneratedPanel = new GeneratedCredentialPanel(getLayoutInflater(), container,
-                        mIsAlphaMode, mLockPatternUtils, mUserId, this,
+                        mHolder, mIsAlphaMode, mLockPatternUtils, mUserId, this,
                         getChildFragmentManager());
-            } else if (mIsAlphaMode) {
+            } else if (mIsAlphaMode && !mIsGenerated) {
                 mVerdictView = new OwnPassphraseVerdictView(getLayoutInflater(), container,
                         mPasswordEntry, getChildFragmentManager());
             }
@@ -771,17 +781,19 @@ public class ChooseLockPassword extends SettingsActivity {
                 }
             } else {
 
-                // restore from previous state. What was typed, or generated, so far is not
-                // kept across a recreation of the screen: the choice starts again.
-                updateStage(Stage.Introduction);
+                // restore from previous state
+                // Re-attach to the exiting worker if there is one.
+                mSaveAndFinishWorker = (SaveAndFinishWorker) getFragmentManager().findFragmentByTag(
+                        FRAGMENT_TAG_SAVE_AND_FINISH);
+
+                // What was typed or generated so far is in no saved state. After a rotation or
+                // a similar change it is still in memory and is taken from there. After
+                // anything else it is gone, and the choice starts again.
+                restoreKeptEntry(mHolder.takeEntry());
                 mIsAutoPinConfirmOptionSetManually =
                         savedInstanceState.getBoolean(KEY_IS_AUTO_CONFIRM_CHECK_MANUALLY_CHANGED);
 
                 mCurrentCredential = savedInstanceState.getParcelable(KEY_CURRENT_CREDENTIAL);
-
-                // Re-attach to the exiting worker if there is one.
-                mSaveAndFinishWorker = (SaveAndFinishWorker) getFragmentManager().findFragmentByTag(
-                        FRAGMENT_TAG_SAVE_AND_FINISH);
             }
 
             if (activity instanceof SettingsActivity) {
@@ -796,19 +808,62 @@ public class ChooseLockPassword extends SettingsActivity {
             }
         }
 
+        // Takes over what the screen before this one had in hand when it was created anew.
+        private void restoreKeptEntry(@Nullable KeptEntry<LockscreenCredential> kept) {
+            if (kept == null) {
+                updateStage(Stage.Introduction);
+                return;
+            }
+            mFirstPassword = kept.first();
+            mChosenPassword = kept.chosen();
+            mRiskAskedForFirstEntry = kept.riskAskedForFirstEntry();
+            mSaveRefused = kept.saveRefused();
+            mSavingStrongLock = kept.savingStrongLock();
+            // Before the step is set: text that changes takes the "doesn't match" step back.
+            mPasswordEntry.setText(CharBuffer.wrap(kept.typed()));
+            mPasswordEntry.setSelection(mPasswordEntry.length());
+            final Stage stage = Stage.valueOf(kept.stage());
+            kept.handedOver();
+            updateStage(stage);
+        }
+
+        // What this screen has in hand, for the screen that takes its place after a rotation
+        // or a similar change. Held in memory until then, and never saved.
+        private KeptEntry<LockscreenCredential> entryToKeep() {
+            final Editable text = mPasswordEntry != null ? mPasswordEntry.getText() : null;
+            final char[] typed = new char[text != null ? text.length() : 0];
+            if (text != null) {
+                text.getChars(0, typed.length, typed, 0);
+            }
+            return new KeptEntry<>(LockscreenCredential::zeroize, mUiStage.name(),
+                    mFirstPassword, mChosenPassword, mSaveAndFinishWorker != null, typed,
+                    mRiskAskedForFirstEntry, mSaveRefused, mSavingStrongLock);
+        }
+
         @Override
         public void onDestroy() {
             super.onDestroy();
             if (mCurrentCredential != null) {
                 mCurrentCredential.zeroize();
             }
-            if (mFirstPassword != null) {
-                mFirstPassword.zeroize();
+            if (getActivity().isChangingConfigurations()) {
+                // The screen is created anew, for a rotation or a similar change. The entries
+                // and the generated secret stay in memory for the new screen.
+                mHolder.keepEntry(entryToKeep());
+            } else {
+                // The screen is left for good.
+                if (mFirstPassword != null) {
+                    mFirstPassword.zeroize();
+                }
+                // A save that is still running holds the chosen password and zeroizes nothing
+                // itself: leave it alone then.
+                if (mChosenPassword != null && mSaveAndFinishWorker == null) {
+                    mChosenPassword.zeroize();
+                }
+                mHolder.wipe();
             }
-            // A save that is still running holds the chosen password and zeroizes nothing
-            // itself: leave it alone then.
-            if (mChosenPassword != null && mSaveAndFinishWorker == null) {
-                mChosenPassword.zeroize();
+            if (mPasswordEntry != null) {
+                mPasswordEntry.setText("");
             }
             if (mGeneratedPanel != null) {
                 mGeneratedPanel.onDestroy();
@@ -899,13 +954,16 @@ public class ChooseLockPassword extends SettingsActivity {
 
         @Override
         public void onPause() {
+            // Not when the screen is only created anew, for a rotation or a similar change:
+            // the user is still looking at it, and gets it back as it was.
+            final boolean staysBehind = !getActivity().isChangingConfigurations();
             if (mSaveAndFinishWorker != null) {
                 mSaveAndFinishWorker.setListener(null);
-            } else {
+            } else if (staysBehind) {
                 // Nothing secret stays on a screen that is not in front.
                 mPasswordEntry.setText("");
             }
-            if (mGeneratedPanel != null) {
+            if (mGeneratedPanel != null && staysBehind) {
                 mGeneratedPanel.onPause();
             }
             super.onPause();
@@ -914,9 +972,8 @@ public class ChooseLockPassword extends SettingsActivity {
         @Override
         public void onSaveInstanceState(Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(KEY_UI_STAGE, mUiStage.name());
-            // The new passphrase or PIN is not saved: see onViewCreated.
-            mRiskGate.onSaveInstanceState(outState);
+            // Not the step, the new passphrase or PIN, or the agreement to a weaker lock: those
+            // are kept in memory across a recreation of the screen, see onDestroy.
             if (mCurrentCredential != null) {
                 outState.putParcelable(KEY_CURRENT_CREDENTIAL, mCurrentCredential.duplicate());
             }
@@ -1365,16 +1422,6 @@ public class ChooseLockPassword extends SettingsActivity {
             activity.finish();
         }
 
-        @Override
-        public void onConfigurationChanged(android.content.res.Configuration newConfig) {
-            super.onConfigurationChanged(newConfig);
-            // The screen is not created anew for a rotation, a text size or a theme change, so
-            // that nothing typed or generated is lost and nothing has to be saved for it.
-            if (mGeneratedPanel != null) {
-                mGeneratedPanel.onConfigurationChanged();
-            }
-        }
-
         private void focusPasswordEntry() {
             mPasswordEntry.requestFocus();
             if (mPasswordEntry instanceof ImeAwareEditText) {
@@ -1468,9 +1515,9 @@ public class ChooseLockPassword extends SettingsActivity {
                     }
                     mPasswordEntry.setText("");
                     updateStage(Stage.Introduction);
-                } else {
-                    getActivity().finish();
                 }
+                // Otherwise the dialog outlived what it asked about, with a process that was
+                // gone: the screen is on the first entry again, which is where this leads.
             } else if (isSupervisingProfile()) {
                 // A supervision PIN has no passphrase to offer instead.
                 getActivity().finish();
@@ -1630,7 +1677,7 @@ public class ChooseLockPassword extends SettingsActivity {
 
             mPasswordEntry.setText("");
 
-            if (mSavingStrongLock && mGeneratedPanel == null && mSaveAndFinishWorker != null
+            if (mSavingStrongLock && !mIsGenerated && mSaveAndFinishWorker != null
                     && mSaveAndFinishWorker.wasSaved()) {
                 // Said once: for a generated passphrase on its last step, for one the user
                 // chose here, as the screen closes.

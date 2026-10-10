@@ -520,7 +520,7 @@ public class ChooseLockPattern extends SettingsActivity {
             mIsManagedProfile = UserManager.get(getActivity()).isManagedProfile(mUserId);
 
             mLockPatternUtils = new LockPatternUtils(getActivity());
-            mRiskGate = new WeakerRiskGate(this, mLockPatternUtils, mUserId, savedInstanceState);
+            mRiskGate = new WeakerRiskGate(this, mLockPatternUtils, mUserId);
 
             mForFingerprint = intent.getBooleanExtra(
                     ChooseLockSettingsHelper.EXTRA_KEY_FOR_FINGERPRINT, false);
@@ -851,7 +851,6 @@ public class ChooseLockPattern extends SettingsActivity {
             super.onSaveInstanceState(outState);
 
             outState.putInt(KEY_UI_STAGE, mUiStage.ordinal());
-            mRiskGate.onSaveInstanceState(outState);
             if (mChosenPattern != null) {
                 outState.putParcelable(KEY_PATTERN_CHOICE, mChosenPattern);
             }

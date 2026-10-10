@@ -9,6 +9,9 @@ package com.android.settings.password.passphrase;
  *
  * <p>The steps: the secret is shown on request and copied to paper; it is typed back; it is
  * typed once more for practice; then it is saved. The secret itself is not in here.
+ *
+ * <p>It also knows when a shown secret has been on screen long enough. That time runs on, and
+ * does not start again, when the screen is created anew while the secret is shown.
  */
 public final class GeneratedSetupState {
 
@@ -26,6 +29,8 @@ public final class GeneratedSetupState {
     private boolean mHasSecret;
     private boolean mRevealed;
     private boolean mSeen;
+    // When the shown secret leaves the screen by itself, on the clock reveal() was given.
+    private long mHideAtMillis;
 
     /** The current step. */
     public Step step() {
@@ -64,15 +69,27 @@ public final class GeneratedSetupState {
     /**
      * The user asked to see the secret.
      *
+     * @param nowMillis the time now, on any clock that only runs forward
+     * @param forMillis how long the secret may stay on screen
      * @return whether it is shown now
      */
-    public boolean reveal() {
+    public boolean reveal(long nowMillis, long forMillis) {
         if (mStep != Step.SHOW || !mHasSecret) {
             return false;
         }
         mRevealed = true;
         mSeen = true;
+        mHideAtMillis = nowMillis + forMillis;
         return true;
+    }
+
+    /**
+     * How much longer the secret may stay on screen: 0 when it is hidden or its time is up.
+     *
+     * @param nowMillis the time now, on the clock {@link #reveal} was given
+     */
+    public long revealMillisLeft(long nowMillis) {
+        return mRevealed ? Math.max(0, mHideAtMillis - nowMillis) : 0;
     }
 
     /** The secret leaves the screen: the user hid it, the screen was left, or time ran out. */

@@ -14,10 +14,13 @@ import org.junit.Test;
 
 public class GeneratedSetupStateTest {
 
+    private static final long NOW = 5_000_000;
+    private static final long TIMEOUT = 120_000;
+
     private static GeneratedSetupState shown() {
         final GeneratedSetupState state = new GeneratedSetupState();
         state.onGenerated();
-        state.reveal();
+        state.reveal(NOW, TIMEOUT);
         return state;
     }
 
@@ -28,7 +31,7 @@ public class GeneratedSetupStateTest {
         assertEquals(Step.SHOW, state.step());
         assertFalse(state.isRevealed());
         assertFalse(state.canContinue());
-        assertFalse(state.reveal());
+        assertFalse(state.reveal(NOW, TIMEOUT));
         assertFalse(state.isRevealed());
         assertFalse(state.continueToTypeBack());
     }
@@ -44,7 +47,7 @@ public class GeneratedSetupStateTest {
         assertFalse(state.continueToTypeBack());
         assertEquals(Step.SHOW, state.step());
 
-        assertTrue(state.reveal());
+        assertTrue(state.reveal(NOW, TIMEOUT));
         assertTrue(state.isRevealed());
         assertTrue(state.canContinue());
     }
@@ -68,7 +71,7 @@ public class GeneratedSetupStateTest {
         assertEquals(Step.TYPE_BACK, state.step());
         assertFalse(state.isRevealed());
         // It cannot be shown while it is being typed back.
-        assertFalse(state.reveal());
+        assertFalse(state.reveal(NOW, TIMEOUT));
         assertFalse(state.isRevealed());
     }
 
@@ -79,7 +82,7 @@ public class GeneratedSetupStateTest {
 
         assertFalse(state.onTypedCorrectly());
         assertEquals(Step.PRACTISE, state.step());
-        assertFalse(state.reveal());
+        assertFalse(state.reveal(NOW, TIMEOUT));
 
         assertTrue(state.onTypedCorrectly());
         assertEquals(Step.PRACTISE, state.step());
@@ -130,6 +133,47 @@ public class GeneratedSetupStateTest {
 
         assertFalse(state.isRevealed());
         assertFalse(state.canContinue());
-        assertFalse(state.reveal());
+        assertFalse(state.reveal(NOW, TIMEOUT));
+    }
+
+    @Test
+    public void shownSecret_hasItsTimeOnScreenCountedDown() {
+        final GeneratedSetupState state = shown();
+
+        assertEquals(TIMEOUT, state.revealMillisLeft(NOW));
+        assertEquals(TIMEOUT - 45_000, state.revealMillisLeft(NOW + 45_000));
+        assertEquals(0, state.revealMillisLeft(NOW + TIMEOUT));
+        assertEquals(0, state.revealMillisLeft(NOW + TIMEOUT + 1));
+        // Asking does not hide it: whoever shows it does that when the time is up.
+        assertTrue(state.isRevealed());
+    }
+
+    @Test
+    public void hiddenSecret_hasNoTimeLeftOnScreen() {
+        final GeneratedSetupState state = shown();
+
+        state.hide();
+
+        assertEquals(0, state.revealMillisLeft(NOW));
+    }
+
+    @Test
+    public void shownAgain_getsTheFullTimeAgain() {
+        final GeneratedSetupState state = shown();
+        state.hide();
+
+        assertTrue(state.reveal(NOW + 60_000, TIMEOUT));
+
+        assertEquals(TIMEOUT, state.revealMillisLeft(NOW + 60_000));
+    }
+
+    @Test
+    public void newSecret_isHiddenWithNoTimeLeft() {
+        final GeneratedSetupState state = shown();
+
+        state.onGenerated();
+
+        assertFalse(state.isRevealed());
+        assertEquals(0, state.revealMillisLeft(NOW));
     }
 }
