@@ -16,7 +16,9 @@ import java.util.Map;
  * numbers here must not be looser than the service's, or a phrase the user already confirmed
  * could be refused when it is saved.
  *
- * <p>The floor is a shape check. It says nothing about how hard a self-chosen phrase is to guess.
+ * <p>The floor is a shape check, and it can be wrong in both directions. A short random password
+ * is under it and may be hard to guess; a long phrase that is easy to guess is over it. A screen
+ * that shows the result has to say so: see {@link PassphraseGenerator}.
  */
 public final class PassphraseFloor {
 

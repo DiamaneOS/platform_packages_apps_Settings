@@ -53,6 +53,18 @@ import java.util.Random;
  *   <li>Mark the views as sensitive for accessibility services
  *       ({@code ACCESSIBILITY_DATA_SENSITIVE_YES}).
  * </ul>
+ *
+ * <p><b>What a screen must say about strength.</b> "Strong" and "weaker" are classes that come
+ * from the shape of a credential, its length and its characters: see {@link PassphraseFloor}.
+ * The class can be wrong in both directions:
+ * <ul>
+ *   <li>A random password of 12 characters can be as hard to guess as six of these words. It
+ *       is rated weaker, because it is short.
+ *   <li>A long phrase that is easy to guess, such as a line from a song, is rated strong.
+ * </ul>
+ * A screen that shows the class says this in plain words: the label is about the shape, it is
+ * not a measurement. Only a phrase from this generator has a known strength,
+ * {@link #entropyBits}.
  */
 public final class PassphraseGenerator {
 
