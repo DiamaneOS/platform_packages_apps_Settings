@@ -516,12 +516,8 @@ public final class GeneratedCredentialPanel {
             mNumbersRight.setText(numbers[1]);
             mNumbersRight.setVisibility(twoColumns ? View.VISIBLE : View.GONE);
             mSecretRight.setVisibility(twoColumns ? View.VISIBLE : View.GONE);
-            // Room for the most words a column can have, so that the card does not change
-            // its height with the number of words either.
-            final int lines = SecretDisplay.firstColumnWords(
-                    twoColumns ? PassphraseGenerator.MAX_WORDS : mWords, twoColumns);
-            mNumbersLeft.setMinLines(lines);
-            mSecretLeft.setMinLines(lines);
+            // The card has the rows this number of words needs: three for 5 and 6 words in
+            // two columns, four for 7 and 8. Dots or words, the lines are the same.
             if (revealed) {
                 final char[][] columns =
                         SecretDisplay.wordColumns(mPassphrase.chars(), twoColumns);

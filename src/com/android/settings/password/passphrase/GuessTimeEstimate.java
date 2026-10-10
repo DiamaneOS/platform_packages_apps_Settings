@@ -24,7 +24,10 @@ public final class GuessTimeEstimate {
         LESS_THAN,
         /** About the amount: the estimate, rounded down to two figures. */
         ABOUT,
-        /** More than the amount: used for "more than 1,000 billion years". */
+        /**
+         * More than the amount: used for 1,000 billion years and beyond, which the screens word
+         * as "more than a trillion years".
+         */
         MORE_THAN,
     }
 

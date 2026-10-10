@@ -101,6 +101,21 @@ public class SecretDisplayTest {
     }
 
     @Test
+    public void rowsOfTheCard_onlyAsManyAsTheWordCountNeeds() {
+        // Two columns: three rows for 5 and 6 words, four for 7 and 8.
+        assertEquals(3, SecretDisplay.firstColumnWords(5, true));
+        assertEquals(3, SecretDisplay.firstColumnWords(6, true));
+        assertEquals(4, SecretDisplay.firstColumnWords(7, true));
+        assertEquals(4, SecretDisplay.firstColumnWords(8, true));
+        // One column: a row for every word.
+        assertEquals(6, SecretDisplay.firstColumnWords(6, false));
+        for (int words = 5; words <= 8; words++) {
+            assertEquals(SecretDisplay.firstColumnWords(words, true),
+                    lineCount(SecretDisplay.maskColumns(words, true)[0]));
+        }
+    }
+
+    @Test
     public void groupedDigits_groupsOfFour() {
         assertEquals("1234 5678 9012 3456 7890", grouped("12345678901234567890"));
         assertEquals("1234 5678 90", grouped("1234567890"));

@@ -39,7 +39,7 @@ public final class LockStrengthText {
                 case LESS_THAN:
                     return context.getString(R.string.tally_guess_time_less_than_second);
                 case MORE_THAN:
-                    return context.getString(R.string.tally_guess_time_more_than_billions);
+                    return context.getString(R.string.tally_guess_time_more_than_trillion);
                 default:
                     final Map<String, Object> arguments = new HashMap<>();
                     arguments.put("count", amount);

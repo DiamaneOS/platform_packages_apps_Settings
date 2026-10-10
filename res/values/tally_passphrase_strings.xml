@@ -108,12 +108,12 @@
     <string name="tally_compare_heading">On the same assumptions:</string>
     <string name="tally_compare_pin6">6-digit PIN, at best: <xliff:g id="time">%1$s</xliff:g></string>
     <string name="tally_compare_words"><xliff:g id="words" example="6">%1$d</xliff:g> words: <xliff:g id="time">%2$s</xliff:g></string>
-    <string name="tally_compare_random_pin">20 random digits: <xliff:g id="time">%1$s</xliff:g></string>
+    <string name="tally_compare_random_pin">20-digit PIN: <xliff:g id="time">%1$s</xliff:g></string>
 
     <!-- An estimated time to guess. Always with "about", "less than" or "more than": it is an
          estimate. # is a number of two figures such as 4.6, 15 or 190. [CHAR LIMIT=NONE] -->
     <string name="tally_guess_time_less_than_second">less than 1 second</string>
-    <string name="tally_guess_time_more_than_billions">more than 1,000 billion years</string>
+    <string name="tally_guess_time_more_than_trillion">more than a trillion years</string>
     <string name="tally_guess_time_seconds">{count, plural,
         =1      {about # second}
         other   {about # seconds}
@@ -160,7 +160,7 @@
     <!-- Own passphrase. What the verdict can and cannot tell. [CHAR LIMIT=NONE] -->
     <string name="tally_verdict_how_message">The phone only looks at length and characters, not at meaning. So it can be wrong both ways. A short random password counts as weaker. A long quote counts as strong. A weaker password still works, after one warning.</string>
     <!-- Own passphrase. Headers of the first and the second entry. [CHAR LIMIT=40] -->
-    <string name="tally_own_passphrase_header">Choose a passphrase</string>
+    <string name="tally_own_passphrase_header">Own passphrase</string>
     <string name="tally_own_passphrase_again_header">Type it again</string>
 
     <!-- Warning shown before a PIN, a pattern or a short password is set. Titles.
@@ -186,7 +186,12 @@
     <!-- Choosing no screen lock, or skipping it in setup. [CHAR LIMIT=NONE] -->
     <string name="tally_lock_none_title">No screen lock?</string>
     <string name="tally_lock_none_warning">Without a lock, anyone holding the phone can open it.</string>
-    <!-- Choosing no screen lock. Button that confirms. [CHAR LIMIT=24] -->
+    <!-- Choosing no screen lock. The safe button, which is the filled one, and the button that
+         confirms. [CHAR LIMIT=24] -->
+    <string name="tally_lock_none_keep">Keep a lock</string>
     <string name="tally_lock_none_confirm">Use no lock</string>
+    <!-- Removing the screen lock in use. The same two buttons. [CHAR LIMIT=24] -->
+    <string name="tally_lock_remove_keep">Keep the lock</string>
+    <string name="tally_lock_remove_confirm">Remove the lock</string>
 
 </resources>
