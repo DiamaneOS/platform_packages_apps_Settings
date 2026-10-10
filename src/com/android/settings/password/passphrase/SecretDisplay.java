@@ -57,6 +57,36 @@ public final class SecretDisplay {
         return result;
     }
 
+    /**
+     * The numbered words in two columns, to be shown side by side: the first half, rounded up,
+     * on the left and the rest on the right. Six words give "1 2 3" and "4 5 6".
+     *
+     * @return the left and the right column; the caller wipes both
+     */
+    public static char[][] numberedWordColumns(char[] phrase) {
+        final char[] all = numberedWords(phrase);
+        int lines = 1;
+        for (char c : all) {
+            if (c == '\n') {
+                lines++;
+            }
+        }
+        // The left column ends at the line break after its last word.
+        int breaksToSkip = (lines + 1) / 2;
+        int split = all.length;
+        for (int i = 0; i < all.length; i++) {
+            if (all[i] == '\n' && --breaksToSkip == 0) {
+                split = i;
+                break;
+            }
+        }
+        final char[] left = Arrays.copyOf(all, split);
+        final char[] right = split < all.length
+                ? Arrays.copyOfRange(all, split + 1, all.length) : new char[0];
+        wipe(all);
+        return new char[][] {left, right};
+    }
+
     /** The digits in groups of {@link #DIGIT_GROUP}, separated by spaces: "1234 5678 9012". */
     public static char[] groupedDigits(char[] digits) {
         if (digits.length == 0) {

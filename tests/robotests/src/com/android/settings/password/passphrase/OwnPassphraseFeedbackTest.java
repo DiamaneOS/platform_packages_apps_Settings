@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.android.settings.password.passphrase.ChosenPassphraseRater.Rating;
+import com.android.settings.password.passphrase.OwnPassphraseFeedback.Verdict;
 
 import org.junit.Test;
 
@@ -76,6 +77,64 @@ public class OwnPassphraseFeedbackTest {
         assertTrue(feedback("abababababababababababab").countsAsWeaker);
         assertTrue(feedback("").countsAsWeaker);
         assertTrue(feedback("abcd").countsAsWeaker);
+    }
+
+    private static Verdict verdict(String password) {
+        return OwnPassphraseFeedback.of(password.toCharArray(), password.length(),
+                classOf(password),
+                new ShapeRater().rate(password.toCharArray(), password.length())).verdict;
+    }
+
+    @Test
+    public void verdict_followsWhatIsTyped() {
+        assertEquals(Verdict.EMPTY, verdict(""));
+        assertEquals(Verdict.WEAKER_TOO_SHORT, verdict("a"));
+        assertEquals(Verdict.WEAKER_TOO_SHORT, verdict("q7#Lw2!vXp9$"));
+        assertEquals(Verdict.WEAKER_TOO_SHORT, verdict("mango stairs violet"));      // 19
+        assertEquals(Verdict.STRONG, verdict("mango stairs violets"));               // 20
+        assertEquals(Verdict.STRONG, verdict("mango stairs violet copper engine"));
+        assertEquals(Verdict.STRONG_LOOKS_GUESSABLE, verdict("horse horse horse horse "));
+    }
+
+    @Test
+    public void verdict_weakerAtFullLength_saysWhy() {
+        assertEquals(Verdict.WEAKER_DIGITS_ONLY, verdict("01234567890123456789"));
+        assertEquals(Verdict.WEAKER_FEW_CHARACTERS, verdict("abababababababababababab"));
+        assertEquals(Verdict.WEAKER_FEW_CHARACTERS, verdict("aaaa bbbb aaaa bbbb aaaa"));
+        // Short and digits only: the length comes first, it is what to fix first.
+        assertEquals(Verdict.WEAKER_TOO_SHORT, verdict("123456"));
+    }
+
+    @Test
+    public void verdict_matchesTheFlags() {
+        for (String password : new String[] {"", "abcd", "q7#Lw2!vXp9$", "01234567890123456789",
+                "abababababababababababab", "mango stairs violet copper engine",
+                "horse horse horse horse "}) {
+            final OwnPassphraseFeedback feedback = OwnPassphraseFeedback.of(
+                    password.toCharArray(), password.length(), classOf(password),
+                    new ShapeRater().rate(password.toCharArray(), password.length()));
+            final boolean strong = feedback.verdict == Verdict.STRONG
+                    || feedback.verdict == Verdict.STRONG_LOOKS_GUESSABLE;
+            assertEquals(password, !strong, feedback.countsAsWeaker);
+            assertEquals(password, strong, feedback.learningPeriodApplies);
+            assertEquals(password, feedback.verdict == Verdict.STRONG_LOOKS_GUESSABLE,
+                    feedback.looksGuessable);
+            // The flags agree with the simpler way of asking.
+            final OwnPassphraseFeedback simple = feedback(password);
+            assertEquals(password, simple.countsAsWeaker, feedback.countsAsWeaker);
+            assertEquals(password, simple.looksGuessable, feedback.looksGuessable);
+        }
+    }
+
+    @Test
+    public void verdict_serviceSaysWeakerForAReasonNotSeenHere() {
+        final String password = "mango stairs violet copper engine";
+
+        final OwnPassphraseFeedback feedback = OwnPassphraseFeedback.of(password.toCharArray(),
+                password.length(), StrengthClass.WEAKER, Rating.NOT_EASILY_GUESSED);
+
+        assertEquals(Verdict.WEAKER, feedback.verdict);
+        assertTrue(feedback.countsAsWeaker);
     }
 
     @Test
