@@ -72,6 +72,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.EditorInfo;
@@ -79,6 +80,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImeAwareEditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -103,7 +105,6 @@ import com.android.settings.core.InstrumentedFragment;
 import com.android.settings.flags.Flags;
 import com.android.settings.notification.RedactionInterstitial;
 import com.android.settings.password.passphrase.ChosenPassphraseRater;
-import com.android.settings.password.passphrase.FooterOverlap;
 import com.android.settings.password.passphrase.GeneratedCredentialPanel;
 import com.android.settings.password.passphrase.KeptEntry;
 import com.android.settings.password.passphrase.LockSetupHolder;
@@ -652,8 +653,14 @@ public class ChooseLockPassword extends SettingsActivity {
             // with the sides of the parent visually.
             ViewGroup container = view.findViewById(R.id.password_container);
             container.setOpticalInsets(Insets.NONE);
-            // In landscape the footer lies over the scrolling content: keep the content above.
-            FooterOverlap.keepContentAbove(mLayout, container);
+            // The setup layout lets what scrolls be drawn outside its scrolling view, under the
+            // footer's buttons and the status bar. This screen can have more on it than fits,
+            // above all in landscape: it stays inside, and what does not fit is scrolled to.
+            final ScrollView scrollView = mLayout.getScrollView();
+            if (scrollView != null) {
+                scrollView.setOutlineProvider(ViewOutlineProvider.BOUNDS);
+                scrollView.setClipToOutline(true);
+            }
 
             final FooterBarMixin mixin = mLayout.getMixin(FooterBarMixin.class);
             mixin.setSecondaryButton(
