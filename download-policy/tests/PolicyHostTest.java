@@ -193,8 +193,15 @@ public final class PolicyHostTest {
             case "read_failure":
                 android.provider.Settings.Global.value = "2:canada:1";
                 check(DownloadPolicyClient.read(c) == DownloadPolicy.DEFAULT);
+                android.provider.Settings.Global.value = "1:canada:0";
                 android.provider.Settings.Global.failRead = true;
-                check(DownloadPolicyClient.read(c) == DownloadPolicy.DEFAULT);
+                refuses(IOException.class, () -> DownloadPolicyClient.read(c));
+                android.provider.Settings.Global.failRead = false;
+                android.provider.Settings.Global.nullCursor = true;
+                refuses(IOException.class, () -> DownloadPolicyClient.read(c));
+                android.provider.Settings.Global.nullCursor = false;
+                android.provider.Settings.Global.rows = 2;
+                refuses(IOException.class, () -> DownloadPolicyClient.read(c));
                 check(android.provider.Settings.Global.writes == 0);
                 break;
             case "platform_writer":
