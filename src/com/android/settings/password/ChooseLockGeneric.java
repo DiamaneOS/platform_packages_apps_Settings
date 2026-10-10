@@ -95,9 +95,8 @@ import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
 import com.android.settings.ext.BoolSettingPrefController;
 import com.android.settings.flags.Flags;
+import com.android.settings.password.passphrase.LockLabels;
 import com.android.settings.password.passphrase.LockPickerOrder;
-import com.android.settings.password.passphrase.LockStrength;
-import com.android.settings.password.passphrase.StrengthClass;
 import com.android.settings.safetycenter.LockScreenSafetySource;
 import com.android.settings.search.SearchFeatureProvider;
 import com.android.settings.security.screenlock.AutoPinConfirmPreferenceController;
@@ -889,10 +888,13 @@ public class ChooseLockGeneric extends SettingsActivity {
             ScreenLockType lock =
                     ScreenLockType.fromQuality(
                             mLockPatternUtils.getKeyguardStoredPasswordQuality(credentialOwner));
-            if (lock == ScreenLockType.PIN && LockStrength.current(
-                    mLockPatternUtils, credentialOwner) == StrengthClass.STRONG) {
-                // Only a PIN the phone generated is strong.
-                lock = ScreenLockType.GENERATED_PIN;
+            // The row that says what the lock is worth: a strong password is on "Passphrase",
+            // a weaker one on "Own passphrase", a PIN the phone generated on its own row.
+            final ScreenLockType row = LockLabels.currentPickerRow(mLockPatternUtils,
+                    credentialOwner,
+                    mLockPatternUtils.getKeyguardStoredPasswordQuality(credentialOwner));
+            if (row != null) {
+                lock = row;
             }
             return lock != null ? lock.preferenceKey : null;
         }
@@ -1310,14 +1312,13 @@ public class ChooseLockGeneric extends SettingsActivity {
             public Dialog onCreateDialog(Bundle savedInstanceState) {
                 final Bundle args = getArguments();
 
-                // First, in plain words, what having no lock means. Then, when a lock is
-                // removed, what goes with it.
+                // One sentence, in plain words, on what having no lock means. The stock
+                // message, which differs with the lock and the biometrics, is not shown; its
+                // resource only tells here whether a lock is being removed.
                 final int messageRes = args.getInt(ARG_MESSAGE_RES);
-                final String message = getString(R.string.tally_lock_none_warning)
-                        + (messageRes != 0 ? "\n\n" + getString(messageRes) : "");
                 return new AlertDialog.Builder(getActivity())
                         .setTitle(args.getInt(ARG_TITLE_RES))
-                        .setMessage(message)
+                        .setMessage(R.string.tally_lock_none_warning)
                         .setPositiveButton(messageRes != 0
                                         ? R.string.unlock_disable_frp_warning_ok
                                         : R.string.tally_lock_none_confirm,

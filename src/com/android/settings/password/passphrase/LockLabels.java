@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.android.internal.widget.LockPatternUtils;
 import com.android.settings.R;
+import com.android.settings.password.ScreenLockType;
 
 /** The name Settings shows for the screen lock in use: see {@link LockLabel}. */
 public final class LockLabels {
@@ -44,6 +45,36 @@ public final class LockLabels {
                 return R.string.tally_lock_label_pin_weaker;
             case PATTERN_WEAKER:
                 return R.string.tally_lock_label_pattern_weaker;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * The row of the lock picker that stands for the lock in use, or null for no lock or a
+     * kind this does not know. A password that counts as strong is on the "Passphrase" row,
+     * whether the phone generated it or not; a weaker one, or one not typed since the restart,
+     * on "Own passphrase". Only a PIN the phone generated is on "Long random PIN".
+     */
+    @Nullable
+    public static ScreenLockType currentPickerRow(LockPatternUtils utils,
+            int credentialOwnerUserId, int storedQuality) {
+        final LockLabel.Kind kind = kindOf(storedQuality);
+        if (kind == LockLabel.Kind.NONE) {
+            return null;
+        }
+        switch (LockLabel.of(kind, LockStrength.current(utils, credentialOwnerUserId))) {
+            case PASSPHRASE:
+                return ScreenLockType.GENERATED_PASSPHRASE;
+            case PASSWORD_WEAKER:
+            case PASSWORD_NOT_TYPED_SINCE_RESTART:
+                return ScreenLockType.PASSWORD;
+            case RANDOM_PIN:
+                return ScreenLockType.GENERATED_PIN;
+            case PIN_WEAKER:
+                return ScreenLockType.PIN;
+            case PATTERN_WEAKER:
+                return ScreenLockType.PATTERN;
             default:
                 return null;
         }
