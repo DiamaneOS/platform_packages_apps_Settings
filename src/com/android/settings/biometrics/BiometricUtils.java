@@ -53,6 +53,7 @@ import com.android.settings.biometrics.fingerprint.FingerprintEnroll;
 import com.android.settings.biometrics.fingerprint.FingerprintEnrollActivityClassProvider;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settings.password.ChooseLockGeneric;
+import com.android.settings.password.ChooseLockPassword;
 import com.android.settings.password.ChooseLockSettingsHelper;
 import com.android.settings.password.SetupChooseLockGeneric;
 import com.android.settingslib.activityembedding.ActivityEmbeddingUtils;
@@ -208,12 +209,14 @@ public class BiometricUtils {
     public static Intent getChooseLockIntent(@NonNull Context context,
             @NonNull Intent activityIntent) {
         if (WizardManagerHelper.isAnySetupWizard(activityIntent)) {
-            // Default to PIN lock in setup wizard
+            // Default to a generated passphrase in setup wizard
             Intent intent = new Intent(context, SetupChooseLockGeneric.class);
             if (StorageManager.isFileEncrypted()) {
+                // A generated passphrase, not a PIN: the other kinds are behind "options".
                 intent.putExtra(
                         LockPatternUtils.PASSWORD_TYPE_KEY,
-                        DevicePolicyManager.PASSWORD_QUALITY_NUMERIC);
+                        DevicePolicyManager.PASSWORD_QUALITY_ALPHABETIC);
+                intent.putExtra(ChooseLockPassword.EXTRA_KEY_GENERATED, true);
                 intent.putExtra(ChooseLockGeneric.ChooseLockGenericFragment
                         .EXTRA_SHOW_OPTIONS_BUTTON, true);
             }
@@ -233,12 +236,14 @@ public class BiometricUtils {
     public static Intent getChooseLockIntent(@NonNull Context context,
             boolean isSuw, @NonNull Bundle suwExtras) {
         if (isSuw) {
-            // Default to PIN lock in setup wizard
+            // Default to a generated passphrase in setup wizard
             Intent intent = new Intent(context, SetupChooseLockGeneric.class);
             if (StorageManager.isFileEncrypted()) {
+                // A generated passphrase, not a PIN: the other kinds are behind "options".
                 intent.putExtra(
                         LockPatternUtils.PASSWORD_TYPE_KEY,
-                        DevicePolicyManager.PASSWORD_QUALITY_NUMERIC);
+                        DevicePolicyManager.PASSWORD_QUALITY_ALPHABETIC);
+                intent.putExtra(ChooseLockPassword.EXTRA_KEY_GENERATED, true);
                 intent.putExtra(ChooseLockGeneric.ChooseLockGenericFragment
                         .EXTRA_SHOW_OPTIONS_BUTTON, true);
             }

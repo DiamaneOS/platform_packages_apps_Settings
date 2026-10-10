@@ -95,6 +95,9 @@ import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
 import com.android.settings.ext.BoolSettingPrefController;
 import com.android.settings.flags.Flags;
+import com.android.settings.password.passphrase.LockPickerOrder;
+import com.android.settings.password.passphrase.LockStrength;
+import com.android.settings.password.passphrase.StrengthClass;
 import com.android.settings.safetycenter.LockScreenSafetySource;
 import com.android.settings.search.SearchFeatureProvider;
 import com.android.settings.security.screenlock.AutoPinConfirmPreferenceController;
@@ -106,6 +109,7 @@ import com.android.settings.security.screenlock.PinScramblingPrefController;
 import com.android.settings.security.screenlock.PowerButtonInstantLockPreferenceController;
 import com.android.settingslib.RestrictedPreference;
 import com.android.settingslib.core.AbstractPreferenceController;
+import com.android.settingslib.utils.ThreadUtils;
 import com.android.settingslib.widget.FooterPreference;
 
 import com.google.android.setupcompat.util.WizardManagerHelper;
@@ -209,6 +213,10 @@ public class ChooseLockGeneric extends SettingsActivity {
         private ChooseLockGenericController mController;
         private int mUnificationProfileId = UserHandle.USER_NULL;
         private LockscreenCredential mUnificationProfileCredential;
+        // Whether the phone generates the passphrase or PIN that is set next.
+        private boolean mGenerate;
+        // Set while the lock is being removed off the main thread.
+        private boolean mRemovingLock;
 
         @Nullable
         private AutoPinConfirmPreferenceController mAutoPinConfirmPreferenceController;
@@ -293,6 +301,8 @@ public class ChooseLockGeneric extends SettingsActivity {
             mForBiometrics = intent.getBooleanExtra(
                     ChooseLockSettingsHelper.EXTRA_KEY_FOR_BIOMETRICS, false);
             mWaitingForBiometricEnrollment = mForBiometrics || mForFingerprint || mForFace;
+            // Only matters when the kind of lock is named by the intent as well.
+            mGenerate = intent.getBooleanExtra(ChooseLockPassword.EXTRA_KEY_GENERATED, false);
 
             mExtraLockScreenTitleResId = intent.getIntExtra(EXTRA_KEY_CHOOSE_LOCK_SCREEN_TITLE, -1);
             mExtraLockScreenDescriptionResId =
@@ -488,6 +498,12 @@ public class ChooseLockGeneric extends SettingsActivity {
                 // unlock method to an insecure one
                 showFactoryResetProtectionWarningDialog(key, GateKeeper.getSecureUserId(mUserId));
                 return true;
+            } else if (!isUnlockMethodSecure(key)) {
+                // There is no lock and none is wanted. Say what that means before it stays so.
+                FactoryResetProtectionWarningDialog.newInstance(
+                        R.string.tally_lock_none_title, 0 /* messageRes */, key)
+                        .show(getChildFragmentManager(), TAG_FRP_WARNING_DIALOG);
+                return true;
             } else if (KEY_SKIP_FINGERPRINT.equals(key) || KEY_SKIP_FACE.equals(key)
                     || KEY_SKIP_BIOMETRICS.equals(key)) {
                 mWaitingForBiometricEnrollment = false;
@@ -645,6 +661,7 @@ public class ChooseLockGeneric extends SettingsActivity {
                 disableUnusablePreferences();
                 updatePreferenceText();
                 updateCurrentPreference();
+                LockPickerOrder.apply(getPreferenceScreen());
             } else if (!isRecreatingActivity) {
                 // Don't start the activity again if we are recreated for configuration change
                 updateUnlockMethodAndFinish(quality, false, true /* chooseLockSkipped */);
@@ -858,6 +875,11 @@ public class ChooseLockGeneric extends SettingsActivity {
             ScreenLockType lock =
                     ScreenLockType.fromQuality(
                             mLockPatternUtils.getKeyguardStoredPasswordQuality(credentialOwner));
+            if (lock == ScreenLockType.PIN && LockStrength.current(
+                    mLockPatternUtils, credentialOwner) == StrengthClass.STRONG) {
+                // Only a PIN the phone generated is strong.
+                lock = ScreenLockType.GENERATED_PIN;
+            }
             return lock != null ? lock.preferenceKey : null;
         }
 
@@ -902,7 +924,8 @@ public class ChooseLockGeneric extends SettingsActivity {
                             .setForBiometrics(mForBiometrics)
                             .setUserId(mUserId)
                             .setRequestGatekeeperPasswordHandle(mRequestGatekeeperPasswordHandle)
-                            .setReturnCredentials(mReturnCredentials);
+                            .setReturnCredentials(mReturnCredentials)
+                            .setGenerated(mGenerate);
             if (android.app.supervision.flags.Flags.enableSupervisionSettingsUiUpdates()) {
                 builder.setForSupervisionReset(
                         getIntent().getBooleanExtra(
@@ -982,14 +1005,51 @@ public class ChooseLockGeneric extends SettingsActivity {
                 if (mUserPassword != null) {
                     // No need to call setLockCredential if the user currently doesn't
                     // have a password
-                    mLockPatternUtils.setLockCredential(
-                            LockscreenCredential.createNone(), mUserPassword, mUserId);
+                    removeLockInBackground(disabled);
+                    return;
                 }
                 mLockPatternUtils.setLockScreenDisabled(disabled, mUserId);
                 getActivity().setResult(Activity.RESULT_OK);
                 LockScreenSafetySource.onLockScreenChange(getContext());
                 finish();
             }
+        }
+
+        /**
+         * Removes the screen lock and finishes. Removing checks the current lock first, which
+         * takes about a second on this phone, so it is not done on the main thread.
+         */
+        private void removeLockInBackground(boolean disabled) {
+            if (mRemovingLock) {
+                return;
+            }
+            mRemovingLock = true;
+            final PreferenceScreen screen = getPreferenceScreen();
+            if (screen != null) {
+                screen.setEnabled(false);
+            }
+            final LockPatternUtils utils = mLockPatternUtils;
+            final LockscreenCredential current = mUserPassword.duplicate();
+            final int userId = mUserId;
+            final Context appContext = getContext().getApplicationContext();
+            ThreadUtils.postOnBackgroundThread(() -> {
+                try {
+                    utils.setLockCredential(LockscreenCredential.createNone(), current, userId);
+                    utils.setLockScreenDisabled(disabled, userId);
+                } catch (RuntimeException e) {
+                    Log.e(TAG, "Failed to remove the screen lock", e);
+                } finally {
+                    current.zeroize();
+                }
+                ThreadUtils.postOnMainThread(() -> {
+                    LockScreenSafetySource.onLockScreenChange(appContext);
+                    final Activity activity = getActivity();
+                    if (activity != null) {
+                        activity.setResult(Activity.RESULT_OK);
+                        activity.finish();
+                    }
+                });
+            });
         }
 
         private Intent getIntentForUnlockMethod(int quality) {
@@ -1159,12 +1219,15 @@ public class ChooseLockGeneric extends SettingsActivity {
 
             ScreenLockType lock = ScreenLockType.fromKey(unlockMethod);
             if (lock != null) {
+                mGenerate = lock.isGenerated();
                 switch (lock) {
                     case NONE:
                     case SWIPE:
                     case PATTERN:
                     case PIN:
                     case PASSWORD:
+                    case GENERATED_PASSPHRASE:
+                    case GENERATED_PIN:
                     case MANAGED:
                         updateUnlockMethodAndFinish(
                                 lock.defaultQuality,
@@ -1233,10 +1296,17 @@ public class ChooseLockGeneric extends SettingsActivity {
             public Dialog onCreateDialog(Bundle savedInstanceState) {
                 final Bundle args = getArguments();
 
+                // First, in plain words, what having no lock means. Then, when a lock is
+                // removed, what goes with it.
+                final int messageRes = args.getInt(ARG_MESSAGE_RES);
+                final String message = getString(R.string.tally_lock_none_warning)
+                        + (messageRes != 0 ? "\n\n" + getString(messageRes) : "");
                 return new AlertDialog.Builder(getActivity())
                         .setTitle(args.getInt(ARG_TITLE_RES))
-                        .setMessage(args.getInt(ARG_MESSAGE_RES))
-                        .setPositiveButton(R.string.unlock_disable_frp_warning_ok,
+                        .setMessage(message)
+                        .setPositiveButton(messageRes != 0
+                                        ? R.string.unlock_disable_frp_warning_ok
+                                        : R.string.tally_lock_none_confirm,
                                 (dialog, whichButton) -> {
                                     String unlockMethod = args.getString(ARG_UNLOCK_METHOD_TO_SET);
                                     ((ChooseLockGenericFragment) getParentFragment())
