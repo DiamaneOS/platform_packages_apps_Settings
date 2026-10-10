@@ -20,7 +20,7 @@ import java.util.Random;
  * of its words are drawn again. Only a whole new draw keeps every acceptable phrase equally
  * likely; replacing one word or adding one would favour some phrases. With the EFF list this
  * happens to about one 5-word phrase in 7.7 billion (five words of three letters make 19
- * characters) and costs 1.9e-10 bits of entropy.
+ * characters) and costs 1.9e-10 bits; see {@link #rejectionLossBits}.
  *
  * <p><b>Secret handling.</b> The phrase is built in char arrays. Every array that held a part of
  * it is overwritten before {@link #generate} returns, except the one inside the returned
@@ -123,6 +123,30 @@ public final class PassphraseGenerator {
         } finally {
             scratch.wipe();
         }
+    }
+
+    /**
+     * Exact entropy in bits of a phrase from {@link #generate}: the base-2 logarithm of the
+     * number of phrases it can return.
+     *
+     * <p>The phrases under the floor are counted on each call, which takes milliseconds, more on
+     * a first call. The value for a word count never changes: compute it once, off the main
+     * thread.
+     */
+    public double entropyBits(int words) {
+        checkWords(words);
+        return CredentialStrength.passphraseEntropyBits(
+                words, mList.size(), PassphraseFloor.countRejected(mList, words));
+    }
+
+    /**
+     * Bits by which {@link #entropyBits} is below {@code words * log2(list size)}, because
+     * phrases under the floor are never returned.
+     */
+    public double rejectionLossBits(int words) {
+        checkWords(words);
+        return CredentialStrength.rejectionLossBits(
+                words, mList.size(), PassphraseFloor.countRejected(mList, words));
     }
 
     private static void checkWords(int words) {

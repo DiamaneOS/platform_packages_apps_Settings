@@ -76,6 +76,9 @@ public class PassphraseGeneratorTest {
 
         for (int words : new int[] {-1, 0, 1, 4, 9, 100}) {
             assertThrows(IllegalArgumentException.class, () -> generator.generate(words));
+            assertThrows(IllegalArgumentException.class, () -> generator.entropyBits(words));
+            assertThrows(IllegalArgumentException.class,
+                    () -> generator.rejectionLossBits(words));
         }
     }
 
@@ -366,5 +369,27 @@ public class PassphraseGeneratorTest {
     public void passphrase_cannotBeSerializedOrUsedAsText() {
         assertFalse(Serializable.class.isAssignableFrom(Passphrase.class));
         assertFalse(CharSequence.class.isAssignableFrom(Passphrase.class));
+    }
+
+    @Test
+    public void entropyBits_effList() {
+        final PassphraseGenerator generator = new PassphraseGenerator(mEff, new SeededRandom(SEED));
+
+        // words * log2(7776), less what the floor costs. Only five words lose anything that
+        // shows in a double: 1.88e-10 bits.
+        assertEquals(64.62406251784077, generator.entropyBits(5), 1e-12);
+        assertEquals(77.54887502163469, generator.entropyBits(6), 1e-12);
+        assertEquals(90.47368752524047, generator.entropyBits(7), 1e-12);
+        assertEquals(103.39850002884625, generator.entropyBits(8), 1e-12);
+    }
+
+    @Test
+    public void rejectionLossBits_effList() {
+        final PassphraseGenerator generator = new PassphraseGenerator(mEff, new SeededRandom(SEED));
+
+        assertEquals(1.88132119e-10, generator.rejectionLossBits(5), 1e-18);
+        assertEquals(7.087072e-20, generator.rejectionLossBits(6), 1e-25);
+        assertEquals(2.691074e-23, generator.rejectionLossBits(7), 1e-28);
+        assertEquals(1.116253e-26, generator.rejectionLossBits(8), 1e-31);
     }
 }
