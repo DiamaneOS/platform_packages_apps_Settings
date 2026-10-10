@@ -808,6 +808,20 @@ public class ChooseLockGeneric extends SettingsActivity {
                         getBiometricsPreferenceTitle(ScreenLockType.PASSWORD));
             }
 
+            if (mForFingerprint || mForFace || mForBiometrics) {
+                // Every choice keeps the name it has in the plain picker, with the biometric
+                // after it: "Passphrase • Fingerprint", "Own passphrase • Fingerprint".
+                for (ScreenLockType lock : ScreenLockType.values()) {
+                    if (lock == ScreenLockType.PATTERN || lock == ScreenLockType.PIN
+                            || lock == ScreenLockType.PASSWORD || lock.isGenerated()) {
+                        setPreferenceTitle(lock, mForBiometrics
+                                ? getBiometricsPreferenceTitle(lock)
+                                : BiometricUtils.getCombinedScreenLockOptions(getContext(),
+                                        mController.getTitle(lock), mForFingerprint, mForFace));
+                    }
+                }
+            }
+
             if (mManagedPasswordProvider.isSettingManagedPasswordSupported()) {
                 setPreferenceTitle(ScreenLockType.MANAGED,
                         mManagedPasswordProvider.getPickerOptionTitle(mForFingerprint));
