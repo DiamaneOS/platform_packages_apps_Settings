@@ -17,7 +17,8 @@
 
 <!-- The two buttons of a dialog that asks before something weaker or riskier is chosen, one
      under the other at full width: the safe choice filled, the other as a plain text button.
-     After dialog_custom_body_audio_sharing.xml, which stacks the same dialog button styles. -->
+     After dialog_custom_body_audio_sharing.xml, which stacks the same dialog button styles.
+     The backgrounds are those styles' shapes with a highlight for a press and for focus. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -32,12 +33,14 @@
         style="@style/Widget.SettingsLib.DialogButton.Filled"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp" />
+        android:layout_marginEnd="0dp"
+        android:background="@drawable/tally_dialog_button_filled" />
 
     <Button
         android:id="@+id/tally_dialog_other_button"
         style="@style/Widget.SettingsLib.DialogButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/tally_passphrase_gap_small" />
+        android:layout_marginTop="@dimen/tally_passphrase_gap_small"
+        android:background="@drawable/tally_dialog_button_plain" />
 </LinearLayout>

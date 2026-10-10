@@ -190,6 +190,8 @@
          confirms. [CHAR LIMIT=24] -->
     <string name="tally_lock_none_keep">Keep a lock</string>
     <string name="tally_lock_none_confirm">Use no lock</string>
+    <!-- Removing the screen lock in use: title of the dialog. [CHAR LIMIT=40] -->
+    <string name="tally_lock_remove_title">Remove the screen lock?</string>
     <!-- Removing the screen lock in use. The same two buttons. [CHAR LIMIT=24] -->
     <string name="tally_lock_remove_keep">Keep the lock</string>
     <string name="tally_lock_remove_confirm">Remove the lock</string>

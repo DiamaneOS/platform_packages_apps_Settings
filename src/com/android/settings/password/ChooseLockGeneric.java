@@ -1114,8 +1114,9 @@ public class ChooseLockGeneric extends SettingsActivity {
         }
 
         private int getResIdForFactoryResetProtectionWarningTitle() {
+            // A work profile keeps its stock title, which names the profile.
             return mIsManagedProfile ? R.string.unlock_disable_frp_warning_title_profile
-                    : R.string.unlock_disable_frp_warning_title;
+                    : R.string.tally_lock_remove_title;
         }
 
         private int getResIdForFactoryResetProtectionWarningMessage(
