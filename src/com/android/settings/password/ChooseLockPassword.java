@@ -103,6 +103,7 @@ import com.android.settings.core.InstrumentedFragment;
 import com.android.settings.flags.Flags;
 import com.android.settings.notification.RedactionInterstitial;
 import com.android.settings.password.passphrase.ChosenPassphraseRater;
+import com.android.settings.password.passphrase.FooterOverlap;
 import com.android.settings.password.passphrase.GeneratedCredentialPanel;
 import com.android.settings.password.passphrase.LockStrength;
 import com.android.settings.password.passphrase.OwnPassphraseFeedback;
@@ -642,6 +643,8 @@ public class ChooseLockPassword extends SettingsActivity {
             // with the sides of the parent visually.
             ViewGroup container = view.findViewById(R.id.password_container);
             container.setOpticalInsets(Insets.NONE);
+            // In landscape the footer lies over the scrolling content: keep the content above.
+            FooterOverlap.keepContentAbove(mLayout, container);
 
             final FooterBarMixin mixin = mLayout.getMixin(FooterBarMixin.class);
             mixin.setSecondaryButton(
