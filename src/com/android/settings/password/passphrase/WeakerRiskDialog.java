@@ -8,9 +8,7 @@ import android.app.Dialog;
 import android.app.settings.SettingsEnums;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -95,27 +93,21 @@ public class WeakerRiskDialog extends InstrumentedDialogFragment {
                 decline = R.string.tally_weaker_risk_decline_pin;
                 break;
         }
-        // Not the fragment's own inflater: asking for that one creates the dialog.
-        final View buttons = LayoutInflater.from(requireActivity())
-                .inflate(R.layout.tally_weaker_risk_buttons, null);
-        final Button declineButton = buttons.findViewById(R.id.tally_weaker_risk_decline);
-        declineButton.setText(decline);
-        declineButton.setOnClickListener(v -> {
-            final Listener listener = listener();
-            dismiss();
-            if (listener != null) {
-                listener.onWeakerRiskDeclined();
-            }
-        });
-        final Button acceptButton = buttons.findViewById(R.id.tally_weaker_risk_accept);
-        acceptButton.setText(accept);
-        acceptButton.setOnClickListener(v -> {
-            final Listener listener = listener();
-            dismiss();
-            if (listener != null) {
-                listener.onWeakerRiskAccepted();
-            }
-        });
+        final View buttons = StackedDialogButtons.create(requireActivity(),
+                decline, () -> {
+                    final Listener listener = listener();
+                    dismiss();
+                    if (listener != null) {
+                        listener.onWeakerRiskDeclined();
+                    }
+                },
+                accept, () -> {
+                    final Listener listener = listener();
+                    dismiss();
+                    if (listener != null) {
+                        listener.onWeakerRiskAccepted();
+                    }
+                });
         return new AlertDialog.Builder(requireActivity())
                 .setTitle(title)
                 .setMessage(message)

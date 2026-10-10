@@ -97,6 +97,7 @@ import com.android.settings.ext.BoolSettingPrefController;
 import com.android.settings.flags.Flags;
 import com.android.settings.password.passphrase.LockLabels;
 import com.android.settings.password.passphrase.LockPickerOrder;
+import com.android.settings.password.passphrase.StackedDialogButtons;
 import com.android.settings.safetycenter.LockScreenSafetySource;
 import com.android.settings.search.SearchFeatureProvider;
 import com.android.settings.security.screenlock.AutoPinConfirmPreferenceController;
@@ -1315,19 +1316,24 @@ public class ChooseLockGeneric extends SettingsActivity {
                 // One sentence, in plain words, on what having no lock means. The stock
                 // message, which differs with the lock and the biometrics, is not shown; its
                 // resource only tells here whether a lock is being removed.
-                final int messageRes = args.getInt(ARG_MESSAGE_RES);
+                final boolean removesLock = args.getInt(ARG_MESSAGE_RES) != 0;
+                // The filled button keeps a lock. Having none is the plain one under it.
+                final View buttons = StackedDialogButtons.create(getActivity(),
+                        removesLock ? R.string.tally_lock_remove_keep
+                                : R.string.tally_lock_none_keep,
+                        this::dismiss,
+                        removesLock ? R.string.tally_lock_remove_confirm
+                                : R.string.tally_lock_none_confirm,
+                        () -> {
+                            dismiss();
+                            String unlockMethod = args.getString(ARG_UNLOCK_METHOD_TO_SET);
+                            ((ChooseLockGenericFragment) getParentFragment())
+                                    .setUnlockMethod(unlockMethod);
+                        });
                 return new AlertDialog.Builder(getActivity())
                         .setTitle(args.getInt(ARG_TITLE_RES))
                         .setMessage(R.string.tally_lock_none_warning)
-                        .setPositiveButton(messageRes != 0
-                                        ? R.string.unlock_disable_frp_warning_ok
-                                        : R.string.tally_lock_none_confirm,
-                                (dialog, whichButton) -> {
-                                    String unlockMethod = args.getString(ARG_UNLOCK_METHOD_TO_SET);
-                                    ((ChooseLockGenericFragment) getParentFragment())
-                                            .setUnlockMethod(unlockMethod);
-                                })
-                        .setNegativeButton(R.string.cancel, (dialog, whichButton) -> dismiss())
+                        .setView(buttons)
                         .create();
             }
 

@@ -45,6 +45,7 @@ import com.android.settings.R;
 import com.android.settings.Utils;
 import com.android.settings.biometrics.BiometricUtils;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
+import com.android.settings.password.passphrase.StackedDialogButtons;
 
 public class SetupSkipDialog extends InstrumentedDialogFragment
         implements DialogInterface.OnClickListener {
@@ -106,9 +107,10 @@ public class SetupSkipDialog extends InstrumentedDialogFragment
                 msgResId = getPinSkipMessageRes(hasFace && isFaceSupported, hasFingerprint);
                 break;
         }
-        return new AlertDialog.Builder(isExpressiveStyle ? getExpressiveContext() : getContext())
-                .setPositiveButton(R.string.skip_lock_screen_dialog_button_label, this)
-                .setNegativeButton(R.string.cancel_lock_screen_dialog_button_label, this)
+        final Context context = isExpressiveStyle ? getExpressiveContext() : getContext();
+        return new AlertDialog.Builder(context)
+                .setView(stackedButtons(context, R.string.cancel_lock_screen_dialog_button_label,
+                        R.string.skip_lock_screen_dialog_button_label))
                 .setTitle(getSkipSetupTitle(screenLockResId, hasFingerprint,
                         hasFace && isFaceSupported))
                 .setMessage(withNoLockWarning(msgResId));
@@ -136,13 +138,27 @@ public class SetupSkipDialog extends InstrumentedDialogFragment
                     isExpressiveStyle);
         }
 
-        return new AlertDialog.Builder(isExpressiveStyle ? getExpressiveContext() : getContext())
-                .setPositiveButton(R.string.skip_anyway_button_label, this)
-                .setNegativeButton(R.string.go_back_button_label, this)
+        final Context context = isExpressiveStyle ? getExpressiveContext() : getContext();
+        return new AlertDialog.Builder(context)
+                .setView(stackedButtons(context, R.string.go_back_button_label,
+                        R.string.skip_anyway_button_label))
                 .setTitle(R.string.lock_screen_intro_skip_title)
                 .setMessage(withNoLockWarning(args.getBoolean(ARG_FRP_SUPPORTED) ?
                         R.string.lock_screen_intro_skip_dialog_text_frp :
                         R.string.lock_screen_intro_skip_dialog_text));
+    }
+
+    // Going back to set a lock is the filled button. Skipping is the plain one under it.
+    private View stackedButtons(Context context, @StringRes int goBack, @StringRes int skip) {
+        return StackedDialogButtons.create(context,
+                goBack, () -> {
+                    onClick(getDialog(), DialogInterface.BUTTON_NEGATIVE);
+                    dismiss();
+                },
+                skip, () -> {
+                    onClick(getDialog(), DialogInterface.BUTTON_POSITIVE);
+                    dismiss();
+                });
     }
 
     // First, in plain words, what a phone without a screen lock means. Then the usual text.
