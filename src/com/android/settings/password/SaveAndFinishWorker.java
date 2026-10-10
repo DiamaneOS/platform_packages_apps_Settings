@@ -58,6 +58,11 @@ public class SaveAndFinishWorker extends Fragment {
 
     private boolean mBlocking;
 
+    // Whether the user agreed to the risk of a weaker lock on the screen that starts the save.
+    private boolean mWeakerRiskAccepted;
+    // Set when the lock settings refused the lock because that agreement is missing.
+    private boolean mRefused;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +75,10 @@ public class SaveAndFinishWorker extends Fragment {
         }
 
         mListener = listener;
+        if (mRefused && mListener instanceof RefusalListener) {
+            mRefused = false;
+            ((RefusalListener) mListener).onChosenLockSaveRefused();
+        }
         if (mFinished && mListener != null) {
             mListener.onChosenLockSaveFinished(mWasSecureBefore, mResultData);
         }
@@ -95,7 +104,10 @@ public class SaveAndFinishWorker extends Fragment {
             LockscreenCredential currentCredential, int userId) {
         prepare(utils, chosenCredential, currentCredential, userId);
         if (mBlocking) {
-            finish(saveAndVerifyInBackground().second);
+            final Intent result = saveAndVerifyInBackground().second;
+            if (!reportRefusal()) {
+                finish(result);
+            }
         } else {
             new Task().execute();
         }
@@ -109,10 +121,23 @@ public class SaveAndFinishWorker extends Fragment {
     @VisibleForTesting
     Pair<Boolean, Intent> saveAndVerifyInBackground() {
         final int userId = mUserId;
+        mRefused = false;
         try {
+            if (mWeakerRiskAccepted) {
+                // Told to the lock settings directly before the save: it is good for this one
+                // save and is kept in memory for a few minutes at most.
+                mUtils.setWeakerCredentialRiskAccepted(true, userId);
+            }
             if (!mUtils.setLockCredential(mChosenCredential, mCurrentCredential, userId)) {
                 return Pair.create(false, null);
             }
+        } catch (IllegalStateException e) {
+            // The lock is of the weaker class and the user's agreement is missing. Nothing was
+            // changed. The screen has to show the risk and try again. With the agreement
+            // recorded just above, this is some other failure.
+            Log.e(TAG, "Lockscreen credential was refused", e);
+            mRefused = !mWeakerRiskAccepted;
+            return Pair.create(false, null);
         } catch (RuntimeException e) {
             Log.e(TAG, "Failed to set lockscreen credential", e);
             return Pair.create(false, null);
@@ -194,6 +219,39 @@ public class SaveAndFinishWorker extends Fragment {
         return this;
     }
 
+    /**
+     * Sets whether the user agreed, on the risk screen, to a lock of the weaker class. The
+     * worker tells the lock settings right before it saves.
+     */
+    public SaveAndFinishWorker setWeakerRiskAccepted(boolean accepted) {
+        mWeakerRiskAccepted = accepted;
+        return this;
+    }
+
+    /**
+     * Tells a listener that can show the risk screen that the save was refused for want of the
+     * user's agreement.
+     *
+     * @return whether the save was refused and such a listener will be, or was, told. If not,
+     *     the save ends the usual way.
+     */
+    private boolean reportRefusal() {
+        if (!mRefused) {
+            return false;
+        }
+        if (mListener == null) {
+            // Told when a listener is set again.
+            return true;
+        }
+        if (mListener instanceof RefusalListener) {
+            mRefused = false;
+            ((RefusalListener) mListener).onChosenLockSaveRefused();
+            return true;
+        }
+        mRefused = false;
+        return false;
+    }
+
     public SaveAndFinishWorker setProfileToUnify(
             int profileId, LockscreenCredential credential) {
         mUnificationProfileId = profileId;
@@ -217,6 +275,9 @@ public class SaveAndFinishWorker extends Fragment {
 
         @Override
         protected void onPostExecute(Pair<Boolean, Intent> resultData) {
+            if (reportRefusal()) {
+                return;
+            }
             if (!resultData.first) {
                 Toast.makeText(getContext(), R.string.lockpassword_credential_changed,
                         Toast.LENGTH_LONG).show();
@@ -227,5 +288,17 @@ public class SaveAndFinishWorker extends Fragment {
 
     interface Listener {
         void onChosenLockSaveFinished(boolean wasSecureBefore, Intent resultData);
+    }
+
+    /**
+     * A {@link Listener} that can show the risk screen for a weaker lock. Only such a listener
+     * is told about a refusal; for any other, a refused save ends like a failed one.
+     */
+    interface RefusalListener {
+        /**
+         * The lock was not set, because it is of the weaker class and the user's agreement was
+         * not there. The worker is done; a new one is needed to try again.
+         */
+        void onChosenLockSaveRefused();
     }
 }
