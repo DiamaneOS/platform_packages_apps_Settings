@@ -17,6 +17,16 @@ public final class LockLabels {
 
     private LockLabels() {}
 
+    /** The lock's label. {@link LockLabel#NO_LOCK} also covers kinds without a label. */
+    public static LockLabel labelOf(LockPatternUtils utils, int credentialOwnerUserId,
+            int storedQuality) {
+        final LockLabel.Kind kind = kindOf(storedQuality);
+        if (kind == LockLabel.Kind.NONE) {
+            return LockLabel.NO_LOCK;
+        }
+        return LockLabel.of(kind, LockStrength.current(utils, credentialOwnerUserId));
+    }
+
     /**
      * The text for the screen lock of a user, or null when the usual text is to be used (no
      * lock, or a kind this does not know).
@@ -28,11 +38,7 @@ public final class LockLabels {
     @Nullable
     public static Integer summaryResId(LockPatternUtils utils, int credentialOwnerUserId,
             int storedQuality) {
-        final LockLabel.Kind kind = kindOf(storedQuality);
-        if (kind == LockLabel.Kind.NONE) {
-            return null;
-        }
-        switch (LockLabel.of(kind, LockStrength.current(utils, credentialOwnerUserId))) {
+        switch (labelOf(utils, credentialOwnerUserId, storedQuality)) {
             case PASSPHRASE:
                 return R.string.tally_lock_label_passphrase;
             case PASSWORD_WEAKER:
@@ -59,11 +65,7 @@ public final class LockLabels {
     @Nullable
     public static ScreenLockType currentPickerRow(LockPatternUtils utils,
             int credentialOwnerUserId, int storedQuality) {
-        final LockLabel.Kind kind = kindOf(storedQuality);
-        if (kind == LockLabel.Kind.NONE) {
-            return null;
-        }
-        switch (LockLabel.of(kind, LockStrength.current(utils, credentialOwnerUserId))) {
+        switch (labelOf(utils, credentialOwnerUserId, storedQuality)) {
             case PASSPHRASE:
                 return ScreenLockType.GENERATED_PASSPHRASE;
             case PASSWORD_WEAKER:

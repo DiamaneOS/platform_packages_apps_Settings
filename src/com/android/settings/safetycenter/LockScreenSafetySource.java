@@ -77,6 +77,9 @@ public final class LockScreenSafetySource {
         final boolean lockScreenAllowedByAdmin = isLockScreenAllowedByAdmin(context,
                 screenLockPreferenceDetailsUtils);
         final boolean isLockPatternSecure = screenLockPreferenceDetailsUtils.isLockPatternSecure();
+        // A weaker lock is a recommendation; a password of unknown strength makes no claim.
+        final TallyLockScreenSafety tally = TallyLockScreenSafety.of(context,
+                screenLockPreferenceDetailsUtils, lockScreenAllowedByAdmin, isLockPatternSecure);
         final int severityLevel =
                 lockScreenAllowedByAdmin
                         ? isLockPatternSecure
@@ -90,7 +93,7 @@ public final class LockScreenSafetySource {
                                 lockScreenAllowedByAdmin
                                         ? getScreenLockSummary(screenLockPreferenceDetailsUtils)
                                         : context.getString(R.string.disabled_by_policy_title),
-                                severityLevel)
+                                tally.severityLevel(severityLevel))
                         .setPendingIntent(lockScreenAllowedByAdmin ? pendingIntent : null)
                         .setEnabled(lockScreenAllowedByAdmin)
                         .build();
@@ -99,6 +102,7 @@ public final class LockScreenSafetySource {
         if (lockScreenAllowedByAdmin && !isLockPatternSecure) {
             safetySourceDataBuilder.addIssue(createNoScreenLockIssue(context, pendingIntent));
         }
+        tally.addIssue(context, safetySourceDataBuilder, pendingIntent);
         final SafetySourceData safetySourceData = safetySourceDataBuilder.build();
 
         SafetyCenterManagerWrapper.get()

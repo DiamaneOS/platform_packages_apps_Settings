@@ -8,4 +8,8 @@
          overlay turns it on where the device applies persist.diamaneos.hw_video_decode at
          boot and reports ro.vendor.diamaneos.hw_video_decode. -->
     <bool name="config_show_hardware_video_decoding">false</bool>
+
+    <!-- Security & privacy page, weaker screen lock. 0: reported as fine. 1: yellow row.
+         2: yellow row and a card. -->
+    <integer name="config_tally_weaker_lock_status">2</integer>
 </resources>
