@@ -162,7 +162,8 @@
     <!-- Own passphrase. What the verdict can and cannot tell. [CHAR LIMIT=NONE] -->
     <string name="tally_verdict_how_message">The phone only looks at length and characters, not at meaning. So it can be wrong both ways. A short random password counts as weaker. A long quote counts as strong. A weaker password still works, after one warning.</string>
     <!-- Warning shown before a PIN, a pattern or a short password is set. Titles.
-         [CHAR LIMIT=60] -->
+         The titles and the risk are also the card for such a lock on the Security & privacy
+         page. [CHAR LIMIT=60] -->
     <string name="tally_weaker_risk_title_pin">A PIN is easy to guess on this phone</string>
     <string name="tally_weaker_risk_title_pattern">A pattern is easy to guess on this phone</string>
     <string name="tally_weaker_risk_title_password">A short password is easier to guess on this phone</string>
