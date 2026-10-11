@@ -98,7 +98,7 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
             Preference(context).apply {
                 key = "kernel_emergency"
                 isSelectable = false
-                setTitle(R.string.tally_moments_kernel_emergency_title)
+                setTitle(R.string.wfc_disclaimer_emergency_limitation_title_text)
                 setSummary(R.string.tally_moments_kernel_emergency)
             }
         kernelCategory.addPreference(kernelNote)
@@ -148,8 +148,8 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
         greyscale =
             SwitchPreferenceCompat(context).apply {
                 key = "greyscale"
-                setTitle(R.string.tally_moments_greyscale)
-                setSummary(R.string.tally_moments_greyscale_summary)
+                setTitle(R.string.mode_grayscale_title)
+                setSummary(R.string.mode_grayscale_summary)
                 setOnPreferenceChangeListener { _, value ->
                     putInt(Secure.TALLY_MOMENTS_GREYSCALE, if (value as Boolean) 1 else 0)
                     true
@@ -291,12 +291,12 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
                 ),
                 Action(
                     Secure.MOMENTS_ACTION_AIRPLANE,
-                    R.string.tally_moments_action_airplane,
+                    R.string.airplane_mode,
                     R.string.tally_moments_action_airplane_summary,
                 ),
                 Action(
                     Secure.MOMENTS_ACTION_LOCKDOWN,
-                    R.string.tally_moments_action_lockdown,
+                    com.android.internal.R.string.global_action_lockdown,
                     R.string.tally_moments_action_lockdown_summary,
                 ),
                 Action(

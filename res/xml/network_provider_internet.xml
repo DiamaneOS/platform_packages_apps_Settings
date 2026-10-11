@@ -67,7 +67,7 @@
     <!-- DiamaneOS: the eSIM manager has no launcher icon. This opens it while eSIM support is on. -->
     <com.android.settingslib.RestrictedPreference
         android:key="manage_esims"
-        android:title="@string/tally_manage_esims"
+        android:title="@string/downloaded_sims_category_title"
         android:icon="@drawable/ic_sim_card"
         android:order="-13"
         settings:controller="com.android.settings.network.ManageEsimsPreferenceController"

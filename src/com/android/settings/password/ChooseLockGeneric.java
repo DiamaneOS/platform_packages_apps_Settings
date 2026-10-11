@@ -1114,9 +1114,8 @@ public class ChooseLockGeneric extends SettingsActivity {
         }
 
         private int getResIdForFactoryResetProtectionWarningTitle() {
-            // A work profile keeps its stock title, which names the profile.
             return mIsManagedProfile ? R.string.unlock_disable_frp_warning_title_profile
-                    : R.string.tally_lock_remove_title;
+                    : R.string.unlock_disable_frp_warning_title;
         }
 
         private int getResIdForFactoryResetProtectionWarningMessage(
@@ -1320,10 +1319,10 @@ public class ChooseLockGeneric extends SettingsActivity {
                 final boolean removesLock = args.getInt(ARG_MESSAGE_RES) != 0;
                 // The filled button keeps a lock. Having none is the plain one under it.
                 final View buttons = StackedDialogButtons.create(getActivity(),
-                        removesLock ? R.string.tally_lock_remove_keep
+                        removesLock ? R.string.cancel
                                 : R.string.tally_lock_none_keep,
                         this::dismiss,
-                        removesLock ? R.string.tally_lock_remove_confirm
+                        removesLock ? R.string.unlock_disable_frp_warning_ok
                                 : R.string.tally_lock_none_confirm,
                         () -> {
                             dismiss();

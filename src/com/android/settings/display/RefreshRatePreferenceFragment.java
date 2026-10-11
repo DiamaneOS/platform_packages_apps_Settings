@@ -42,7 +42,8 @@ public class RefreshRatePreferenceFragment extends RadioButtonPickerFragment {
         List<RateCandidate> candidates = new ArrayList<>();
         for (int rate : RefreshRates.supported(context)) {
             candidates.add(new RateCandidate(
-                    context.getString(R.string.tally_refresh_rate_option, rate), KEY_PREFIX + rate));
+                    context.getString(R.string.screen_refresh_rate_displayed_text, rate),
+                    KEY_PREFIX + rate));
         }
         return candidates;
     }

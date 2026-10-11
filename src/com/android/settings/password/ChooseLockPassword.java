@@ -807,9 +807,6 @@ public class ChooseLockPassword extends SettingsActivity {
                 final SettingsActivity sa = (SettingsActivity) activity;
                 String title = Stage.Introduction.getHint(
                         getContext(), mIsAlphaMode, getStageType(), mProfileType);
-                if (showsOwnPassphraseHeaders()) {
-                    title = getString(R.string.tally_own_passphrase_header);
-                }
                 sa.setTitle(title);
                 mLayout.setHeaderText(title);
             }
@@ -1136,12 +1133,6 @@ public class ChooseLockPassword extends SettingsActivity {
             }
         }
 
-        // Whether this screen has the headers of the own passphrase: a personal lock, typed
-        // by the user. A profile keeps the stock headers, which name the profile.
-        private boolean showsOwnPassphraseHeaders() {
-            return mVerdictView != null && mProfileType == ProfileType.None;
-        }
-
         protected void setNextEnabled(boolean enabled) {
             mNextButton.setEnabled(enabled);
         }
@@ -1332,9 +1323,10 @@ public class ChooseLockPassword extends SettingsActivity {
                     // before it is broken. The line under the field says what counts.
                     messages = new String[0];
                 }
-                if (showsOwnPassphraseHeaders()) {
+                if (mVerdictView != null) {
                     // Also when coming back from the second entry.
-                    setHeaderText(getString(R.string.tally_own_passphrase_header));
+                    setHeaderText(mUiStage.getHint(getContext(), mIsAlphaMode, getStageType(),
+                            mProfileType));
                 }
                 // Update the fulfillment of requirements.
                 mPasswordRequirementAdapter.setRequirements(messages, mIsErrorTooShort);
@@ -1347,8 +1339,6 @@ public class ChooseLockPassword extends SettingsActivity {
                 mPasswordRestrictionView.setVisibility(View.GONE);
                 setHeaderText(mGeneratedPanel != null
                         ? mGeneratedPanel.headerText(mUiStage == Stage.ConfirmWrong)
-                        : showsOwnPassphraseHeaders() && mUiStage == Stage.NeedToConfirm
-                        ? getString(R.string.tally_own_passphrase_again_header)
                         : mUiStage.getHint(getContext(), mIsAlphaMode, getStageType(),
                                 mProfileType));
                 setNextEnabled(canInput && length >= LockPatternUtils.MIN_LOCK_PASSWORD_SIZE);
