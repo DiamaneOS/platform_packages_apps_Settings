@@ -35,6 +35,7 @@ import com.android.settings.Utils;
 import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settings.password.ChooseLockGeneric.ChooseLockGenericFragment;
+import com.android.settings.password.passphrase.LockLabels;
 import com.android.settingslib.RestrictedLockUtils;
 import com.android.settingslib.transition.SettingsTransitionHelper;
 
@@ -190,6 +191,12 @@ public class ScreenLockPreferenceDetailsUtils {
         } else {
             int keyguardStoredPasswordQuality =
                     mLockPatternUtils.getKeyguardStoredPasswordQuality(userId);
+            // A name that says what the lock is worth on this phone, where there is one.
+            final Integer label = LockLabels.summaryResId(mLockPatternUtils,
+                    mUm.getCredentialOwnerProfile(userId), keyguardStoredPasswordQuality);
+            if (label != null) {
+                return label;
+            }
             switch (keyguardStoredPasswordQuality) {
                 case DevicePolicyManager.PASSWORD_QUALITY_SOMETHING:
                     return R.string.unlock_set_unlock_mode_pattern;

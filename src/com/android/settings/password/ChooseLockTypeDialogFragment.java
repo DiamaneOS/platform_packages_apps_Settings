@@ -82,6 +82,9 @@ public class ChooseLockTypeDialogFragment extends InstrumentedDialogFragment
                         ChooseLockGenericFragment.EXTRA_CHOOSE_LOCK_GENERIC_EXTRAS));
             }
             intent.putExtra(LockPatternUtils.PASSWORD_TYPE_KEY, selectedLockType.defaultQuality);
+            // Set either way: the copied extras may carry it from the type shown before.
+            intent.putExtra(ChooseLockPassword.EXTRA_KEY_GENERATED,
+                    selectedLockType.isGenerated());
             WizardManagerHelper.copyWizardManagerExtras(activityIntent, intent);
             activity.startActivity(intent);
             activity.finish();
@@ -170,8 +173,10 @@ public class ChooseLockTypeDialogFragment extends InstrumentedDialogFragment
                 case PATTERN:
                     return context.getDrawable(R.drawable.ic_pattern);
                 case PIN:
+                case GENERATED_PIN:
                     return context.getDrawable(R.drawable.ic_pin);
                 case PASSWORD:
+                case GENERATED_PASSPHRASE:
                     return context.getDrawable(R.drawable.ic_password);
                 case NONE:
                 case SWIPE:
