@@ -16,7 +16,7 @@
   -->
 
 <!-- Choosing a screen lock: the passphrase-first flow, the warning for weaker locks, the
-     strength line and the lock's name on the Security page. English only for now.
+     strength line and the lock's name on the Security page. English only.
 
      Rules for this text: plain and short. A sentence has about 15 words at most, a screen two
      sentences besides its title and verdict; details go behind a link. It must stay true: this

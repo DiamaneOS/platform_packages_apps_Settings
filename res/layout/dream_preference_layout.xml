@@ -67,7 +67,7 @@
             app:layout_constraintEnd_toEndOf="@+id/preview"/>
 
         <!-- Tally: no button tracking, as the system font sets its own: with it,
-             "Customise" no longer fit the key and scrolled. -->
+             "Customise" does not fit the key and scrolls. -->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/customize_button_new"
             android:layout_width="wrap_content"

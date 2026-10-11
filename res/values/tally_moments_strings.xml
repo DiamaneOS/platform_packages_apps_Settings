@@ -16,7 +16,7 @@
   -->
 
 <!-- The Moments switch page (System > Gestures > Moments switch), on phones with a Moments
-     switch, a slider on the side of the phone. English only for now. -->
+     switch, a slider on the side of the phone. English only. -->
 <resources>
     <!-- Title of the Moments switch page and its entry in Gestures. "Moments" is the feature's
          name. [CHAR LIMIT=40] -->
