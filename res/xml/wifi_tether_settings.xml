@@ -66,6 +66,14 @@
         android:summary="@string/summary_placeholder"
         settings:isPreferenceVisible="false"/>
 
+    <!-- Stores the choice only. SystemUI posts the notification. -->
+    <SwitchPreferenceCompat
+        android:key="tally_hotspot_join_notice"
+        android:title="@string/tally_hotspot_join_notice_title"
+        android:summary="@string/tally_hotspot_join_notice_summary"
+        android:persistent="false"
+        settings:controller="com.android.settings.wifi.tether.TallyHotspotJoinNoticePreferenceController"/>
+
     <!-- Connected devices. The controller sets the title and adds the rows. -->
     <PreferenceCategory
         android:key="tally_hotspot_clients"

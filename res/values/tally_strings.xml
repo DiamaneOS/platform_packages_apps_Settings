@@ -73,4 +73,8 @@
     <string name="tally_hotspot_client_address" translatable="false"><xliff:g id="ip_address" example="192.168.43.25">%1$s</xliff:g> \u00b7 <xliff:g id="mac_address" example="a2:11:22:33:44:55">%2$s</xliff:g></string>
     <!-- Wi-Fi hotspot, note under the list of connected devices. -->
     <string name="tally_hotspot_clients_note">A device picks its own name, so a name can be false. Most devices show a random MAC address, and some change it each time they connect.</string>
+    <!-- Wi-Fi hotspot: switch for a notification when a device joins. [CHAR LIMIT=50] -->
+    <string name="tally_hotspot_join_notice_title">Notify when a device joins</string>
+    <!-- Wi-Fi hotspot: summary of that switch. [CHAR LIMIT=NONE] -->
+    <string name="tally_hotspot_join_notice_summary">With sound for a new device, silent when a known one returns</string>
 </resources>
