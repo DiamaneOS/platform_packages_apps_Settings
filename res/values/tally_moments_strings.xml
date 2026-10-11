@@ -102,7 +102,7 @@
     </plurals>
 
     <!-- Footer. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_footer">Sliding the switch on works on the lock screen too. Sliding it back turns camera and microphone access, airplane mode and paused apps back only after you unlock. Settings you changed yourself meanwhile stay as you set them.</string>
+    <string name="tally_moments_footer">Sliding the switch on works on the lock screen too. Sliding it back turns airplane mode and paused apps back only after you unlock. Camera and microphone access comes back at once if the kernel blocked it, and otherwise after you unlock. Settings you changed yourself meanwhile stay as you set them.</string>
 
     <!-- Title of the app list for Home during Moments. [CHAR LIMIT=40] -->
     <string name="tally_moments_home_apps_title">Apps on Home during Moments</string>
