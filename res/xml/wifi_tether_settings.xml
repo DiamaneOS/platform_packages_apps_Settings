@@ -65,4 +65,20 @@
         android:title="@string/wifi_hotspot_instant_title"
         android:summary="@string/summary_placeholder"
         settings:isPreferenceVisible="false"/>
+
+    <!-- Connected devices. The controller sets the title and adds the rows. -->
+    <PreferenceCategory
+        android:key="tally_hotspot_clients"
+        android:title="@string/summary_placeholder"
+        settings:searchable="false"
+        settings:controller="com.android.settings.wifi.tether.TallyHotspotClientsPreferenceController">
+        <Preference
+            android:key="tally_hotspot_clients_note"
+            android:summary="@string/tally_hotspot_clients_note"
+            android:order="1000"
+            android:persistent="false"
+            android:selectable="false"
+            settings:isPreferenceVisible="false"
+            settings:searchable="false"/>
+    </PreferenceCategory>
 </PreferenceScreen>
