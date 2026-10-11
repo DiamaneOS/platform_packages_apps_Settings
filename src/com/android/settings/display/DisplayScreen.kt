@@ -108,7 +108,8 @@ open class DisplayScreen :
                 R.string.category_name_display_controls,
             ) order -150 +=
                 {
-                    +PeakRefreshRateSwitchPreference()
+                    // DiamaneOS: a choice of rates instead of the Smooth display switch.
+                    +RefreshRateScreen.KEY
                     if (Flags.catalystScreensaver()) +ScreensaverScreen.KEY
                 }
         }

@@ -609,11 +609,11 @@
     "type": "unknown"
   },
   {
-    "preference_key": "peak_refresh_rate",
+    "preference_key": "diamaneos_refresh_rate",
     "file_name": "DisplayScreen.kt",
     "screen_key": "display_settings_screen",
     "writable": "False",
-    "type": "boolean"
+    "type": "unknown"
   },
   {
     "preference_key": "touch_sensitivity_settings_page",

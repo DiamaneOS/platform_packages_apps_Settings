@@ -45,11 +45,6 @@
     "is_writable": false
   },
   {
-    "screen_key": "display_settings_screen",
-    "preference_key": "peak_refresh_rate",
-    "is_writable": true
-  },
-  {
     "screen_key": "firmware_version",
     "preference_key": "os_firmware_version",
     "is_writable": false
