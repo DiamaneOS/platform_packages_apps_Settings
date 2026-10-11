@@ -58,14 +58,22 @@
     <string name="tally_refresh_rate_intro">The screen lowers its refresh rate when nothing moves, to save battery. A higher maximum makes scrolling and animations smoother and uses more battery.</string>
     <!-- Security & privacy > Exploit protection > Hardware video decoding: entry and page title. [CHAR LIMIT=40] -->
     <string name="tally_hw_video_decoding_title">Hardware video decoding</string>
-    <!-- Hardware video decoding page: the switch. [CHAR LIMIT=50] -->
-    <string name="tally_hw_video_decoding_main_switch">Use hardware video decoding</string>
-    <!-- Hardware video decoding entry summary: turned on, applies after the next restart. [CHAR LIMIT=40] -->
-    <string name="tally_hw_video_decoding_summary_on_after_restart">Enabled after restart</string>
-    <!-- Hardware video decoding entry summary: turned off, applies after the next restart. [CHAR LIMIT=40] -->
-    <string name="tally_hw_video_decoding_summary_off_after_restart">Disabled after restart</string>
-    <!-- Hardware video decoding switch summary while a change waits for a restart. [CHAR LIMIT=60] -->
+    <!-- Hardware video decoding page, first choice: only copy-protected video (films and series from streaming services) uses the hardware decoder. Also the entry summary. [CHAR LIMIT=40] -->
+    <string name="tally_hw_video_decoding_protected_title">Protected video only (default)</string>
+    <!-- Hardware video decoding page: what the first choice does. -->
+    <string name="tally_hw_video_decoding_protected_summary">Only video that an app plays with copy protection, such as films from streaming services, uses the hardware decoder. All other video stays in the sandboxed software decoder.</string>
+    <!-- Hardware video decoding page, second choice: every video uses the hardware decoder. Also the entry summary. [CHAR LIMIT=40] -->
+    <string name="tally_hw_video_decoding_all_title">All video</string>
+    <!-- Hardware video decoding page: what the second choice does. -->
+    <string name="tally_hw_video_decoding_all_summary">Every app decodes video with the hardware decoder, which saves battery and plays high-resolution video more smoothly.</string>
+    <!-- Hardware video decoding page, third choice: no video uses the hardware decoder. Also the entry summary. [CHAR LIMIT=40] -->
+    <string name="tally_hw_video_decoding_never_title">Never</string>
+    <!-- Hardware video decoding page: what the third choice does. -->
+    <string name="tally_hw_video_decoding_never_summary">No video uses the hardware decoder, and copy-protected video gets weaker protection, so some streaming services play it in lower quality or not at all.</string>
+    <!-- Hardware video decoding entry summary while a change waits for a restart, for example "After restart: All video". [CHAR LIMIT=60] -->
+    <string name="tally_hw_video_decoding_summary_after_restart">After restart: <xliff:g id="choice" example="All video">%1$s</xliff:g></string>
+    <!-- Hardware video decoding page: shown above the choices while a change waits for a restart. [CHAR LIMIT=60] -->
     <string name="tally_hw_video_decoding_restart">Takes effect after you restart the phone</string>
-    <!-- Hardware video decoding page: what the switch trades. -->
-    <string name="tally_hw_video_decoding_footer">Apps decode video with the chip maker\'s hardware decoder instead of only the sandboxed software decoder. This saves battery and plays high-resolution video more smoothly, but a malicious video can then reach the decoder\'s closed code, its driver and its firmware. Off by default. A change takes effect after a restart.</string>
+    <!-- Hardware video decoding page: what the choice trades. -->
+    <string name="tally_hw_video_decoding_footer">The hardware decoder is the chip maker\'s closed code, with its own driver and firmware, and a malicious video that reaches it can attack them. The software decoder runs in a sandbox. It uses more battery and can stutter at high resolutions. An app can ask for copy-protected playback for its own video, so the default keeps ordinary video away from the hardware decoder, not every app. A change takes effect after you restart the phone.</string>
 </resources>
