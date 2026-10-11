@@ -77,6 +77,14 @@
     <string name="tally_hw_video_decoding_footer">The hardware decoder is the chip maker\'s closed code, with its own driver and firmware, and a malicious video that reaches it can attack them. The software decoder runs in a sandbox. It uses more battery and can stutter at high resolutions. An app can ask for copy-protected playback for its own video, so the default keeps ordinary video away from the hardware decoder, not every app. A change takes effect after you restart the phone.</string>
     <!-- Hardware video decoding page on a device without the first choice: what the choice trades. -->
     <string name="tally_hw_video_decoding_footer_without_protected">The hardware decoder is the chip maker\'s closed code, with its own driver and firmware, and a malicious video that reaches it can attack them. The software decoder runs in a sandbox. It uses more battery and can stutter at high resolutions. A change takes effect after you restart the phone.</string>
+    <!-- Wi-Fi hotspot, connected device: IP address, then MAC address. -->
+    <string name="tally_hotspot_client_address" translatable="false"><xliff:g id="ip_address" example="192.168.43.25">%1$s</xliff:g> \u00b7 <xliff:g id="mac_address" example="a2:11:22:33:44:55">%2$s</xliff:g></string>
+    <!-- Wi-Fi hotspot, note under the list of connected devices. -->
+    <string name="tally_hotspot_clients_note">A device picks its own name, so a name can be false. Most devices show a random MAC address, and some change it each time they connect.</string>
+    <!-- Wi-Fi hotspot: switch for a notification when a device joins. [CHAR LIMIT=50] -->
+    <string name="tally_hotspot_join_notice_title">Notify when a device joins</string>
+    <!-- Wi-Fi hotspot: summary of that switch. [CHAR LIMIT=NONE] -->
+    <string name="tally_hotspot_join_notice_summary">With sound for a new device, silent when a known one returns</string>
     <!-- Toast when the user taps "Add SIM" while the eSIM support switch on Network & internet
          is off, where nothing would open. "eSIM support" is that switch's title, which is
          English only. A physical SIM needs no "Add SIM". [CHAR LIMIT=NONE] -->
