@@ -18,6 +18,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
         android:key="lock_settings_picker">
 
+    <!-- A passphrase the phone generates: the recommended choice. -->
+    <com.android.settingslib.RestrictedPreference
+            android:key="unlock_set_generated_passphrase"
+            android:title="@string/tally_lock_passphrase_title"
+            android:summary="@string/tally_lock_passphrase_summary"
+            android:icon="@drawable/ic_password"
+            android:persistent="false"/>
+
     <com.android.settingslib.RestrictedPreference
             android:key="unlock_set_off"
             android:title="@string/unlock_set_unlock_off_title"
@@ -33,19 +41,30 @@
     <com.android.settingslib.RestrictedPreference
             android:key="unlock_set_pattern"
             android:title="@string/unlock_set_unlock_pattern_title"
+            android:summary="@string/tally_lock_weaker_summary"
             android:icon="@drawable/ic_pattern"
             android:persistent="false"/>
 
     <com.android.settingslib.RestrictedPreference
             android:key="unlock_set_pin"
             android:title="@string/unlock_set_unlock_pin_title"
+            android:summary="@string/tally_lock_weaker_summary"
             android:icon="@drawable/ic_lock_pin"
             android:persistent="false"/>
 
     <com.android.settingslib.RestrictedPreference
             android:key="unlock_set_password"
-            android:title="@string/unlock_set_unlock_password_title"
+            android:title="@string/tally_lock_own_passphrase_title"
+            android:summary="@string/tally_lock_own_passphrase_summary"
             android:icon="@drawable/ic_password"
+            android:persistent="false"/>
+
+    <!-- A long PIN the phone generates. -->
+    <com.android.settingslib.RestrictedPreference
+            android:key="unlock_set_generated_pin"
+            android:title="@string/tally_lock_random_pin_title"
+            android:summary="@string/tally_lock_random_pin_summary"
+            android:icon="@drawable/ic_lock_pin"
             android:persistent="false"/>
 
     <com.android.settingslib.RestrictedPreference

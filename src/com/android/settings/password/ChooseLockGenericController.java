@@ -183,6 +183,8 @@ public class ChooseLockGenericController {
                 return mLockPatternUtils.hasSecureLockScreen();
             case PIN:
             case PASSWORD:
+            case GENERATED_PASSPHRASE:
+            case GENERATED_PIN:
                 // Hide the secure lock screen options if the device doesn't support the secure lock
                 // screen feature.
                 return mLockPatternUtils.hasSecureLockScreen();
@@ -229,7 +231,11 @@ public class ChooseLockGenericController {
             case PIN:
                 return mContext.getText(R.string.unlock_set_unlock_pin_title);
             case PASSWORD:
-                return mContext.getText(R.string.unlock_set_unlock_password_title);
+                return mContext.getText(R.string.tally_lock_own_passphrase_title);
+            case GENERATED_PASSPHRASE:
+                return mContext.getText(R.string.tally_lock_passphrase_title);
+            case GENERATED_PIN:
+                return mContext.getText(R.string.tally_lock_random_pin_title);
             case MANAGED:
                 return mManagedPasswordProvider.getPickerOptionTitle(false);
         }

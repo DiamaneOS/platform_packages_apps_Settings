@@ -24,6 +24,13 @@ import android.app.admin.DevicePolicyManager;
  */
 public enum ScreenLockType {
 
+    /**
+     * A passphrase the phone generates. First, so that it is first wherever the types are
+     * listed in this order. Saved as a password.
+     */
+    GENERATED_PASSPHRASE(
+            DevicePolicyManager.PASSWORD_QUALITY_ALPHABETIC,
+            "unlock_set_generated_passphrase"),
     NONE(
             DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED,
             "unlock_set_off"),
@@ -41,6 +48,11 @@ public enum ScreenLockType {
             DevicePolicyManager.PASSWORD_QUALITY_ALPHABETIC,
             DevicePolicyManager.PASSWORD_QUALITY_COMPLEX,
             "unlock_set_password"),
+    /** A long PIN the phone generates. Saved as a PIN. */
+    GENERATED_PIN(
+            DevicePolicyManager.PASSWORD_QUALITY_NUMERIC,
+            DevicePolicyManager.PASSWORD_QUALITY_NUMERIC_COMPLEX,
+            "unlock_set_generated_pin"),
     MANAGED(
             DevicePolicyManager.PASSWORD_QUALITY_MANAGED,
             "unlock_set_managed");
@@ -94,6 +106,11 @@ public enum ScreenLockType {
                 return ScreenLockType.SWIPE;
         }
         return null;
+    }
+
+    /** Whether the phone generates the passphrase or PIN of this type. */
+    public boolean isGenerated() {
+        return this == GENERATED_PASSPHRASE || this == GENERATED_PIN;
     }
 
     public static ScreenLockType fromKey(String key) {
