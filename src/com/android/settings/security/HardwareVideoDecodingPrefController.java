@@ -78,7 +78,7 @@ public class HardwareVideoDecodingPrefController extends IntSettingPrefControlle
             Preference note = new Preference(screen.getContext());
             note.setPersistent(false);
             note.setSelectable(false);
-            note.setTitle(R.string.tally_hw_video_decoding_restart);
+            note.setTitle(R.string.bluetooth_disable_hw_offload_dialog_message);
             screen.addPreference(note);
         }
     }

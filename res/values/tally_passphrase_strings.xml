@@ -16,7 +16,9 @@
   -->
 
 <!-- Choosing a screen lock: the passphrase-first flow, the warning for weaker locks, the
-     strength line and the lock's name on the Security page. English only.
+     strength line and the lock's name on the Security page. English only. Where stock
+     Settings has a translated string for the same message, the code uses it. Texts shown
+     together stay in one language.
 
      Rules for this text: plain and short. A sentence has about 15 words at most, a screen two
      sentences besides its title and verdict; details go behind a link. It must stay true: this
@@ -74,8 +76,6 @@
     <!-- Generated passphrase or PIN. Shown in its place until it is ready. [CHAR LIMIT=NONE] -->
     <string name="tally_generated_preparing">Preparing…</string>
     <!-- Generated passphrase or PIN. Buttons. [CHAR LIMIT=24] -->
-    <string name="tally_generated_show">Show</string>
-    <string name="tally_generated_hide">Hide</string>
     <string name="tally_generated_another">New phrase</string>
     <string name="tally_generated_another_pin">New PIN</string>
     <string name="tally_generated_show_again">Show it again</string>
@@ -161,10 +161,6 @@
     <string name="tally_verdict_how">How is this judged?</string>
     <!-- Own passphrase. What the verdict can and cannot tell. [CHAR LIMIT=NONE] -->
     <string name="tally_verdict_how_message">The phone only looks at length and characters, not at meaning. So it can be wrong both ways. A short random password counts as weaker. A long quote counts as strong. A weaker password still works, after one warning.</string>
-    <!-- Own passphrase. Headers of the first and the second entry. [CHAR LIMIT=40] -->
-    <string name="tally_own_passphrase_header">Own passphrase</string>
-    <string name="tally_own_passphrase_again_header">Type it again</string>
-
     <!-- Warning shown before a PIN, a pattern or a short password is set. Titles.
          [CHAR LIMIT=60] -->
     <string name="tally_weaker_risk_title_pin">A PIN is easy to guess on this phone</string>
@@ -192,10 +188,5 @@
          confirms. [CHAR LIMIT=24] -->
     <string name="tally_lock_none_keep">Keep a lock</string>
     <string name="tally_lock_none_confirm">Use no lock</string>
-    <!-- Removing the screen lock in use: title of the dialog. [CHAR LIMIT=40] -->
-    <string name="tally_lock_remove_title">Remove the screen lock?</string>
-    <!-- Removing the screen lock in use. The same two buttons. [CHAR LIMIT=24] -->
-    <string name="tally_lock_remove_keep">Keep the lock</string>
-    <string name="tally_lock_remove_confirm">Remove the lock</string>
 
 </resources>

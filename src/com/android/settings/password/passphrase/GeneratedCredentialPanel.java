@@ -417,7 +417,7 @@ public final class GeneratedCredentialPanel {
         mSecretLeft.setContentDescription(hidden);
         mSecretRight.setContentDescription(hidden);
         mRevealButton.setText(mState.isRevealed()
-                ? R.string.tally_generated_hide : R.string.tally_generated_show);
+                ? R.string.condition_expand_hide : R.string.condition_expand_show);
         mRevealButton.setEnabled(hasSecret);
         mAnotherButton.setEnabled(hasSecret);
         for (int id : WORD_CHOICES) {

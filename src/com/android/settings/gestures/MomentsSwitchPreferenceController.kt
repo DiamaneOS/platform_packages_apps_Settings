@@ -31,7 +31,7 @@ class MomentsSwitchPreferenceController(context: Context, key: String) :
     override fun getSummary(): CharSequence {
         val action =
             Secure.getString(mContext.contentResolver, Secure.TALLY_MOMENTS_ACTION)?.toIntOrNull()
-                ?: return mContext.getString(R.string.tally_moments_not_set)
+                ?: return mContext.getString(R.string.user_summary_not_set_up)
         val title = MomentsSwitchSettings.ACTIONS.find { it.value == action }?.title
         return title?.let { mContext.getString(it) } ?: ""
     }
