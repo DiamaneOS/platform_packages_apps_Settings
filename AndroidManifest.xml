@@ -290,7 +290,8 @@
         </activity>
 
         <activity android:name=".Settings$DownloadServersActivity"
-            android:label="@string/download_servers_title" android:exported="true">
+            android:label="@string/download_servers_title" android:exported="true"
+            android:theme="@style/Theme.SubSettings">
             <intent-filter>
                 <action android:name="de.diamaneos.settings.DOWNLOAD_SERVERS" />
                 <category android:name="android.intent.category.DEFAULT" />

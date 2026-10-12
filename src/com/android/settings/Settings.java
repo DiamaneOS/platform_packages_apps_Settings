@@ -32,6 +32,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.settings.accessibility.VibrationIntensityScreen;
@@ -602,7 +603,24 @@ public class Settings extends SettingsActivity {
     public static class BugReportHandlerPickerActivity extends SettingsActivity { /* empty */ }
 
     // Top level categories for new IA
-    public static class DownloadServersActivity extends SettingsActivity {}
+    public static class DownloadServersActivity extends SubSettings {
+        @Override
+        protected void onCreate(Bundle savedState) {
+            super.onCreate(savedState);
+            if (!isFinishing()
+                    && com.google.android.setupcompat.util.WizardManagerHelper
+                            .isAnySetupWizard(getIntent())) {
+                Utils.setupEdgeToEdge(this);
+                ViewCompat.requestApplyInsets(findViewById(android.R.id.content));
+            }
+        }
+
+        @Override
+        protected boolean isValidFragment(String fragmentName) {
+            return com.android.settings.network.DownloadServersFragment.class.getName()
+                    .equals(fragmentName);
+        }
+    }
 
     public static class NetworkDashboardActivity extends SettingsActivity {
         private static final String TAG = "NetworkDashboardActivity";
