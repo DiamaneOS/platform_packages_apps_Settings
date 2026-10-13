@@ -77,4 +77,8 @@
     <string name="tally_hotspot_join_notice_title">Notify when a device joins</string>
     <!-- Wi-Fi hotspot: summary of that switch. [CHAR LIMIT=NONE] -->
     <string name="tally_hotspot_join_notice_summary">With sound for a new device, silent when a known one returns</string>
+    <!-- Toast when the user taps "Add SIM" while the eSIM support switch on Network & internet
+         is off, where nothing would open. "eSIM support" is that switch's title, which is
+         English only. A physical SIM needs no "Add SIM". [CHAR LIMIT=NONE] -->
+    <string name="tally_add_sim_esim_support_off">eSIM support is off. To add an eSIM, turn it on in Network &amp; internet.</string>
 </resources>
