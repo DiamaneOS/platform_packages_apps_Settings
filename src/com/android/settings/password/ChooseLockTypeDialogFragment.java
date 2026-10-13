@@ -82,6 +82,9 @@ public class ChooseLockTypeDialogFragment extends InstrumentedDialogFragment
                         ChooseLockGenericFragment.EXTRA_CHOOSE_LOCK_GENERIC_EXTRAS));
             }
             intent.putExtra(LockPatternUtils.PASSWORD_TYPE_KEY, selectedLockType.defaultQuality);
+            // Set either way: the copied extras may carry it from the type shown before.
+            intent.putExtra(ChooseLockPassword.EXTRA_KEY_GENERATED,
+                    selectedLockType.isGenerated());
             WizardManagerHelper.copyWizardManagerExtras(activityIntent, intent);
             activity.startActivity(intent);
             activity.finish();
@@ -126,6 +129,11 @@ public class ChooseLockTypeDialogFragment extends InstrumentedDialogFragment
         Context context = getContext();
         Builder builder = new Builder(context);
         List<ScreenLockType> locks = mController.getVisibleAndEnabledScreenLockTypes();
+        // As the picker in Settings: the weaker PIN comes after the strong locks.
+        if (locks.remove(ScreenLockType.PIN)) {
+            locks.add(locks.contains(ScreenLockType.MANAGED) ? locks.size() - 1 : locks.size(),
+                    ScreenLockType.PIN);
+        }
         mAdapter = new ScreenLockAdapter(context, locks, mController);
         builder.setAdapter(mAdapter, this);
         builder.setTitle(R.string.setup_lock_settings_options_dialog_title);
@@ -170,8 +178,10 @@ public class ChooseLockTypeDialogFragment extends InstrumentedDialogFragment
                 case PATTERN:
                     return context.getDrawable(R.drawable.ic_pattern);
                 case PIN:
+                case GENERATED_PIN:
                     return context.getDrawable(R.drawable.ic_pin);
                 case PASSWORD:
+                case GENERATED_PASSPHRASE:
                     return context.getDrawable(R.drawable.ic_password);
                 case NONE:
                 case SWIPE:

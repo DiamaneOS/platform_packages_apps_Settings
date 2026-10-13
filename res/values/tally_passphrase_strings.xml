@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<!-- Choosing a screen lock: the passphrase-first flow, the warning for weaker locks, the
+     strength line and the lock's name on the Security page. English only. Where stock
+     Settings has a translated string for the same message, the code uses it. Texts shown
+     together stay in one language.
+
+     Rules for this text: plain and short. A sentence has about 15 words at most, a screen two
+     sentences besides its title and verdict. Details go behind a link. It must stay true: this
+     phone limits wrong guesses with its secure area only, and "strong" and "weaker" are a
+     check of length and characters. -->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- Lock picker. The recommended choice: a passphrase the phone generates.
+         [CHAR LIMIT=40] -->
+    <string name="tally_lock_passphrase_title">Passphrase</string>
+    <!-- Lock picker. Summary of the generated passphrase. [CHAR LIMIT=60] -->
+    <string name="tally_lock_passphrase_summary">Recommended. Random words</string>
+    <!-- Lock picker. The choice to type a passphrase or password of one's own.
+         [CHAR LIMIT=40] -->
+    <string name="tally_lock_own_passphrase_title">Own passphrase</string>
+    <!-- Lock picker. Summary of the own passphrase. [CHAR LIMIT=60] -->
+    <string name="tally_lock_own_passphrase_summary">Strong from 20 characters</string>
+    <!-- Lock picker. The choice of a long PIN that the phone generates. [CHAR LIMIT=40] -->
+    <string name="tally_lock_random_pin_title">Long random PIN</string>
+    <!-- Lock picker. Summary of the generated PIN. [CHAR LIMIT=60] -->
+    <string name="tally_lock_random_pin_summary">20 random digits</string>
+    <!-- Lock picker. Summary of a PIN the user picks, and of a pattern where one is offered.
+         [CHAR LIMIT=60] -->
+    <string name="tally_lock_weaker_summary">Weaker on this phone</string>
+
+    <!-- Security page. Names of the screen lock in use. "Not typed since restart": the phone
+         cannot say yet whether the password is long enough. [CHAR LIMIT=60] -->
+    <string name="tally_lock_label_passphrase">Passphrase</string>
+    <string name="tally_lock_label_password_weaker">Password: weaker on this phone</string>
+    <string name="tally_lock_label_password_unknown">Password (not typed since restart)</string>
+    <string name="tally_lock_label_random_pin">Long random PIN</string>
+    <string name="tally_lock_label_pin_weaker">PIN: weaker on this phone</string>
+    <string name="tally_lock_label_pattern_weaker">Pattern: weaker on this phone</string>
+
+    <!-- Generated passphrase or PIN. Headers of the steps. [CHAR LIMIT=40] -->
+    <string name="tally_generated_passphrase_header">Your passphrase</string>
+    <string name="tally_generated_pin_header">Your PIN</string>
+    <string name="tally_generated_type_back_passphrase_header">Type your passphrase</string>
+    <string name="tally_generated_type_back_pin_header">Type your PIN</string>
+    <string name="tally_generated_practise_header">Type it once more</string>
+    <string name="tally_generated_wrong_header">That doesn\'t match</string>
+    <!-- Generated passphrase or PIN. The two lines of advice under it. [CHAR LIMIT=NONE] -->
+    <string name="tally_generated_advice">Write it down and keep it at home until you know it by heart.</string>
+    <string name="tally_lock_no_recovery">It can\'t be recovered. If you forget it, this phone\'s data is lost.</string>
+    <!-- Setting a strong lock, said once on the last step or after saving. %1$d is a number of
+         days (14). [CHAR LIMIT=NONE] -->
+    <string name="tally_lock_learning">For <xliff:g id="days" example="14">%1$d</xliff:g> days the phone asks for it once a day, so it sticks.</string>
+    <!-- Generated passphrase. Small label of the choice of 5 to 8 words. [CHAR LIMIT=12] -->
+    <string name="tally_generated_words_caption">Words</string>
+    <!-- Generated passphrase. Spoken name of one choice: %1$d is 5 to 8. [CHAR LIMIT=NONE] -->
+    <string name="tally_generated_words_choice"><xliff:g id="words" example="6">%1$d</xliff:g> words</string>
+    <!-- Generated passphrase or PIN. Spoken in place of the dots while it is hidden.
+         [CHAR LIMIT=NONE] -->
+    <string name="tally_generated_hidden_description">Hidden</string>
+    <!-- Generated passphrase or PIN. Shown in its place until it is ready. [CHAR LIMIT=NONE] -->
+    <string name="tally_generated_preparing">Preparing…</string>
+    <!-- Generated passphrase or PIN. Buttons. [CHAR LIMIT=24] -->
+    <string name="tally_generated_another">New phrase</string>
+    <string name="tally_generated_another_pin">New PIN</string>
+    <string name="tally_generated_show_again">Show it again</string>
+    <!-- Generated passphrase or PIN. One line above the field while it is typed back.
+         [CHAR LIMIT=NONE] -->
+    <string name="tally_generated_type_back_passphrase_hint">Type the words with a space between them.</string>
+    <string name="tally_generated_type_back_pin_hint">Type the digits without spaces.</string>
+    <string name="tally_generated_practise_hint">Correct. Once more, then it\'s saved.</string>
+    <!-- Generated passphrase or PIN. Nothing could be made. [CHAR LIMIT=NONE] -->
+    <string name="tally_generated_unavailable">Couldn\'t make one on this phone. Go back and choose Own passphrase.</string>
+    <string name="tally_generated_blocked_by_rules">This phone\'s rules don\'t allow this lock. Go back and choose another.</string>
+    <!-- Setting a lock. Shown while it is saved, which takes about a second.
+         [CHAR LIMIT=40] -->
+    <string name="tally_lock_saving">Saving…</string>
+
+    <!-- The one strength row under a generated passphrase or PIN: %1$s is a time such as
+         "about 3.4 billion years". It has to say that this is an estimate, and to fit one line.
+         Tapping it opens the details. [CHAR LIMIT=50] -->
+    <string name="tally_strength_line">Estimate: <xliff:g id="time" example="about 3.4 billion years">%1$s</xliff:g> to guess</string>
+    <!-- Title of the details behind the strength line. [CHAR LIMIT=40] -->
+    <string name="tally_strength_details_title">How this is estimated</string>
+    <!-- Details: what every estimate rests on, four short sentences shown as four paragraphs.
+         The first: whom the estimate is about. [CHAR LIMIT=NONE] -->
+    <string name="tally_strength_caveat_attacker">Rough estimates for someone who copied the phone\'s storage and broke its secure area. Until then, they get few tries.</string>
+    <!-- The second: the assumed rate. %1$s guesses a second (1,000,000), %2$s graphics cards
+         (10,000), %3$s times faster (1,000). [CHAR LIMIT=NONE] -->
+    <string name="tally_strength_caveat_rate">They assume <xliff:g id="rate" example="1,000,000">%1$s</xliff:g> guesses a second: over <xliff:g id="cards" example="10,000">%2$s</xliff:g> top graphics cards today. A government\'s purpose-built machines could be <xliff:g id="factor" example="1,000">%3$s</xliff:g> times faster.</string>
+    <!-- The third: only for secrets the phone picked. [CHAR LIMIT=NONE] -->
+    <string name="tally_strength_caveat_random">They hold only for a passphrase or PIN the phone picked at random. Your own can be far easier to guess.</string>
+    <!-- The fourth: an average, and it shrinks. [CHAR LIMIT=NONE] -->
+    <string name="tally_strength_caveat_average">The times are averages: an attacker can get lucky, and computers get faster every year.</string>
+    <!-- Details: heading and lines of the comparison. Every line must fit one line of the
+         dialog, about 38 characters. The time is "seconds", or such as "about 5.7 days".
+         The heading says that the PINs and words are random ones, so the lines need not.
+         [CHAR LIMIT=38] -->
+    <string name="tally_compare_heading">If picked at random:</string>
+    <string name="tally_compare_pin6">6-digit PIN: <xliff:g id="time">%1$s</xliff:g></string>
+    <string name="tally_compare_words"><xliff:g id="words" example="6">%1$d</xliff:g> words: <xliff:g id="time">%2$s</xliff:g></string>
+    <!-- One line for two numbers of words with the same time, such as "7–8 words". -->
+    <string name="tally_compare_words_range"><xliff:g id="words" example="7">%1$d</xliff:g>–<xliff:g id="more_words" example="8">%2$d</xliff:g> words: <xliff:g id="time">%3$s</xliff:g></string>
+    <string name="tally_compare_random_pin"><xliff:g id="digits" example="20">%1$d</xliff:g>-digit PIN: <xliff:g id="time">%2$s</xliff:g></string>
+
+    <!-- An estimated time to guess. Always with "about" or "more than": it is an estimate.
+         # is a number of two figures such as 4.6, 15, 190 or, for years, 450,000. Anything
+         under a minute is "seconds", with no number. [CHAR LIMIT=NONE] -->
+    <string name="tally_guess_time_under_minute">seconds</string>
+    <string name="tally_guess_time_more_than_trillion">more than a trillion years</string>
+    <string name="tally_guess_time_minutes">{count, plural,
+        =1      {about # minute}
+        other   {about # minutes}
+        }</string>
+    <string name="tally_guess_time_hours">{count, plural,
+        =1      {about # hour}
+        other   {about # hours}
+        }</string>
+    <string name="tally_guess_time_days">{count, plural,
+        =1      {about # day}
+        other   {about # days}
+        }</string>
+    <string name="tally_guess_time_years">{count, plural,
+        =1      {about # year}
+        other   {about # years}
+        }</string>
+    <string name="tally_guess_time_million_years">{count, plural,
+        other   {about # million years}
+        }</string>
+    <string name="tally_guess_time_billion_years">{count, plural,
+        other   {about # billion years}
+        }</string>
+
+    <!-- Own passphrase. The one line above the field. [CHAR LIMIT=NONE] -->
+    <string name="tally_own_passphrase_intro">It can\'t be recovered if you forget it.</string>
+    <!-- Own passphrase. The verdict under the field, changing while the user types. %1$d is a
+         number of characters (20). "Weaker on this phone" as on the picker. [CHAR LIMIT=60] -->
+    <string name="tally_verdict_empty"><xliff:g id="length" example="20">%1$d</xliff:g> or more characters counts as strong</string>
+    <string name="tally_verdict_too_short">Weaker on this phone: under <xliff:g id="length" example="20">%1$d</xliff:g> characters</string>
+    <string name="tally_verdict_digits_only">Weaker on this phone: only digits</string>
+    <string name="tally_verdict_few_characters">Weaker on this phone: too few different characters</string>
+    <string name="tally_verdict_weaker">Weaker on this phone</string>
+    <string name="tally_verdict_strong">Strong</string>
+    <string name="tally_verdict_guessable">Long enough, but looks easy to guess</string>
+    <!-- Own passphrase. Link under the verdict, and title of what it opens. [CHAR LIMIT=40] -->
+    <string name="tally_verdict_how">How is this judged?</string>
+    <!-- Own passphrase. What the verdict can and cannot tell. [CHAR LIMIT=NONE] -->
+    <string name="tally_verdict_how_message">The phone only looks at length and characters, not at meaning. So it can be wrong both ways. A short random password counts as weaker. A long quote counts as strong. A weaker password still works, after one warning.</string>
+    <!-- Warning shown before a PIN, a pattern or a short password is set. Titles.
+         The titles and the risk are also the card for such a lock on the Security & privacy
+         page. [CHAR LIMIT=60] -->
+    <string name="tally_weaker_risk_title_pin">A PIN is easy to guess on this phone</string>
+    <string name="tally_weaker_risk_title_pattern">A pattern is easy to guess on this phone</string>
+    <string name="tally_weaker_risk_title_password">A short password is easier to guess on this phone</string>
+    <!-- Warning. The risk, in plain words. [CHAR LIMIT=NONE] -->
+    <string name="tally_weaker_risk_message_pin">This phone has no separate security chip. If its secure area is ever broken, a PIN can be guessed quickly. A passphrase can\'t.</string>
+    <string name="tally_weaker_risk_message_pattern">This phone has no separate security chip. If its secure area is ever broken, a pattern can be guessed quickly. A passphrase can\'t.</string>
+    <string name="tally_weaker_risk_message_password">This phone has no separate security chip. If its secure area is ever broken, a short password can be guessed quickly. A long passphrase can\'t.</string>
+    <!-- Warning. The button that agrees: it has to say that the user understood.
+         [CHAR LIMIT=40] -->
+    <string name="tally_weaker_risk_accept_pin">I understand, use a PIN</string>
+    <string name="tally_weaker_risk_accept_pattern">I understand, use a pattern</string>
+    <string name="tally_weaker_risk_accept_password">I understand, use it</string>
+    <!-- Warning. The button that does not agree: it opens the generated passphrase, goes back,
+         or returns to the field. [CHAR LIMIT=40] -->
+    <string name="tally_weaker_risk_decline_pin">Use a passphrase</string>
+    <string name="tally_weaker_risk_decline_pattern">Go back</string>
+    <string name="tally_weaker_risk_decline_password">Make it longer</string>
+
+    <!-- Choosing no screen lock, or skipping it in setup. [CHAR LIMIT=NONE] -->
+    <string name="tally_lock_none_title">No screen lock?</string>
+    <string name="tally_lock_none_warning">Without a lock, anyone holding the phone can open it.</string>
+    <!-- Choosing no screen lock. The safe button, which is the filled one, and the button that
+         confirms. [CHAR LIMIT=24] -->
+    <string name="tally_lock_none_keep">Keep a lock</string>
+    <string name="tally_lock_none_confirm">Use no lock</string>
+
+</resources>

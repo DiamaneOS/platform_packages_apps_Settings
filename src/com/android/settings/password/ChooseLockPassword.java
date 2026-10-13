@@ -72,6 +72,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.EditorInfo;
@@ -79,8 +80,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImeAwareEditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -101,6 +104,17 @@ import com.android.settings.Utils;
 import com.android.settings.core.InstrumentedFragment;
 import com.android.settings.flags.Flags;
 import com.android.settings.notification.RedactionInterstitial;
+import com.android.settings.password.passphrase.ChosenPassphraseRater;
+import com.android.settings.password.passphrase.GeneratedCredentialPanel;
+import com.android.settings.password.passphrase.KeptEntry;
+import com.android.settings.password.passphrase.LockSetupHolder;
+import com.android.settings.password.passphrase.LockStrength;
+import com.android.settings.password.passphrase.OwnPassphraseFeedback;
+import com.android.settings.password.passphrase.OwnPassphraseVerdictView;
+import com.android.settings.password.passphrase.ShapeRater;
+import com.android.settings.password.passphrase.StrengthClass;
+import com.android.settings.password.passphrase.WeakerRiskDialog;
+import com.android.settings.password.passphrase.WeakerRiskGate;
 import com.android.settings.widget.ImeAwareTextInputEditText;
 import com.android.settingslib.utils.StringUtil;
 
@@ -110,7 +124,9 @@ import com.google.android.setupcompat.template.FooterButton;
 import com.google.android.setupdesign.GlifLayout;
 import com.google.android.setupdesign.util.ThemeHelper;
 
+import java.nio.CharBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -122,6 +138,11 @@ public class ChooseLockPassword extends SettingsActivity {
     static final String EXTRA_KEY_MIN_METRICS = "min_metrics";
     static final String EXTRA_KEY_MIN_COMPLEXITY = "min_complexity";
     public static final String EXTRA_KEY_FOR_SUPERVISION_RESET = "for_supervision_reset";
+    /**
+     * Whether the phone generates the passphrase or PIN: it is shown, typed back and typed once
+     * more, instead of being chosen by the user.
+     */
+    public static final String EXTRA_KEY_GENERATED = "tally_generated_credential";
 
     @Override
     public Intent getIntent() {
@@ -205,6 +226,12 @@ public class ChooseLockPassword extends SettingsActivity {
             return this;
         }
 
+        /** Sets whether the phone generates the passphrase or PIN. */
+        public IntentBuilder setGenerated(boolean generated) {
+            mIntent.putExtra(EXTRA_KEY_GENERATED, generated);
+            return this;
+        }
+
         /**
          * Configures the launch such that at the end of the password enrollment, one of its
          * managed profile (specified by {@code profileId}) will have its lockscreen unified
@@ -247,10 +274,14 @@ public class ChooseLockPassword extends SettingsActivity {
         super.onCreate(savedInstanceState);
         findViewById(R.id.content_parent).setFitsSystemWindows(false);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        // No picture of this screen in recents either.
+        setRecentsScreenshotEnabled(false);
     }
 
     public static class ChooseLockPasswordFragment extends InstrumentedFragment
-            implements OnEditorActionListener, TextWatcher, SaveAndFinishWorker.Listener {
+            implements OnEditorActionListener, TextWatcher, SaveAndFinishWorker.Listener,
+            SaveAndFinishWorker.RefusalListener, WeakerRiskDialog.Listener,
+            GeneratedCredentialPanel.Host {
         private static final String KEY_FIRST_PASSWORD = "first_password";
         private static final String KEY_UI_STAGE = "ui_stage";
         private static final String KEY_CURRENT_CREDENTIAL = "current_credential";
@@ -304,6 +335,24 @@ public class ChooseLockPassword extends SettingsActivity {
         static final int RESULT_FINISHED = RESULT_FIRST_USER;
         private boolean mIsErrorTooShort = true;
         private boolean mIsExpressiveStyle = false;
+
+        // What is kept in memory, and nowhere else, while the screen is created anew.
+        private LockSetupHolder mHolder;
+        // Whether the phone generates the passphrase or PIN instead of the user choosing it.
+        private boolean mIsGenerated;
+        // The panel for that. Not there while a save from before a recreation is running.
+        @Nullable private GeneratedCredentialPanel mGeneratedPanel;
+        private WeakerRiskGate mRiskGate;
+        // The lock settings refused the save for want of the user's agreement to the risk.
+        private boolean mSaveRefused;
+        // The risk dialog is up for a first entry that counts as weaker: agreeing goes on to
+        // the second entry, going back stays here.
+        private boolean mRiskAskedForFirstEntry;
+        private final ChosenPassphraseRater mRater = new ShapeRater();
+        // The verdict under the field while the user types a passphrase of their own.
+        @Nullable private OwnPassphraseVerdictView mVerdictView;
+        // Whether the lock that is being saved counts as strong.
+        private boolean mSavingStrongLock;
 
         /** Used to store the profile type for which pin/password is being set */
         public enum ProfileType {
@@ -572,6 +621,9 @@ public class ChooseLockPassword extends SettingsActivity {
             if (mMinMetrics == null) mMinMetrics = new PasswordMetrics(CREDENTIAL_TYPE_NONE);
 
             mTextChangedHandler = new TextChangedHandler();
+            mHolder = LockSetupHolder.of(getActivity());
+            mIsGenerated = intent.getBooleanExtra(EXTRA_KEY_GENERATED, false);
+            mRiskGate = new WeakerRiskGate(this, mLockPatternUtils, mUserId);
         }
 
         @Override
@@ -601,6 +653,14 @@ public class ChooseLockPassword extends SettingsActivity {
             // with the sides of the parent visually.
             ViewGroup container = view.findViewById(R.id.password_container);
             container.setOpticalInsets(Insets.NONE);
+            // The setup layout lets what scrolls be drawn outside its scrolling view, under the
+            // footer's buttons and the status bar. This screen can have more on it than fits,
+            // above all in landscape: it stays inside, and what does not fit is scrolled to.
+            final ScrollView scrollView = mLayout.getScrollView();
+            if (scrollView != null) {
+                scrollView.setOutlineProvider(ViewOutlineProvider.BOUNDS);
+                scrollView.setClipToOutline(true);
+            }
 
             final FooterBarMixin mixin = mLayout.getMixin(FooterBarMixin.class);
             mixin.setSecondaryButton(
@@ -650,6 +710,10 @@ public class ChooseLockPassword extends SettingsActivity {
             mPasswordEntry.setOnEditorActionListener(this);
             mPasswordEntry.addTextChangedListener(this);
             mPasswordEntry.requestFocus();
+            // What is typed here is a secret: it is not put in the saved state of the screen.
+            mPasswordEntry.setSaveEnabled(false);
+            view.setImportantForContentCapture(
+                    View.IMPORTANT_FOR_CONTENT_CAPTURE_NO_EXCLUDE_DESCENDANTS);
             mPasswordEntryInputDisabler = new TextViewInputDisabler(mPasswordEntry);
 
             // Fetch the AutoPinConfirmOption
@@ -691,8 +755,26 @@ public class ChooseLockPassword extends SettingsActivity {
                     ChooseLockSettingsHelper.EXTRA_KEY_REQUEST_WRITE_REPAIR_MODE_PW, false);
             mReturnCredentials = intent.getBooleanExtra(
                     ChooseLockSettingsHelper.EXTRA_KEY_RETURN_CREDENTIALS, false);
+            // Not while a save from before a recreation of the screen is still running: after
+            // the process was gone, a new generated PIN would take the place of the one that
+            // is being saved.
+            final boolean isSaving = savedInstanceState != null && getFragmentManager()
+                    .findFragmentByTag(FRAGMENT_TAG_SAVE_AND_FINISH) != null;
+            if (!isSaving && mIsGenerated) {
+                mGeneratedPanel = new GeneratedCredentialPanel(getLayoutInflater(), container,
+                        mHolder, mIsAlphaMode, mLockPatternUtils, mUserId, this,
+                        getChildFragmentManager());
+            } else if (mIsAlphaMode && !mIsGenerated) {
+                mVerdictView = new OwnPassphraseVerdictView(getLayoutInflater(), container,
+                        mPasswordEntry, getChildFragmentManager());
+            }
             if (savedInstanceState == null) {
                 updateStage(Stage.Introduction);
+                if (!mIsAlphaMode && mGeneratedPanel == null
+                        && mRiskGate.isNeededForWeakerLock()) {
+                    // A PIN the user picks is weaker on this phone: say so before it is typed.
+                    mRiskGate.show(WeakerRiskDialog.Kind.PIN);
+                }
                 if (confirmCredentials) {
                     final ChooseLockSettingsHelper.Builder builder =
                             new ChooseLockSettingsHelper.Builder(getActivity());
@@ -707,20 +789,18 @@ public class ChooseLockPassword extends SettingsActivity {
             } else {
 
                 // restore from previous state
-                mFirstPassword = savedInstanceState.getParcelable(KEY_FIRST_PASSWORD);
-                final String state = savedInstanceState.getString(KEY_UI_STAGE);
-                if (state != null) {
-                    mUiStage = Stage.valueOf(state);
-                    updateStage(mUiStage);
-                }
+                // Re-attach to the exiting worker if there is one.
+                mSaveAndFinishWorker = (SaveAndFinishWorker) getFragmentManager().findFragmentByTag(
+                        FRAGMENT_TAG_SAVE_AND_FINISH);
+
+                // What was typed or generated so far is in no saved state. After a rotation or
+                // a similar change it is still in memory and is taken from there. After
+                // anything else it is gone, and the choice starts again.
+                restoreKeptEntry(mHolder.takeEntry());
                 mIsAutoPinConfirmOptionSetManually =
                         savedInstanceState.getBoolean(KEY_IS_AUTO_CONFIRM_CHECK_MANUALLY_CHANGED);
 
                 mCurrentCredential = savedInstanceState.getParcelable(KEY_CURRENT_CREDENTIAL);
-
-                // Re-attach to the exiting worker if there is one.
-                mSaveAndFinishWorker = (SaveAndFinishWorker) getFragmentManager().findFragmentByTag(
-                        FRAGMENT_TAG_SAVE_AND_FINISH);
             }
 
             if (activity instanceof SettingsActivity) {
@@ -732,11 +812,65 @@ public class ChooseLockPassword extends SettingsActivity {
             }
         }
 
+        // Takes over what the screen before this one had in hand when it was created anew.
+        private void restoreKeptEntry(@Nullable KeptEntry<LockscreenCredential> kept) {
+            if (kept == null) {
+                updateStage(Stage.Introduction);
+                return;
+            }
+            mFirstPassword = kept.first();
+            mChosenPassword = kept.chosen();
+            mRiskAskedForFirstEntry = kept.riskAskedForFirstEntry();
+            mSaveRefused = kept.saveRefused();
+            mSavingStrongLock = kept.savingStrongLock();
+            // Before the step is set: text that changes takes the "doesn't match" step back.
+            mPasswordEntry.setText(CharBuffer.wrap(kept.typed()));
+            mPasswordEntry.setSelection(mPasswordEntry.length());
+            final Stage stage = Stage.valueOf(kept.stage());
+            kept.handedOver();
+            updateStage(stage);
+        }
+
+        // What this screen has in hand, for the screen that takes its place after a rotation
+        // or a similar change. Held in memory until then, and never saved.
+        private KeptEntry<LockscreenCredential> entryToKeep() {
+            final Editable text = mPasswordEntry != null ? mPasswordEntry.getText() : null;
+            final char[] typed = new char[text != null ? text.length() : 0];
+            if (text != null) {
+                text.getChars(0, typed.length, typed, 0);
+            }
+            return new KeptEntry<>(LockscreenCredential::zeroize, mUiStage.name(),
+                    mFirstPassword, mChosenPassword, mSaveAndFinishWorker != null, typed,
+                    mRiskAskedForFirstEntry, mSaveRefused, mSavingStrongLock);
+        }
+
         @Override
         public void onDestroy() {
             super.onDestroy();
             if (mCurrentCredential != null) {
                 mCurrentCredential.zeroize();
+            }
+            if (getActivity().isChangingConfigurations()) {
+                // The screen is created anew, for a rotation or a similar change. The entries
+                // and the generated secret stay in memory for the new screen.
+                mHolder.keepEntry(entryToKeep());
+            } else {
+                // The screen is left for good.
+                if (mFirstPassword != null) {
+                    mFirstPassword.zeroize();
+                }
+                // A save that is still running holds the chosen password and zeroizes nothing
+                // itself: leave it alone then.
+                if (mChosenPassword != null && mSaveAndFinishWorker == null) {
+                    mChosenPassword.zeroize();
+                }
+                mHolder.wipe();
+            }
+            if (mPasswordEntry != null) {
+                mPasswordEntry.setText("");
+            }
+            if (mGeneratedPanel != null) {
+                mGeneratedPanel.onDestroy();
             }
             // Force a garbage collection immediately to remove remnant of user password shards
             // from memory.
@@ -806,6 +940,8 @@ public class ChooseLockPassword extends SettingsActivity {
             updateStage(mUiStage);
             if (mSaveAndFinishWorker != null) {
                 mSaveAndFinishWorker.setListener(this);
+            } else if (mGeneratedPanel != null && mGeneratedPanel.isShowStep()) {
+                // Nothing to type yet: the generated passphrase or PIN is being shown.
             } else {
                 mPasswordEntry.requestFocus();
                 if (mPasswordEntry instanceof ImeAwareEditText) {
@@ -822,8 +958,17 @@ public class ChooseLockPassword extends SettingsActivity {
 
         @Override
         public void onPause() {
+            // Not when the screen is only created anew, for a rotation or a similar change:
+            // the user is still looking at it, and gets it back as it was.
+            final boolean staysBehind = !getActivity().isChangingConfigurations();
             if (mSaveAndFinishWorker != null) {
                 mSaveAndFinishWorker.setListener(null);
+            } else if (staysBehind) {
+                // Nothing secret stays on a screen that is not in front.
+                mPasswordEntry.setText("");
+            }
+            if (mGeneratedPanel != null && staysBehind) {
+                mGeneratedPanel.onPause();
             }
             super.onPause();
         }
@@ -831,8 +976,8 @@ public class ChooseLockPassword extends SettingsActivity {
         @Override
         public void onSaveInstanceState(Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(KEY_UI_STAGE, mUiStage.name());
-            outState.putParcelable(KEY_FIRST_PASSWORD, mFirstPassword);
+            // Not the step, the new passphrase or PIN, or the agreement to a weaker lock: those
+            // are kept in memory across a recreation of the screen, see onDestroy.
             if (mCurrentCredential != null) {
                 outState.putParcelable(KEY_CURRENT_CREDENTIAL, mCurrentCredential.duplicate());
             }
@@ -891,7 +1036,12 @@ public class ChooseLockPassword extends SettingsActivity {
         boolean validatePassword(LockscreenCredential credential) {
             mValidationErrors = PasswordMetrics.validateCredential(mMinMetrics, mMinComplexity,
                     credential);
-            if (mValidationErrors.isEmpty() && mLockPatternUtils.checkPasswordHistory(
+            // The hash factor needs a check of the current lock, which takes about a second:
+            // only get it when a history is kept at all.
+            if (mValidationErrors.isEmpty()
+                    && getContext().getSystemService(DevicePolicyManager.class)
+                            .getPasswordHistoryLength(null /* admin */, mUserId) > 0
+                    && mLockPatternUtils.checkPasswordHistory(
                         credential.getCredential(), getPasswordHistoryHashFactor(), mUserId)) {
                 mValidationErrors =
                         Collections.singletonList(new PasswordValidationError(RECENTLY_USED));
@@ -914,6 +1064,21 @@ public class ChooseLockPassword extends SettingsActivity {
 
         public void handleNext() {
             if (mSaveAndFinishWorker != null) return;
+            if (mGeneratedPanel != null && mUiStage == Stage.Introduction) {
+                // The generated passphrase or PIN takes the place of a first entry. It is
+                // hidden now and has to be typed back.
+                final LockscreenCredential generated = mGeneratedPanel.continueToTypeBack();
+                if (generated != null) {
+                    if (mFirstPassword != null) {
+                        mFirstPassword.zeroize();
+                    }
+                    mFirstPassword = generated;
+                    mPasswordEntry.setText("");
+                    updateStage(Stage.NeedToConfirm);
+                    focusPasswordEntry();
+                }
+                return;
+            }
             // TODO(b/120484642): This is a point of entry for passwords from the UI
             final Editable passwordText = mPasswordEntry.getText();
             if (TextUtils.isEmpty(passwordText)) {
@@ -923,6 +1088,13 @@ public class ChooseLockPassword extends SettingsActivity {
                     : LockscreenCredential.createPin(passwordText);
             if (mUiStage == Stage.Introduction) {
                 if (validatePassword(mChosenPassword)) {
+                    if (mIsAlphaMode && mRiskGate.isNeededFor(mChosenPassword, false)) {
+                        // Not the shape of a strong passphrase: it counts as weaker on this
+                        // phone, like a PIN. It can be used once the user has read the risk.
+                        mRiskAskedForFirstEntry = true;
+                        mRiskGate.show(WeakerRiskDialog.Kind.PASSWORD);
+                        return;
+                    }
                     mFirstPassword = mChosenPassword;
                     mPasswordEntry.setText("");
                     updateStage(Stage.NeedToConfirm);
@@ -931,7 +1103,20 @@ public class ChooseLockPassword extends SettingsActivity {
                 }
             } else if (mUiStage == Stage.NeedToConfirm) {
                 if (mChosenPassword.equals(mFirstPassword)) {
-                    startSaveAndFinish();
+                    if (mGeneratedPanel != null && !mGeneratedPanel.onTypedCorrectly()) {
+                        // Typed back correctly. Once more, for practice, before it is saved.
+                        mChosenPassword.zeroize();
+                        mPasswordEntry.setText("");
+                        updateUi();
+                    } else if (mRiskGate.isNeededFor(mChosenPassword,
+                            mGeneratedPanel != null)) {
+                        // Reached without the risk screen, for example by an intent that
+                        // names the kind of lock. It is shown now. Agreeing saves.
+                        mSaveRefused = true;
+                        mRiskGate.show(getRiskKind());
+                    } else {
+                        startSaveAndFinish();
+                    }
                 } else {
                     CharSequence tmp = mPasswordEntry.getText();
                     if (tmp != null) {
@@ -939,6 +1124,11 @@ public class ChooseLockPassword extends SettingsActivity {
                     }
                     updateStage(Stage.ConfirmWrong);
                     mChosenPassword.zeroize();
+                    if (mGeneratedPanel != null) {
+                        // A wrong entry of the generated passphrase or PIN is not kept for
+                        // correcting: start it again. The header keeps saying what happened.
+                        mPasswordEntry.setText("");
+                    }
                 }
             }
         }
@@ -1114,10 +1304,30 @@ public class ChooseLockPassword extends SettingsActivity {
                     : LockscreenCredential.createPin(mPasswordEntry.getText());
             final int length = password.size();
 
-            if (mUiStage == Stage.Introduction) {
+            if (mGeneratedPanel != null && mUiStage == Stage.Introduction) {
+                // The phone's passphrase or PIN is being shown. There is nothing to type and
+                // no rule to meet. Next opens once it was looked at.
+                mPasswordRestrictionView.setVisibility(View.GONE);
+                setHeaderText(mGeneratedPanel.headerText(false));
+                setNextEnabled(canInput && mGeneratedPanel.canContinue());
+                mSkipOrClearButton.setVisibility(View.GONE);
+                mAutoPinConfirmOption.setVisibility(View.GONE);
+                mAutoConfirmSecurityMessage.setVisibility(View.GONE);
+            } else if (mUiStage == Stage.Introduction) {
                 mPasswordRestrictionView.setVisibility(View.VISIBLE);
                 final boolean passwordCompliant = validatePassword(password);
                 String[] messages = convertErrorCodeToMessages();
+                if (mVerdictView != null && length == 0 && mValidationErrors.size() == 1
+                        && mValidationErrors.get(0).errorCode == TOO_SHORT) {
+                    // Nothing is typed yet and the only rule is the least length: not said
+                    // before it is broken. The line under the field says what counts.
+                    messages = new String[0];
+                }
+                if (mVerdictView != null) {
+                    // Also when coming back from the second entry.
+                    setHeaderText(mUiStage.getHint(getContext(), mIsAlphaMode, getStageType(),
+                            mProfileType));
+                }
                 // Update the fulfillment of requirements.
                 mPasswordRequirementAdapter.setRequirements(messages, mIsErrorTooShort);
                 // set the visibility of pin_auto_confirm option accordingly
@@ -1127,8 +1337,10 @@ public class ChooseLockPassword extends SettingsActivity {
             } else {
                 // Hide password requirement view when we are just asking user to confirm the pw.
                 mPasswordRestrictionView.setVisibility(View.GONE);
-                setHeaderText(mUiStage.getHint(getContext(), mIsAlphaMode, getStageType(),
-                        mProfileType));
+                setHeaderText(mGeneratedPanel != null
+                        ? mGeneratedPanel.headerText(mUiStage == Stage.ConfirmWrong)
+                        : mUiStage.getHint(getContext(), mIsAlphaMode, getStageType(),
+                                mProfileType));
                 setNextEnabled(canInput && length >= LockPatternUtils.MIN_LOCK_PASSWORD_SIZE);
                 mSkipOrClearButton.setVisibility(toVisibility(canInput && length > 0));
 
@@ -1144,10 +1356,187 @@ public class ChooseLockPassword extends SettingsActivity {
             } else {
                 mMessage.setVisibility(View.INVISIBLE);
             }
+            if (mSaveAndFinishWorker != null) {
+                // Saving takes about a second on this phone.
+                mMessage.setVisibility(View.VISIBLE);
+                mMessage.setText(R.string.tally_lock_saving);
+            } else if (mGeneratedPanel != null) {
+                // The panel carries the text for a generated passphrase or PIN.
+                mMessage.setVisibility(View.GONE);
+            } else if (mVerdictView != null && mUiStage == Stage.Introduction) {
+                // One short line above the field. The verdict on the entry is under it.
+                mMessage.setVisibility(View.VISIBLE);
+                mMessage.setText(R.string.tally_own_passphrase_intro);
+            } else if (mVerdictView != null) {
+                // The second entry: the header and the field, nothing else.
+                mMessage.setVisibility(View.GONE);
+            }
+            if (mVerdictView != null) {
+                mVerdictView.show(mUiStage == Stage.Introduction && mSaveAndFinishWorker == null
+                        ? getOwnPassphraseFeedback(password).verdict : null);
+            }
 
             setNextText(mUiStage.buttonText);
             mPasswordEntryInputDisabler.setInputEnabled(canInput);
             password.zeroize();
+        }
+
+        /**
+         * What the phone makes of a password or passphrase the user is typing: whether it
+         * counts as strong or as weaker on this phone, and why. A check of its shape only.
+         */
+        private OwnPassphraseFeedback getOwnPassphraseFeedback(LockscreenCredential password) {
+            // The characters are ASCII if the entry is valid. Anything else fails the floor.
+            final byte[] bytes = password.getCredential();
+            final char[] chars = new char[bytes.length];
+            for (int i = 0; i < bytes.length; i++) {
+                chars[i] = (char) (bytes[i] & 0xff);
+            }
+            final OwnPassphraseFeedback feedback = OwnPassphraseFeedback.of(chars, chars.length,
+                    LockStrength.of(password, false), mRater.rate(chars, chars.length));
+            Arrays.fill(chars, '\0');
+            return feedback;
+        }
+
+        private WeakerRiskDialog.Kind getRiskKind() {
+            return mIsAlphaMode ? WeakerRiskDialog.Kind.PASSWORD : WeakerRiskDialog.Kind.PIN;
+        }
+
+        /**
+         * Leaves this screen for the one that sets up a passphrase the phone generates, with
+         * everything else this screen was started with. For "Use a passphrase" on the PIN
+         * warning.
+         */
+        private void switchToGeneratedPassphrase() {
+            final Activity activity = getActivity();
+            final Intent intent = new Intent(activity.getIntent());
+            intent.putExtra(LockPatternUtils.PASSWORD_TYPE_KEY,
+                    DevicePolicyManager.PASSWORD_QUALITY_ALPHABETIC);
+            intent.putExtra(EXTRA_KEY_GENERATED, true);
+            // Whoever waits for the result of this screen gets the new one's.
+            intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+            startActivity(intent);
+            activity.finish();
+        }
+
+        private void focusPasswordEntry() {
+            mPasswordEntry.requestFocus();
+            if (mPasswordEntry instanceof ImeAwareEditText) {
+                ((ImeAwareEditText) mPasswordEntry).scheduleShowSoftInput();
+            } else if (mPasswordEntry instanceof ImeAwareTextInputEditText) {
+                ((ImeAwareTextInputEditText) mPasswordEntry).scheduleShowSoftInput();
+            }
+        }
+
+        @Override
+        public void onGeneratedCredentialChanged() {
+            if (getActivity() != null && mSaveAndFinishWorker == null) {
+                if (mUiStage != Stage.Introduction) {
+                    // A new passphrase or PIN was generated: what was typed back is void.
+                    restartWithGeneratedCredential();
+                } else {
+                    updateUi();
+                }
+            }
+        }
+
+        @Override
+        public void onShowGeneratedCredentialAgain() {
+            if (mSaveAndFinishWorker == null && mGeneratedPanel != null) {
+                mGeneratedPanel.showAgain();
+                restartWithGeneratedCredential();
+            }
+        }
+
+        @Override
+        public boolean isGeneratedCredentialAcceptable(LockscreenCredential credential) {
+            return validatePassword(credential);
+        }
+
+        // Back to the step where the generated passphrase or PIN can be shown.
+        private void restartWithGeneratedCredential() {
+            if (mFirstPassword != null) {
+                mFirstPassword.zeroize();
+                mFirstPassword = null;
+            }
+            mPasswordEntry.setText("");
+            ConfirmDeviceCredentialUtils.hideImeImmediately(
+                    getActivity().getWindow().getDecorView());
+            updateStage(Stage.Introduction);
+        }
+
+        @Override
+        public void onWeakerRiskAccepted() {
+            mRiskGate.onAccepted();
+            if (mRiskAskedForFirstEntry) {
+                // The weaker password may be used: on to the second entry.
+                mRiskAskedForFirstEntry = false;
+                if (mChosenPassword != null && mUiStage == Stage.Introduction
+                        && mSaveAndFinishWorker == null) {
+                    mFirstPassword = mChosenPassword;
+                    mPasswordEntry.setText("");
+                    updateStage(Stage.NeedToConfirm);
+                }
+            } else if (mSaveRefused) {
+                mSaveRefused = false;
+                if (mChosenPassword != null && mSaveAndFinishWorker == null) {
+                    startSaveAndFinish();
+                }
+            }
+        }
+
+        @Override
+        public void onWeakerRiskDeclined() {
+            if (mRiskAskedForFirstEntry) {
+                // Stay here: the entry is still in the field and can be made longer.
+                mRiskAskedForFirstEntry = false;
+                if (mChosenPassword != null) {
+                    mChosenPassword.zeroize();
+                }
+                return;
+            }
+            final boolean wasRefused = mSaveRefused;
+            if (mSaveRefused) {
+                // Nothing was saved. The entry is dropped.
+                mSaveRefused = false;
+                if (mChosenPassword != null) {
+                    mChosenPassword.zeroize();
+                }
+            }
+            if (mIsAlphaMode) {
+                if (wasRefused) {
+                    // "Make it longer": back to the first entry.
+                    if (mFirstPassword != null) {
+                        mFirstPassword.zeroize();
+                        mFirstPassword = null;
+                    }
+                    mPasswordEntry.setText("");
+                    updateStage(Stage.Introduction);
+                }
+                // Otherwise the dialog outlived what it asked about, with a process that was
+                // gone: the screen is on the first entry again, which is where this leads.
+            } else if (isSupervisingProfile()) {
+                // A supervision PIN has no passphrase to offer instead.
+                getActivity().finish();
+            } else {
+                // "Use a passphrase".
+                switchToGeneratedPassphrase();
+            }
+        }
+
+        @Override
+        public void onChosenLockSaveRefused() {
+            // The lock settings want the user's agreement to the risk first. Nothing was
+            // changed. Show the risk. Agreeing saves again.
+            if (mSaveAndFinishWorker != null) {
+                getFragmentManager().beginTransaction().remove(mSaveAndFinishWorker)
+                        .commitAllowingStateLoss();
+                mSaveAndFinishWorker = null;
+            }
+            mLayout.setProgressBarShown(false);
+            mSaveRefused = true;
+            updateUi();
+            mRiskGate.show(getRiskKind());
         }
 
         protected int toVisibility(boolean visibleOrGone) {
@@ -1205,8 +1594,10 @@ public class ChooseLockPassword extends SettingsActivity {
         }
 
         public void afterTextChanged(Editable s) {
-            // Changing the text while error displayed resets to NeedToConfirm state
-            if (mUiStage == Stage.ConfirmWrong) {
+            // Changing the text while error displayed resets to NeedToConfirm state. Not when
+            // the wrong entry was just cleared: the error stays until something is typed.
+            if (mUiStage == Stage.ConfirmWrong
+                    && !(mGeneratedPanel != null && s.length() == 0)) {
                 mUiStage = Stage.NeedToConfirm;
             }
             // Schedule the UI update.
@@ -1236,7 +1627,14 @@ public class ChooseLockPassword extends SettingsActivity {
                     .setListener(this)
                     .setRequestGatekeeperPasswordHandle(mRequestGatekeeperPassword)
                     .setRequestWriteRepairModePassword(mRequestWriteRepairModePassword)
-                    .setReturnCredentials(mReturnCredentials);
+                    .setReturnCredentials(mReturnCredentials)
+                    .setWeakerRiskAccepted(mRiskGate.isAccepted());
+            mSavingStrongLock = LockStrength.of(mChosenPassword, mGeneratedPanel != null)
+                    == StrengthClass.STRONG;
+            // The save takes about a second: show that something is happening.
+            mLayout.setProgressBarShown(true);
+            mMessage.setVisibility(View.VISIBLE);
+            mMessage.setText(R.string.tally_lock_saving);
 
             getFragmentManager().beginTransaction().add(mSaveAndFinishWorker,
                     FRAGMENT_TAG_SAVE_AND_FINISH).commit();
@@ -1275,6 +1673,15 @@ public class ChooseLockPassword extends SettingsActivity {
             }
 
             mPasswordEntry.setText("");
+
+            if (mSavingStrongLock && !mIsGenerated && mSaveAndFinishWorker != null
+                    && mSaveAndFinishWorker.wasSaved()) {
+                // Said once: for a generated passphrase on its last step, for one the user
+                // chose here, as the screen closes.
+                Toast.makeText(getActivity(),
+                        GeneratedCredentialPanel.learningPeriodNote(getActivity()),
+                        Toast.LENGTH_LONG).show();
+            }
 
             final AccessibilityManager accessibilityManager =
                     (AccessibilityManager) getActivity().getSystemService(
