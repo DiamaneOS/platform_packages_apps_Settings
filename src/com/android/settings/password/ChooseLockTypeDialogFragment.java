@@ -129,6 +129,11 @@ public class ChooseLockTypeDialogFragment extends InstrumentedDialogFragment
         Context context = getContext();
         Builder builder = new Builder(context);
         List<ScreenLockType> locks = mController.getVisibleAndEnabledScreenLockTypes();
+        // As the picker in Settings: the weaker PIN comes after the strong locks.
+        if (locks.remove(ScreenLockType.PIN)) {
+            locks.add(locks.contains(ScreenLockType.MANAGED) ? locks.size() - 1 : locks.size(),
+                    ScreenLockType.PIN);
+        }
         mAdapter = new ScreenLockAdapter(context, locks, mController);
         builder.setAdapter(mAdapter, this);
         builder.setTitle(R.string.setup_lock_settings_options_dialog_title);
