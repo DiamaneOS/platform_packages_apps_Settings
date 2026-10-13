@@ -21,6 +21,7 @@ import android.content.Intent
 import android.os.UserManager
 import android.telephony.SubscriptionInfo
 import android.telephony.euicc.EuiccManager
+import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.SimCard
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.android.settings.R
 import com.android.settings.Utils
+import com.android.settings.network.GoogleEuiccLpaController
 import com.android.settings.network.SatelliteRepository
 import com.android.settings.network.SatelliteWarningDialogActivity
 import com.android.settings.network.SatelliteWarningDialogActivity.Companion.CUSTOM_CONTENT_BUTTON_NAME
@@ -155,7 +157,15 @@ private fun AddSim() {
     }
 }
 
-fun startAddSimFlow(context: Context) = context.startActivity(getAddSimIntent())
+fun startAddSimFlow(context: Context) {
+    // DiamaneOS: with eSIM support off no eSIM manager answers the request and nothing opens.
+    val lpa = GoogleEuiccLpaController.findLpa(context.packageManager)
+    if (lpa != null && !lpa.enabled) {
+        Toast.makeText(context, R.string.tally_add_sim_esim_support_off, Toast.LENGTH_LONG).show()
+        return
+    }
+    context.startActivity(getAddSimIntent())
+}
 
 fun getAddSimIntent() =
     Intent(EuiccManager.ACTION_PROVISION_EMBEDDED_SUBSCRIPTION).apply {
