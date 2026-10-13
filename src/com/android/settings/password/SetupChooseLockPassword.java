@@ -169,8 +169,12 @@ public class SetupChooseLockPassword extends ChooseLockPassword {
 
         @Override
         public void onLockTypeSelected(ScreenLockType lock) {
-            ScreenLockType currentLockType = mIsAlphaMode ?
-                    ScreenLockType.PASSWORD : ScreenLockType.PIN;
+            final boolean generated = getActivity().getIntent()
+                    .getBooleanExtra(EXTRA_KEY_GENERATED, false);
+            ScreenLockType currentLockType = generated
+                    ? (mIsAlphaMode ? ScreenLockType.GENERATED_PASSPHRASE
+                            : ScreenLockType.GENERATED_PIN)
+                    : (mIsAlphaMode ? ScreenLockType.PASSWORD : ScreenLockType.PIN);
             if (lock == currentLockType) {
                 return;
             }
@@ -191,6 +195,7 @@ public class SetupChooseLockPassword extends ChooseLockPassword {
             // Show the skip button during SUW but not during Settings > Biometric Enrollment
             if (mUiStage == Stage.Introduction) {
                 mSkipOrClearButton.setText(getActivity(), R.string.skip_label);
+                mSkipOrClearButton.setVisibility(View.VISIBLE);
                 mLeftButtonIsSkip = true;
             } else {
                 mSkipOrClearButton.setText(getActivity(), R.string.lockpassword_clear_label);
