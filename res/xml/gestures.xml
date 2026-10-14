@@ -82,6 +82,11 @@
         android:fragment="com.android.settings.gestures.PowerMenuSettings"
         settings:controller="com.android.settings.gestures.PowerMenuPreferenceController" />
 
+    <SwitchPreferenceCompat
+        android:key="gesture_power_volume_down_screenshot"
+        android:title="@string/tally_power_volume_down_screenshot_title"
+        settings:controller="com.android.settings.gestures.PowerVolumeDownScreenshotPrefController" />
+
     <Preference
         android:key="gesture_moments_switch"
         android:title="@string/tally_moments_title"

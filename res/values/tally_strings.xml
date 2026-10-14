@@ -91,4 +91,8 @@
     <string name="tally_add_sim_esim_support_off">eSIM support is off. To add an eSIM, turn it on in Network &amp; internet.</string>
     <!-- Factory reset: why "Erase eSIMs" is greyed out while eSIM support is off. -->
     <string name="tally_reset_esim_support_off">eSIM support is off, so eSIMs stay on the phone. To erase them, turn on eSIM support in Network &amp; internet first.</string>
+    <!-- System > Gestures: switch for taking a screenshot by pressing the power and volume down
+         buttons together. Screenshots from the power menu and Quick Settings work either way.
+         [CHAR LIMIT=50] -->
+    <string name="tally_power_volume_down_screenshot_title">Screenshot with Power &amp; Volume Down</string>
 </resources>
