@@ -49,6 +49,7 @@
             android:text="@string/reset_esim_title"/>
 
         <TextView
+            android:id="@+id/erase_esim_desc"
             style="@style/TextAppearanceSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
