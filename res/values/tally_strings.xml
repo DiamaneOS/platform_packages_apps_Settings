@@ -87,4 +87,7 @@
          buttons together. Screenshots from the power menu and Quick Settings work either way.
          [CHAR LIMIT=50] -->
     <string name="tally_power_volume_down_screenshot_title">Screenshot with Power &amp; Volume Down</string>
+    <!-- Network & internet > Attestation key provisioning: what Google receives. English only,
+         like the other text on this screen. [CHAR LIMIT=NONE] -->
+    <string name="tally_remote_provisioning_footer">Attestation keys are provisioned by Google in the USA. The request carries keys unique to this phone, which let apps check its security. It carries no account, location or phone number. With the DiamaneOS proxy, Google sees the proxy\'s address instead of yours.</string>
 </resources>
