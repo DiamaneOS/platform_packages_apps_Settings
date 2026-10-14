@@ -390,7 +390,16 @@ public class MainClear extends InstrumentedFragment implements OnGlobalLayoutLis
             });
         }
 
-        if (showWipeEuicc()) {
+        if (isEsimSupportOff()) {
+            // With eSIM support off no eSIM manager can erase eSIMs, although EuiccManager still
+            // reports the chip as enabled: show the choice greyed out and say why.
+            mEsimStorageContainer.setVisibility(View.VISIBLE);
+            mEsimStorageContainer.setEnabled(false);
+            mEsimStorage.setChecked(false);
+            mEsimStorage.setEnabled(false);
+            final TextView esimDesc = mEsimStorageContainer.findViewById(R.id.erase_esim_desc);
+            esimDesc.setText(R.string.tally_reset_esim_support_off);
+        } else if (showWipeEuicc()) {
             if (showWipeEuiccCheckbox()) {
                 mEsimStorageContainer.setVisibility(View.VISIBLE);
                 mEsimStorageContainer.setOnClickListener(new View.OnClickListener() {
@@ -408,15 +417,6 @@ public class MainClear extends InstrumentedFragment implements OnGlobalLayoutLis
                 noCancelMobilePlan.setVisibility(View.VISIBLE);
                 mEsimStorage.setChecked(true /* checked */);
             }
-        } else if (isEsimSupportOff()) {
-            // With eSIM support off no eSIM manager can erase eSIMs: show the choice greyed out
-            // and say why, instead of leaving it out.
-            mEsimStorageContainer.setVisibility(View.VISIBLE);
-            mEsimStorageContainer.setEnabled(false);
-            mEsimStorage.setChecked(false);
-            mEsimStorage.setEnabled(false);
-            final TextView esimDesc = mEsimStorageContainer.findViewById(R.id.erase_esim_desc);
-            esimDesc.setText(R.string.tally_reset_esim_support_off);
         } else {
             mEsimStorage.setChecked(false /* checked */);
         }
