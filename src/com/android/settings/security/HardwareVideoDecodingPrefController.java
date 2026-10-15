@@ -15,7 +15,8 @@ import com.android.settings.ext.RadioButtonPickerFragment2;
 
 /**
  * Exploit protection > Hardware video decoding, on devices that can apply the choice: the entry
- * and its page with the three choices.
+ * and its page with the three choices. Protected video only is shown disabled where the device
+ * does not offer it.
  */
 public class HardwareVideoDecodingPrefController extends IntSettingPrefController {
 
@@ -33,15 +34,28 @@ public class HardwareVideoDecodingPrefController extends IntSettingPrefControlle
 
     @Override
     protected void getEntries(Entries entries) {
-        entries.add(R.string.tally_hw_video_decoding_protected_title,
-                R.string.tally_hw_video_decoding_protected_summary,
-                HardwareVideoDecoding.PROTECTED_VIDEO);
+        boolean offersProtected = HardwareVideoDecoding.offersProtectedVideo(mContext);
+        if (offersProtected) {
+            entries.add(R.string.tally_hw_video_decoding_protected_title,
+                    R.string.tally_hw_video_decoding_protected_summary,
+                    HardwareVideoDecoding.PROTECTED_VIDEO);
+        } else {
+            entries.add(getText(R.string.tally_hw_video_decoding_protected_unavailable_title),
+                    getText(R.string.screensaver_unavailable_due_to_mode),
+                    HardwareVideoDecoding.PROTECTED_VIDEO, false);
+        }
         entries.add(R.string.tally_hw_video_decoding_all_title,
                 R.string.tally_hw_video_decoding_all_summary,
                 HardwareVideoDecoding.ALL_VIDEO);
-        entries.add(R.string.tally_hw_video_decoding_never_title,
-                R.string.tally_hw_video_decoding_never_summary,
-                HardwareVideoDecoding.NEVER);
+        if (offersProtected) {
+            entries.add(R.string.tally_hw_video_decoding_never_title,
+                    R.string.tally_hw_video_decoding_never_summary,
+                    HardwareVideoDecoding.NEVER);
+        } else {
+            entries.add(R.string.tally_hw_video_decoding_never_default_title,
+                    R.string.tally_hw_video_decoding_never_summary_without_protected,
+                    HardwareVideoDecoding.NEVER);
+        }
     }
 
     @Override
@@ -85,6 +99,8 @@ public class HardwareVideoDecodingPrefController extends IntSettingPrefControlle
 
     @Override
     public void addPrefsAfterList(RadioButtonPickerFragment2 fragment, PreferenceScreen screen) {
-        addFooterPreference(screen, R.string.tally_hw_video_decoding_footer);
+        addFooterPreference(screen, HardwareVideoDecoding.offersProtectedVideo(mContext)
+                ? R.string.tally_hw_video_decoding_footer
+                : R.string.tally_hw_video_decoding_footer_without_protected);
     }
 }
