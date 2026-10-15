@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+  SPDX-License-Identifier: Apache-2.0
+
+  French for values/tally_moments_strings.xml, translated by the DiamaneOS project.
+  Android's own words, with their translations: tally_moments_paused_apps_none from Settings zen_mode_apps_none_apps.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="tally_moments_title">"Bouton Moments"</string>
+    <string name="tally_moments_intro">"Choisissez l'action du bouton situé sur le côté du téléphone lorsque vous l'activez. Le remettre en place annule ce qu'il a modifié."</string>
+    <string name="tally_moments_action_header">"Quand le bouton est activé"</string>
+    <string name="tally_moments_action_moments">"Moments"</string>
+    <string name="tally_moments_action_moments_summary">"Ne pas déranger avec les personnes et applis que vous autorisez, écran d'accueil avec seulement les applis de votre choix, et mise en pause des applis choisies"</string>
+    <string name="tally_moments_action_sensors">"Appareil photo et micro désactivés"</string>
+    <string name="tally_moments_action_sensors_summary">"Désactive l'accès à l'appareil photo et au micro, comme les Réglages rapides. Il s'agit d'un réglage logiciel, pas d'une coupure matérielle."</string>
+    <string name="tally_moments_action_sensors_summary_kernel">"Désactive l'accès à l'appareil photo et au micro, comme les Réglages rapides. Le noyau bloque aussi les caméras et les micros intégrés."</string>
+    <string name="tally_moments_action_airplane_summary">"Active le mode Avion"</string>
+    <string name="tally_moments_action_lockdown_summary">"Verrouille le téléphone et désactive le déverrouillage par empreinte digitale et par reconnaissance faciale jusqu'à ce que vous saisissiez votre code, votre schéma ou votre mot de passe. Remettre le bouton en place n'y met pas fin."</string>
+    <string name="tally_moments_action_lockdown_needs_lock">"Nécessite un code, un schéma ou un mot de passe"</string>
+    <string name="tally_moments_action_nothing">"Aucune action"</string>
+    <string name="tally_moments_action_nothing_summary">"Le bouton n'a aucun effet"</string>
+    <string name="tally_moments_kernel_header">"Blocage dans le noyau"</string>
+    <string name="tally_moments_kernel_title">"Micros intégrés"</string>
+    <string name="tally_moments_kernel_title_camera">"Caméras et micros intégrés"</string>
+    <string name="tally_moments_kernel_on">"Tant que le bouton est abaissé, le noyau coupe le son des micros intégrés et leur alimentation. Aucune appli ni aucun service Android ne peut les réactiver. Seul le bouton le peut, immédiatement, y compris sur l'écran de verrouillage. Une modification de ce choix n'atteint le noyau qu'après un redémarrage. Le blocage par Android change immédiatement."</string>
+    <string name="tally_moments_kernel_after_restart">"Redémarrez votre téléphone pour que le bouton verrouille aussi l'appareil photo et le micro en position désactivée, en dessous d'Android."</string>
+    <string name="tally_moments_kernel_until_restart">"Jusqu'au redémarrage, le micro reste verrouillé en position désactivée lorsque le bouton est abaissé."</string>
+    <string name="tally_moments_kernel_until_restart_camera">"Jusqu'au redémarrage, l'appareil photo et le micro restent verrouillés en position désactivée lorsque le bouton est abaissé."</string>
+    <string name="tally_moments_kernel_on_camera">"Tant que le bouton est abaissé, le noyau bloque les caméras sur une image de test et coupe le son des micros intégrés en coupant leur alimentation. Aucune appli ni aucun service Android ne peut l'annuler. Seul le bouton le peut, immédiatement, y compris sur l'écran de verrouillage. Une modification de ce choix n'atteint le noyau qu'après un redémarrage. Le blocage par Android change immédiatement."</string>
+    <string name="tally_moments_kernel_emergency">"Tant que le bouton est abaissé, les appels d'urgence n'ont pas de micro."</string>
+    <string name="tally_moments_sensor_note">"Afficher une note quand une appli tente d'utiliser l'appareil photo ou le micro bloqués"</string>
+    <string name="tally_moments_sensor_note_summary">"Dans tous les cas, les applis ne peuvent pas utiliser l'appareil photo et ne reçoivent que du silence du micro, sans invite de déblocage. Désactivé : rien ne s'affiche."</string>
+    <string name="tally_moments_options_header">"Moments"</string>
+    <string name="tally_moments_home_apps">"Applis sur l'écran d'accueil"</string>
+    <string name="tally_moments_home_apps_none">"Aucune sélection : l'écran d'accueil reste inchangé"</string>
+    <string name="tally_moments_paused_apps">"Applis en pause"</string>
+    <plurals name="tally_moments_apps_count">
+        <item quantity="one">"<xliff:g id="count">%d</xliff:g> appli"</item>
+        <item quantity="other">"<xliff:g id="count">%d</xliff:g> applis"</item>
+    </plurals>
+    <string name="tally_moments_footer">"Activer le bouton fonctionne aussi sur l'écran de verrouillage. Quand vous le remettez en place, le mode Avion et les applis en pause ne sont rétablis qu'après le déverrouillage. L'accès à l'appareil photo et au micro revient immédiatement si le noyau l'a bloqué, sinon après le déverrouillage. Les paramètres que vous avez modifiés vous-même entre-temps restent tels que vous les avez définis."</string>
+    <string name="tally_moments_home_apps_title">"Applis de l'accueil pendant Moments"</string>
+    <string name="tally_moments_paused_apps_title">"En pause pendant Moments"</string>
+    <string name="tally_moments_paused_apps_intro">"Les applis en pause ne peuvent pas s'ouvrir ni envoyer de notifications tant que Moments est activé. Certaines applis, comme Téléphone, ne peuvent pas être mises en pause."</string>
+    <string name="tally_moments_paused_apps_none">"Aucune"</string>
+</resources>
