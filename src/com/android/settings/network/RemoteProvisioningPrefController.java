@@ -27,8 +27,19 @@ import com.android.settings.ext.RadioButtonPickerFragment2;
 
 public class RemoteProvisioningPrefController extends IntSettingPrefController {
 
+    // Declared by devices whose keystore gets hardware attestation keys (vendor/diamaneos).
+    private static final String HARDWARE_ATTESTATION_FEATURE = "de.diamaneos.hardware_attestation";
+
     public RemoteProvisioningPrefController(Context ctx, String key) {
         super(ctx, key, RemoteKeyProvisioningSettings.SERVER_SETTING);
+    }
+
+    @Override
+    public int getAvailabilityStatus() {
+        if (!mContext.getPackageManager().hasSystemFeature(HARDWARE_ATTESTATION_FEATURE)) {
+            return UNSUPPORTED_ON_DEVICE;
+        }
+        return super.getAvailabilityStatus();
     }
 
     @Override
