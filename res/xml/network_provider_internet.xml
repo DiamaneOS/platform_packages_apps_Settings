@@ -145,6 +145,13 @@
         settings:controller="com.android.settings.network.ConnectivityChecksPrefController"/>
 
     <Preference
+        android:fragment="com.android.settings.network.DownloadServersFragment"
+        android:key="download_servers"
+        android:title="@string/download_servers_title"
+        android:summary="@string/download_servers_summary"
+        android:order="32" />
+
+    <Preference
         android:key="cert_transparency_dl"
         android:title="@string/cert_transparency_dl_title"
         android:order="31"
