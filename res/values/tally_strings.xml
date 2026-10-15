@@ -55,6 +55,8 @@
     <string name="tally_hw_video_decoding_title">Hardware video decoding</string>
     <!-- Hardware video decoding page, first choice: only copy-protected video (films and series from streaming services) uses the hardware decoder. Also the entry summary. [CHAR LIMIT=40] -->
     <string name="tally_hw_video_decoding_protected_title">Protected video only (default)</string>
+    <!-- Hardware video decoding page, first choice on a device that does not offer it (shown disabled). [CHAR LIMIT=40] -->
+    <string name="tally_hw_video_decoding_protected_unavailable_title">Protected video only</string>
     <!-- Hardware video decoding page: what the first choice does. -->
     <string name="tally_hw_video_decoding_protected_summary">Only video that an app plays with copy protection, such as films from streaming services, uses the hardware decoder. All other video stays in the sandboxed software decoder.</string>
     <!-- Hardware video decoding page, second choice: every video uses the hardware decoder. Also the entry summary. [CHAR LIMIT=40] -->
@@ -63,12 +65,18 @@
     <string name="tally_hw_video_decoding_all_summary">Every app decodes video with the hardware decoder, which saves battery and plays high-resolution video more smoothly.</string>
     <!-- Hardware video decoding page, third choice: no video uses the hardware decoder. Also the entry summary. [CHAR LIMIT=40] -->
     <string name="tally_hw_video_decoding_never_title">Never</string>
+    <!-- Hardware video decoding page, third choice and the default on a device without the first choice. Also the entry summary. [CHAR LIMIT=40] -->
+    <string name="tally_hw_video_decoding_never_default_title">Never (default)</string>
     <!-- Hardware video decoding page: what the third choice does. -->
     <string name="tally_hw_video_decoding_never_summary">No video uses the hardware decoder, and copy-protected video gets weaker protection, so some streaming services play it in lower quality or not at all.</string>
+    <!-- Hardware video decoding page: what the third choice does on a device without the first choice. -->
+    <string name="tally_hw_video_decoding_never_summary_without_protected">Every app decodes video with the sandboxed software decoder.</string>
     <!-- Hardware video decoding entry summary while a change waits for a restart, for example "After restart: All video". [CHAR LIMIT=60] -->
     <string name="tally_hw_video_decoding_summary_after_restart">After restart: <xliff:g id="choice" example="All video">%1$s</xliff:g></string>
     <!-- Hardware video decoding page: what the choice trades. -->
     <string name="tally_hw_video_decoding_footer">The hardware decoder is the chip maker\'s closed code, with its own driver and firmware, and a malicious video that reaches it can attack them. The software decoder runs in a sandbox. It uses more battery and can stutter at high resolutions. An app can ask for copy-protected playback for its own video, so the default keeps ordinary video away from the hardware decoder, not every app. A change takes effect after you restart the phone.</string>
+    <!-- Hardware video decoding page on a device without the first choice: what the choice trades. -->
+    <string name="tally_hw_video_decoding_footer_without_protected">The hardware decoder is the chip maker\'s closed code, with its own driver and firmware, and a malicious video that reaches it can attack them. The software decoder runs in a sandbox. It uses more battery and can stutter at high resolutions. A change takes effect after you restart the phone.</string>
     <!-- Wi-Fi hotspot, connected device: IP address, then MAC address. -->
     <string name="tally_hotspot_client_address" translatable="false"><xliff:g id="ip_address" example="192.168.43.25">%1$s</xliff:g> \u00b7 <xliff:g id="mac_address" example="a2:11:22:33:44:55">%2$s</xliff:g></string>
     <!-- Wi-Fi hotspot, note under the list of connected devices. -->
