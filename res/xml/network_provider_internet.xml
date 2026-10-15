@@ -116,6 +116,7 @@
 
     <com.android.settings.network.PrivateDnsModeDialogPreference
         android:key="private_dns_settings"
+        settings:iconSpaceReserved="true"
         android:title="@string/select_private_dns_configuration_title"
         android:order="20"
         android:dialogTitle="@string/select_private_dns_configuration_dialog_title"
@@ -126,6 +127,7 @@
     <Preference
         android:fragment="com.android.settings.network.AdaptiveConnectivitySettings"
         android:key="adaptive_connectivity"
+        settings:iconSpaceReserved="true"
         android:title="@string/adaptive_connectivity_title"
         android:summary="@string/summary_placeholder"
         android:order="25"
@@ -133,6 +135,7 @@
 
     <Preference
         android:key="cellular_security_network_internet"
+        settings:iconSpaceReserved="true"
         android:title="@string/cellular_security_title"
         android:summary="@string/cellular_security_summary"
         android:order="30"
@@ -140,6 +143,7 @@
 
     <Preference
         android:key="connectivity_checks"
+        settings:iconSpaceReserved="true"
         android:title="@string/conn_checks_title"
         android:order="30"
         settings:controller="com.android.settings.network.ConnectivityChecksPrefController"/>
@@ -147,24 +151,28 @@
     <Preference
         android:fragment="com.android.settings.network.DownloadServersFragment"
         android:key="download_servers"
+        settings:iconSpaceReserved="true"
         android:title="@string/download_servers_title"
         android:summary="@string/download_servers_summary"
         android:order="32" />
 
     <Preference
         android:key="cert_transparency_dl"
+        settings:iconSpaceReserved="true"
         android:title="@string/cert_transparency_dl_title"
         android:order="31"
         settings:controller="com.android.settings.network.CertTransparencyDownloaderPrefController"/>
 
     <Preference
         android:key="remote_provisioning_settings"
+        settings:iconSpaceReserved="true"
         android:title="@string/remote_provisioning_title"
         android:order="35"
         settings:controller="com.android.settings.network.RemoteProvisioningPrefController" />
     
     <Preference
         android:key="widevine_provisioning_settings"
+        settings:iconSpaceReserved="true"
         android:title="@string/widevine_provisioning_title"
         android:order="40"
         settings:controller="com.android.settings.network.WidevineProvisioningPrefController" />
