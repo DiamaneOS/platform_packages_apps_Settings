@@ -15,7 +15,8 @@
   limitations under the License.
   -->
 
-<!-- DiamaneOS's own Settings text for About phone. English only: where stock Android has
+<!-- DiamaneOS's own Settings text for About phone. Translated into German, French, Spanish and
+     Italian, the other languages English only. Where stock Android has
      a translated string for the same message, the Tally code uses that one instead (the homepage
      section titles are stock's: wireless_networks_settings_title, device_dashboard_title,
      privacy_header, header_category_system). -->

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+  SPDX-License-Identifier: Apache-2.0
+
+  Spanish for values/download_servers.xml, translated by the DiamaneOS project.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="download_servers_title">"Servidores de descarga"</string>
+    <string name="download_servers_summary">"Descargas del SO y de Apps"</string>
+    <string name="download_server_title">"Servidor preferido"</string>
+    <string name="download_fallback_title">"Usar el otro servidor si no está disponible"</string>
+    <string name="download_fallback_summary">"Desactivado de forma predeterminada. Probar el otro servidor si falla una conexión o el servidor no está disponible temporalmente."</string>
+    <string name="download_servers_scope">"Europa es la opción predeterminada. El servidor seleccionado ve tu dirección IP en las descargas del SO y de Apps. Canadá es opcional. Si activas el servidor alternativo, la otra región recibe las solicitudes fallidas y ve tu dirección IP."</string>
+    <string name="download_servers_main_user_only">"Cambia estos ajustes desde el usuario principal."</string>
+    <string name="download_servers_unavailable">"Los ajustes de los servidores de descarga no están disponibles. Prueba a abrir esta página de nuevo."</string>
+    <string-array name="download_server_entries">
+        <item>"Europa (principal)"</item>
+        <item>"Canadá"</item>
+    </string-array>
+</resources>
