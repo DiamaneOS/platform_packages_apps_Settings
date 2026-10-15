@@ -9,6 +9,11 @@
          boot and reports ro.vendor.diamaneos.hw_video_decode. -->
     <bool name="config_show_hardware_video_decoding">false</bool>
 
+    <!-- Hardware video decoding: Protected video only is offered and is the default. A device
+         overlay turns this off where the device has no hardware decoders for protected video:
+         the choice is then shown disabled, and Never is the default. -->
+    <bool name="config_hardware_video_decoding_protected_video">true</bool>
+
     <!-- Security & privacy page, weaker screen lock. 0: reported as fine. 1: yellow row.
          2: yellow row and a card. -->
     <integer name="config_tally_weaker_lock_status">2</integer>
