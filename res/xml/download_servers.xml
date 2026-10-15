@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/download_servers_title">
+    <com.android.settingslib.widget.SelectorWithWidgetPreference
+        android:key="download_server_automatic" android:persistent="false"
+        android:title="@string/private_dns_mode_opportunistic" />
+    <com.android.settingslib.widget.SelectorWithWidgetPreference
+        android:key="download_server_primary_eu" android:persistent="false"
+        android:title="@string/download_server_europe_only" />
+    <com.android.settingslib.widget.SelectorWithWidgetPreference
+        android:key="download_server_canada" android:persistent="false"
+        android:title="@string/download_server_canada_only" />
+    <com.android.settingslib.widget.FooterPreference android:key="download_automatic_footer"
+        android:title="@string/download_servers_automatic_footer" android:selectable="false" />
+    <com.android.settingslib.widget.FooterPreference android:key="download_status"
+        android:selectable="false" app:isPreferenceVisible="false" />
+</PreferenceScreen>

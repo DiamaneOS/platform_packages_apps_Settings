@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="download_servers_title">Download servers</string>
+    <string name="download_servers_summary">OS and Apps downloads</string>
+    <string name="download_server_europe_only">Europe only</string>
+    <string name="download_server_canada_only">Canada only</string>
+    <!-- Footer under the choices. "Automatic" is the first choice. -->
+    <string name="download_servers_automatic_footer">With Automatic, downloads come from the faster of DiamaneOS\'s servers in Germany and Canada. If one can\'t be reached or a download stops, the other continues it. Both are run by DiamaneOS and see only your IP address and which download you ask for.</string>
+    <string name="download_servers_main_user_only">Change these settings from the main user.</string>
+    <string name="download_servers_unavailable">Download server settings are unavailable. Try opening this page again.</string>
+</resources>

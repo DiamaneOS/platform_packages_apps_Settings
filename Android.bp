@@ -69,6 +69,7 @@ android_library {
     ],
     optional_uses_libs: ["com.android.extensions.appfunctions"],
     static_libs: [
+        "DiamaneOSDownloadPolicyClient",
         // External dependencies
         "androidx.compose.runtime_runtime-livedata",
         "androidx.lifecycle_lifecycle-livedata-ktx",
