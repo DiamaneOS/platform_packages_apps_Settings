@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+  SPDX-License-Identifier: Apache-2.0
+
+  German for values/tally_moments_strings.xml, translated by the DiamaneOS project.
+  Android's own words, with their translations: tally_moments_paused_apps_none from Settings zen_mode_apps_none_apps.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="tally_moments_title">"Moments-Schalter"</string>
+    <string name="tally_moments_intro">"Wähle aus, was der Schalter an der Seite des Smartphones tut, wenn du ihn einschaltest. Schiebst du ihn zurück, wird zurückgesetzt, was er geändert hat."</string>
+    <string name="tally_moments_action_header">"Wenn der Schalter an ist"</string>
+    <string name="tally_moments_action_moments">"Moments"</string>
+    <string name="tally_moments_action_moments_summary">"„Bitte nicht stören“ mit den Personen und Apps, die du zulässt, Startbildschirm nur mit den Apps, die du auswählst, und die ausgewählten Apps pausiert"</string>
+    <string name="tally_moments_action_sensors">"Kamera und Mikrofon aus"</string>
+    <string name="tally_moments_action_sensors_summary">"Schaltet den Kamera- und Mikrofonzugriff aus, wie die Schnelleinstellungen. Das ist eine Software-Einstellung, keine Trennung in der Hardware."</string>
+    <string name="tally_moments_action_sensors_summary_kernel">"Schaltet den Kamera- und Mikrofonzugriff aus, wie die Schnelleinstellungen. Zusätzlich blockiert der Kernel die eingebauten Kameras und Mikrofone."</string>
+    <string name="tally_moments_action_airplane_summary">"Schaltet den Flugmodus ein"</string>
+    <string name="tally_moments_action_lockdown_summary">"Sperrt das Smartphone und schaltet die Entsperrung per Fingerabdruck und Gesichtserkennung aus, bis du deine PIN, dein Muster oder dein Passwort eingibst. Das Zurückschieben des Schalters beendet das nicht."</string>
+    <string name="tally_moments_action_lockdown_needs_lock">"Erfordert eine PIN, ein Muster oder ein Passwort"</string>
+    <string name="tally_moments_action_nothing">"Nichts"</string>
+    <string name="tally_moments_action_nothing_summary">"Der Schalter tut nichts"</string>
+    <string name="tally_moments_kernel_header">"Im Kernel blockieren"</string>
+    <string name="tally_moments_kernel_title">"Eingebaute Mikrofone"</string>
+    <string name="tally_moments_kernel_title_camera">"Eingebaute Kameras und Mikrofone"</string>
+    <string name="tally_moments_kernel_on">"Solange der Schalter unten ist, schaltet der Kernel die eingebauten Mikrofone stumm und trennt ihre Stromversorgung. Keine App und kein Android-Dienst kann sie wieder einschalten. Nur der Schalter kann das, sofort und auch auf dem Sperrbildschirm. Eine Änderung dieser Auswahl erreicht den Kernel erst nach einem Neustart. Die Blockierung durch Android ändert sich sofort."</string>
+    <string name="tally_moments_kernel_after_restart">"Starte dein Smartphone neu, damit der Schalter Kamera und Mikrofon auch unterhalb von Android fest ausschaltet."</string>
+    <string name="tally_moments_kernel_until_restart">"Bis zum Neustart bleibt das Mikrofon gesperrt, solange der Schalter unten ist."</string>
+    <string name="tally_moments_kernel_until_restart_camera">"Bis zum Neustart bleiben Kamera und Mikrofon gesperrt, solange der Schalter unten ist."</string>
+    <string name="tally_moments_kernel_on_camera">"Solange der Schalter unten ist, hält der Kernel die Kameras auf einem Testbild und schaltet die eingebauten Mikrofone stumm, indem er ihre Stromversorgung trennt. Keine App und kein Android-Dienst kann das rückgängig machen. Nur der Schalter kann das, sofort und auch auf dem Sperrbildschirm. Eine Änderung dieser Auswahl erreicht den Kernel erst nach einem Neustart. Die Blockierung durch Android ändert sich sofort."</string>
+    <string name="tally_moments_kernel_emergency">"Solange der Schalter unten ist, haben Notrufe kein Mikrofon."</string>
+    <string name="tally_moments_sensor_note">"Hinweis anzeigen, wenn eine App eine blockierte Kamera oder ein blockiertes Mikrofon verwenden will"</string>
+    <string name="tally_moments_sensor_note_summary">"In beiden Fällen können Apps die Kamera nicht verwenden und erhalten vom Mikrofon nur Stille, ohne Aufforderung zum Aufheben der Blockierung. Aus: Es wird nichts angezeigt."</string>
+    <string name="tally_moments_options_header">"Moments"</string>
+    <string name="tally_moments_home_apps">"Apps auf dem Startbildschirm"</string>
+    <string name="tally_moments_home_apps_none">"Keine ausgewählt: Der Startbildschirm bleibt unverändert"</string>
+    <string name="tally_moments_paused_apps">"Pausierte Apps"</string>
+    <plurals name="tally_moments_apps_count">
+        <item quantity="one">"<xliff:g id="count">%d</xliff:g> App"</item>
+        <item quantity="other">"<xliff:g id="count">%d</xliff:g> Apps"</item>
+    </plurals>
+    <string name="tally_moments_footer">"Das Einschalten mit dem Schalter funktioniert auch auf dem Sperrbildschirm. Beim Zurückschieben werden Flugmodus und pausierte Apps erst nach dem Entsperren zurückgesetzt. Der Kamera- und Mikrofonzugriff kehrt sofort zurück, wenn der Kernel ihn blockiert hat, sonst nach dem Entsperren. Einstellungen, die du in der Zwischenzeit selbst geändert hast, bleiben so, wie du sie eingestellt hast."</string>
+    <string name="tally_moments_home_apps_title">"Apps auf dem Startbildschirm bei Moments"</string>
+    <string name="tally_moments_paused_apps_title">"Bei Moments pausiert"</string>
+    <string name="tally_moments_paused_apps_intro">"Pausierte Apps können nicht geöffnet werden und keine Benachrichtigungen senden, solange Moments aktiv ist. Manche Apps wie Telefon können nicht pausiert werden."</string>
+    <string name="tally_moments_paused_apps_none">"Keine"</string>
+</resources>

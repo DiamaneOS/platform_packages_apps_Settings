@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+  SPDX-License-Identifier: Apache-2.0
+
+  Spanish for values/tally_passphrase_strings.xml, translated by the DiamaneOS project.
+  Android's own words, with their translations: tally_generated_another_pin from framework restr_pin_enter_new_pin, tally_weaker_risk_decline_pattern from Settings go_back_button_label.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="tally_lock_passphrase_title">"Frase de contraseña"</string>
+    <string name="tally_lock_passphrase_summary">"Recomendado. Palabras aleatorias"</string>
+    <string name="tally_lock_own_passphrase_title">"Frase de contraseña propia"</string>
+    <string name="tally_lock_own_passphrase_summary">"Segura a partir de 20 caracteres"</string>
+    <string name="tally_lock_random_pin_title">"PIN aleatorio largo"</string>
+    <string name="tally_lock_random_pin_summary">"20 dígitos aleatorios"</string>
+    <string name="tally_lock_weaker_summary">"Más débil en este teléfono"</string>
+    <string name="tally_lock_label_passphrase">"Frase de contraseña"</string>
+    <string name="tally_lock_label_password_weaker">"Contraseña: más débil en este teléfono"</string>
+    <string name="tally_lock_label_password_unknown">"Contraseña (no introducida desde el reinicio)"</string>
+    <string name="tally_lock_label_random_pin">"PIN aleatorio largo"</string>
+    <string name="tally_lock_label_pin_weaker">"PIN: más débil en este teléfono"</string>
+    <string name="tally_lock_label_pattern_weaker">"Patrón: más débil en este teléfono"</string>
+    <string name="tally_generated_passphrase_header">"Tu frase de contraseña"</string>
+    <string name="tally_generated_pin_header">"Tu PIN"</string>
+    <string name="tally_generated_type_back_passphrase_header">"Escribe tu frase de contraseña"</string>
+    <string name="tally_generated_type_back_pin_header">"Escribe tu PIN"</string>
+    <string name="tally_generated_practise_header">"Una vez más"</string>
+    <string name="tally_generated_wrong_header">"No coincide"</string>
+    <string name="tally_generated_advice">"Apúntalo y guárdalo en casa hasta que te lo sepas de memoria."</string>
+    <string name="tally_lock_no_recovery">"No se puede recuperar. Si lo olvidas, se perderán los datos de este teléfono."</string>
+    <string name="tally_lock_learning">"Durante <xliff:g id="days" example="14">%1$d</xliff:g> días, el teléfono te lo pedirá una vez al día para que se te quede."</string>
+    <string name="tally_generated_words_caption">"Palabras"</string>
+    <string name="tally_generated_words_choice">"<xliff:g id="words" example="6">%1$d</xliff:g> palabras"</string>
+    <string name="tally_generated_hidden_description">"Oculto"</string>
+    <string name="tally_generated_preparing">"Preparando…"</string>
+    <string name="tally_generated_another">"Nueva frase"</string>
+    <string name="tally_generated_show_again">"Volver a mostrar"</string>
+    <string name="tally_generated_type_back_passphrase_hint">"Escribe las palabras separadas por un espacio."</string>
+    <string name="tally_generated_type_back_pin_hint">"Escribe los dígitos sin espacios."</string>
+    <string name="tally_generated_practise_hint">"Correcto. Una vez más y se guardará."</string>
+    <string name="tally_generated_unavailable">"No se ha podido crear en este teléfono. Vuelve atrás y elige Frase de contraseña propia."</string>
+    <string name="tally_generated_blocked_by_rules">"Las reglas de este teléfono no permiten este bloqueo. Vuelve atrás y elige otro."</string>
+    <string name="tally_lock_saving">"Guardando…"</string>
+    <string name="tally_strength_line">"Estimación: <xliff:g id="time" example="about 3.4 billion years">%1$s</xliff:g> para adivinarlo"</string>
+    <string name="tally_strength_details_title">"Cómo se calcula"</string>
+    <string name="tally_strength_caveat_attacker">"Estimaciones aproximadas para alguien que haya copiado el almacenamiento del teléfono y vulnerado su zona segura. Hasta entonces, solo tiene pocos intentos."</string>
+    <string name="tally_strength_caveat_rate">"Suponen <xliff:g id="rate" example="1,000,000">%1$s</xliff:g> intentos por segundo, lo que equivale a más de <xliff:g id="cards" example="10,000">%2$s</xliff:g> tarjetas gráficas de gama alta actuales. Las máquinas diseñadas a medida de un Gobierno podrían ser <xliff:g id="factor" example="1,000">%3$s</xliff:g> veces más rápidas."</string>
+    <string name="tally_strength_caveat_random">"Solo son válidas para una frase de contraseña o un PIN que el teléfono haya elegido al azar. Los tuyos pueden ser mucho más fáciles de adivinar."</string>
+    <string name="tally_strength_caveat_average">"Los tiempos son promedios: un atacante puede tener suerte y los ordenadores son más rápidos cada año."</string>
+    <string name="tally_compare_heading">"Si se elige al azar:"</string>
+    <string name="tally_compare_pin6">"PIN de 6 dígitos: <xliff:g id="time">%1$s</xliff:g>"</string>
+    <string name="tally_compare_words">"<xliff:g id="words" example="6">%1$d</xliff:g> palabras: <xliff:g id="time">%2$s</xliff:g>"</string>
+    <string name="tally_compare_words_range">"<xliff:g id="words" example="7">%1$d</xliff:g>–<xliff:g id="more_words" example="8">%2$d</xliff:g> palabras: <xliff:g id="time">%3$s</xliff:g>"</string>
+    <string name="tally_compare_random_pin">"PIN de <xliff:g id="digits" example="20">%1$d</xliff:g> dígitos: <xliff:g id="time">%2$s</xliff:g>"</string>
+    <string name="tally_guess_time_under_minute">"segundos"</string>
+    <string name="tally_guess_time_more_than_trillion">"más de un billón de años"</string>
+    <string name="tally_guess_time_minutes">"{count, plural, =1 {aproximadamente # minuto} other {aproximadamente # minutos}}"</string>
+    <string name="tally_guess_time_hours">"{count, plural, =1 {aproximadamente # hora} other {aproximadamente # horas}}"</string>
+    <string name="tally_guess_time_days">"{count, plural, =1 {aproximadamente # día} other {aproximadamente # días}}"</string>
+    <string name="tally_guess_time_years">"{count, plural, =1 {aproximadamente # año} other {aproximadamente # años}}"</string>
+    <string name="tally_guess_time_million_years">"{count, plural, other {aproximadamente # millones de años}}"</string>
+    <string name="tally_guess_time_billion_years">"{count, plural, other {aproximadamente # mil millones de años}}"</string>
+    <string name="tally_own_passphrase_intro">"No se puede recuperar si la olvidas."</string>
+    <string name="tally_verdict_empty">"Con <xliff:g id="length" example="20">%1$d</xliff:g> caracteres o más se considera segura"</string>
+    <string name="tally_verdict_too_short">"Más débil en este teléfono: menos de <xliff:g id="length" example="20">%1$d</xliff:g> caracteres"</string>
+    <string name="tally_verdict_digits_only">"Más débil en este teléfono: solo dígitos"</string>
+    <string name="tally_verdict_few_characters">"Más débil en este teléfono: muy pocos caracteres distintos"</string>
+    <string name="tally_verdict_weaker">"Más débil en este teléfono"</string>
+    <string name="tally_verdict_strong">"Segura"</string>
+    <string name="tally_verdict_guessable">"Suficientemente larga, pero parece fácil de adivinar"</string>
+    <string name="tally_verdict_how">"¿Cómo se evalúa?"</string>
+    <string name="tally_verdict_how_message">"El teléfono solo tiene en cuenta la longitud y los caracteres, no el significado. Por eso puede equivocarse en ambos sentidos. Una contraseña aleatoria corta se considera más débil. Una cita larga se considera segura. Una contraseña más débil sigue funcionando, tras una advertencia."</string>
+    <string name="tally_weaker_risk_title_pin">"Un PIN es fácil de adivinar en este teléfono"</string>
+    <string name="tally_weaker_risk_title_pattern">"Un patrón es fácil de adivinar en este teléfono"</string>
+    <string name="tally_weaker_risk_title_password">"Una contraseña corta es más fácil de adivinar en este teléfono"</string>
+    <string name="tally_weaker_risk_message_pin">"Este teléfono no tiene un chip de seguridad independiente. Si alguna vez se vulnera su zona segura, un PIN se puede adivinar rápidamente. Una frase de contraseña, no."</string>
+    <string name="tally_weaker_risk_message_pattern">"Este teléfono no tiene un chip de seguridad independiente. Si alguna vez se vulnera su zona segura, un patrón se puede adivinar rápidamente. Una frase de contraseña, no."</string>
+    <string name="tally_weaker_risk_message_password">"Este teléfono no tiene un chip de seguridad independiente. Si alguna vez se vulnera su zona segura, una contraseña corta se puede adivinar rápidamente. Una frase de contraseña larga, no."</string>
+    <string name="tally_weaker_risk_accept_pin">"Entendido, usar un PIN"</string>
+    <string name="tally_weaker_risk_accept_pattern">"Entendido, usar un patrón"</string>
+    <string name="tally_weaker_risk_accept_password">"Entendido, usarla"</string>
+    <string name="tally_weaker_risk_decline_pin">"Usar frase de contraseña"</string>
+    <string name="tally_weaker_risk_decline_password">"Hacerla más larga"</string>
+    <string name="tally_lock_none_title">"¿Sin bloqueo de pantalla?"</string>
+    <string name="tally_lock_none_warning">"Sin bloqueo, cualquiera que tenga el teléfono puede abrirlo."</string>
+    <string name="tally_lock_none_keep">"Mantener bloqueo"</string>
+    <string name="tally_lock_none_confirm">"No usar bloqueo"</string>
+    <string name="tally_generated_another_pin">"PIN nuevo"</string>
+    <string name="tally_weaker_risk_decline_pattern">"Volver"</string>
+</resources>

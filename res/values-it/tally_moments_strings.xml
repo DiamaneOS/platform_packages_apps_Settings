@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+  SPDX-License-Identifier: Apache-2.0
+
+  Italian for values/tally_moments_strings.xml, translated by the DiamaneOS project.
+  Android's own words, with their translations: tally_moments_paused_apps_none from Settings zen_mode_apps_none_apps.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="tally_moments_title">"Interruttore Moments"</string>
+    <string name="tally_moments_intro">"Scegli cosa fa l'interruttore sul lato del telefono quando lo attivi. Riportandolo indietro, viene annullato ciò che ha cambiato."</string>
+    <string name="tally_moments_action_header">"Quando l'interruttore è attivo"</string>
+    <string name="tally_moments_action_moments">"Moments"</string>
+    <string name="tally_moments_action_moments_summary">"Non disturbare con le persone e le app che consenti, schermata Home solo con le app che scegli e le app che scegli in pausa"</string>
+    <string name="tally_moments_action_sensors">"Fotocamera e microfono disattivati"</string>
+    <string name="tally_moments_action_sensors_summary">"Disattiva l'accesso a fotocamera e microfono, come le Impostazioni rapide. È un'impostazione software, non un'interruzione hardware."</string>
+    <string name="tally_moments_action_sensors_summary_kernel">"Disattiva l'accesso a fotocamera e microfono, come le Impostazioni rapide. Anche il kernel blocca le fotocamere e i microfoni integrati."</string>
+    <string name="tally_moments_action_airplane_summary">"Attiva la modalità aereo"</string>
+    <string name="tally_moments_action_lockdown_summary">"Blocca il telefono e disattiva lo sblocco con l'impronta e con il volto finché non inserisci PIN, sequenza o password. Riportare indietro l'interruttore non lo annulla."</string>
+    <string name="tally_moments_action_lockdown_needs_lock">"Richiede un PIN, una sequenza o una password"</string>
+    <string name="tally_moments_action_nothing">"Niente"</string>
+    <string name="tally_moments_action_nothing_summary">"L'interruttore non fa nulla"</string>
+    <string name="tally_moments_kernel_header">"Blocco nel kernel"</string>
+    <string name="tally_moments_kernel_title">"Microfoni integrati"</string>
+    <string name="tally_moments_kernel_title_camera">"Fotocamere e microfoni integrati"</string>
+    <string name="tally_moments_kernel_on">"Mentre l'interruttore è abbassato, il kernel disattiva l'audio dei microfoni integrati e ne toglie l'alimentazione. Nessuna app o servizio Android può riattivarli. Solo l'interruttore può farlo, subito, anche dalla schermata di blocco. Una modifica di questa scelta raggiunge il kernel dopo un riavvio. Il blocco di Android cambia subito."</string>
+    <string name="tally_moments_kernel_after_restart">"Riavvia il telefono perché l'interruttore blocchi fotocamera e microfono anche al di sotto di Android."</string>
+    <string name="tally_moments_kernel_until_restart">"Fino al riavvio, il microfono resta bloccato con l'interruttore abbassato."</string>
+    <string name="tally_moments_kernel_until_restart_camera">"Fino al riavvio, fotocamera e microfono restano bloccati con l'interruttore abbassato."</string>
+    <string name="tally_moments_kernel_on_camera">"Mentre l'interruttore è abbassato, il kernel blocca le fotocamere su un'immagine di prova e disattiva l'audio dei microfoni integrati, togliendone l'alimentazione. Nessuna app o servizio Android può annullarlo. Solo l'interruttore può farlo, subito, anche dalla schermata di blocco. Una modifica di questa scelta raggiunge il kernel dopo un riavvio. Il blocco di Android cambia subito."</string>
+    <string name="tally_moments_kernel_emergency">"Mentre l'interruttore è abbassato, le chiamate di emergenza non hanno il microfono."</string>
+    <string name="tally_moments_sensor_note">"Mostra un avviso quando un'app prova a usare la fotocamera o il microfono bloccati"</string>
+    <string name="tally_moments_sensor_note_summary">"In entrambi i casi, le app non possono usare la fotocamera e dal microfono ricevono solo silenzio, senza la richiesta di sblocco. Disattivato: non viene mostrato nulla."</string>
+    <string name="tally_moments_options_header">"Moments"</string>
+    <string name="tally_moments_home_apps">"App nella schermata Home"</string>
+    <string name="tally_moments_home_apps_none">"Nessuna scelta: la schermata Home resta com'è"</string>
+    <string name="tally_moments_paused_apps">"App in pausa"</string>
+    <plurals name="tally_moments_apps_count">
+        <item quantity="one">"<xliff:g id="count">%d</xliff:g> app"</item>
+        <item quantity="other">"<xliff:g id="count">%d</xliff:g> app"</item>
+    </plurals>
+    <string name="tally_moments_footer">"L'attivazione dell'interruttore funziona anche dalla schermata di blocco. Riportandolo indietro, la modalità aereo e le app in pausa vengono ripristinate solo dopo lo sblocco. L'accesso a fotocamera e microfono torna subito se lo ha bloccato il kernel, altrimenti dopo lo sblocco. Le impostazioni che hai modificato tu nel frattempo restano come le hai impostate."</string>
+    <string name="tally_moments_home_apps_title">"App nella Home durante Moments"</string>
+    <string name="tally_moments_paused_apps_title">"In pausa durante Moments"</string>
+    <string name="tally_moments_paused_apps_intro">"Le app in pausa non possono aprirsi né inviare notifiche finché Moments è attivo. Alcune app, come Telefono, non possono essere messe in pausa."</string>
+    <string name="tally_moments_paused_apps_none">"Nessuna"</string>
+</resources>

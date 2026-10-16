@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+  SPDX-License-Identifier: Apache-2.0
+
+  Spanish for values/tally_moments_strings.xml, translated by the DiamaneOS project.
+  Android's own words, with their translations: tally_moments_paused_apps_none from Settings zen_mode_apps_none_apps.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="tally_moments_title">"Interruptor Moments"</string>
+    <string name="tally_moments_intro">"Elige qué hace el interruptor del lateral del teléfono cuando lo activas. Al volver a deslizarlo, se revierte lo que cambió."</string>
+    <string name="tally_moments_action_header">"Cuando el interruptor está activado"</string>
+    <string name="tally_moments_action_moments">"Moments"</string>
+    <string name="tally_moments_action_moments_summary">"No molestar con las personas y aplicaciones que permitas, pantalla de inicio solo con las aplicaciones que elijas y las aplicaciones que elijas en pausa"</string>
+    <string name="tally_moments_action_sensors">"Cámara y micrófono desactivados"</string>
+    <string name="tally_moments_action_sensors_summary">"Desactiva el acceso a la cámara y al micrófono, como los Ajustes rápidos. Es un ajuste de software, no un corte por hardware."</string>
+    <string name="tally_moments_action_sensors_summary_kernel">"Desactiva el acceso a la cámara y al micrófono, como los Ajustes rápidos. El kernel también bloquea las cámaras y los micrófonos integrados."</string>
+    <string name="tally_moments_action_airplane_summary">"Activa el modo Avión"</string>
+    <string name="tally_moments_action_lockdown_summary">"Bloquea el teléfono y desactiva el desbloqueo con huella digital y el desbloqueo facial hasta que introduzcas tu PIN, patrón o contraseña. Volver a deslizar el interruptor no lo desactiva."</string>
+    <string name="tally_moments_action_lockdown_needs_lock">"Requiere un PIN, un patrón o una contraseña"</string>
+    <string name="tally_moments_action_nothing">"Nada"</string>
+    <string name="tally_moments_action_nothing_summary">"El interruptor no hace nada"</string>
+    <string name="tally_moments_kernel_header">"Bloqueo en el kernel"</string>
+    <string name="tally_moments_kernel_title">"Micrófonos integrados"</string>
+    <string name="tally_moments_kernel_title_camera">"Cámaras y micrófonos integrados"</string>
+    <string name="tally_moments_kernel_on">"Mientras el interruptor está bajado, el kernel silencia los micrófonos integrados y corta su alimentación. Ninguna aplicación ni servicio de Android puede volver a activarlos. Solo el interruptor puede hacerlo, al instante, también en la pantalla de bloqueo. Los cambios de esta opción llegan al kernel tras reiniciar. El bloqueo de Android cambia al instante."</string>
+    <string name="tally_moments_kernel_after_restart">"Reinicia el teléfono para que el interruptor también bloquee la cámara y el micrófono por debajo de Android."</string>
+    <string name="tally_moments_kernel_until_restart">"Hasta que reinicies, el micrófono sigue bloqueado con el interruptor bajado."</string>
+    <string name="tally_moments_kernel_until_restart_camera">"Hasta que reinicies, la cámara y el micrófono siguen bloqueados con el interruptor bajado."</string>
+    <string name="tally_moments_kernel_on_camera">"Mientras el interruptor está bajado, el kernel mantiene las cámaras en una imagen de prueba y silencia los micrófonos integrados cortando su alimentación. Ninguna aplicación ni servicio de Android puede deshacerlo. Solo el interruptor puede hacerlo, al instante, también en la pantalla de bloqueo. Los cambios de esta opción llegan al kernel tras reiniciar. El bloqueo de Android cambia al instante."</string>
+    <string name="tally_moments_kernel_emergency">"Mientras el interruptor está bajado, las llamadas de emergencia no tienen micrófono."</string>
+    <string name="tally_moments_sensor_note">"Mostrar un aviso cuando una aplicación intente usar la cámara o el micrófono bloqueados"</string>
+    <string name="tally_moments_sensor_note_summary">"En ambos casos, las aplicaciones no pueden usar la cámara y solo reciben silencio del micrófono, sin un aviso para desbloquear. Desactivado: no se muestra nada."</string>
+    <string name="tally_moments_options_header">"Moments"</string>
+    <string name="tally_moments_home_apps">"Apps en la pantalla de inicio"</string>
+    <string name="tally_moments_home_apps_none">"No se ha elegido ninguna: la pantalla de inicio no cambia"</string>
+    <string name="tally_moments_paused_apps">"Apps en pausa"</string>
+    <plurals name="tally_moments_apps_count">
+        <item quantity="one">"<xliff:g id="count">%d</xliff:g> app"</item>
+        <item quantity="other">"<xliff:g id="count">%d</xliff:g> apps"</item>
+    </plurals>
+    <string name="tally_moments_footer">"Activar el interruptor también funciona en la pantalla de bloqueo. Al volver a deslizarlo, el modo Avión y las aplicaciones en pausa se restablecen solo después de desbloquear. El acceso a la cámara y al micrófono vuelve al instante si lo bloqueó el kernel y, si no, después de desbloquear. Los ajustes que hayas cambiado tú mientras tanto se quedan como los dejaste."</string>
+    <string name="tally_moments_home_apps_title">"Apps de inicio durante Moments"</string>
+    <string name="tally_moments_paused_apps_title">"En pausa durante Moments"</string>
+    <string name="tally_moments_paused_apps_intro">"Las aplicaciones en pausa no pueden abrirse ni enviar notificaciones mientras Moments esté activado. Algunas aplicaciones, como Teléfono, no se pueden pausar."</string>
+    <string name="tally_moments_paused_apps_none">"Ninguna"</string>
+</resources>

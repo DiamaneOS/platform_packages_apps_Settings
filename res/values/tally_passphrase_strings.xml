@@ -16,7 +16,8 @@
   -->
 
 <!-- Choosing a screen lock: the passphrase-first flow, the warning for weaker locks, the
-     strength line and the lock's name on the Security page. English only. Where stock
+     strength line and the lock's name on the Security page. Translated into German, French,
+     Spanish and Italian, the other languages English only. Where stock
      Settings has a translated string for the same message, the code uses it. Texts shown
      together stay in one language.
 
