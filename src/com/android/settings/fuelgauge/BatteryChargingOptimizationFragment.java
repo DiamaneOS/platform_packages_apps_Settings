@@ -18,6 +18,10 @@ public class BatteryChargingOptimizationFragment extends BoolSettingFragment {
 
     @Override
     protected boolean interceptMainSwitchChange(boolean newValue) {
+        if (BatteryChargeLimit.isHealthHalLimit(requireContext())) {
+            // BatteryService passes the setting to the health HAL.
+            return false;
+        }
         int policy = newValue ?
                 IGoogleBattery.BatteryChargingPolicy.LONGLIFE :
                 IGoogleBattery.BatteryChargingPolicy.DEFAULT;

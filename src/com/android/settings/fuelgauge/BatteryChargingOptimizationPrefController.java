@@ -27,7 +27,7 @@ public class BatteryChargingOptimizationPrefController extends BoolSettingFragme
     }
 
     static int getAvailabilityStatus(Context ctx) {
-        if (!BatteryChargeLimit.isGoogleDevice()) {
+        if (!BatteryChargeLimit.isSupported(ctx)) {
             return UNSUPPORTED_ON_DEVICE;
         }
         return ExtSettingControllerHelper.getGlobalSettingAvailability(ctx);
