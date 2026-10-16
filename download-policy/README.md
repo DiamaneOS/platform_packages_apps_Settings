@@ -25,4 +25,4 @@ Automatic:
 - Continues a download that fails or stalls mid-way on the other server from the same byte offset. The answer must carry the exact `Content-Range` of a file of the same size.
 - Tries each server once per download.
 
-Run `python3 -m unittest discover -s download-policy/tests -p 'test_*.py'`. `DOWNLOAD_POLICY_JAVA_HOME` selects a host JDK. Tests use explicit Android authority and HTTPS doubles. They do not qualify Android runtime, rendered UI or cryptography.
+Run `python3 -m unittest discover -s download-policy/tests -p 'test_*.py'`. `DOWNLOAD_POLICY_JAVA_HOME` selects a host JDK. The tests use stand-ins for the Android settings authority and HTTPS, so they do not test the Android runtime, the rendered UI or the cryptography.
