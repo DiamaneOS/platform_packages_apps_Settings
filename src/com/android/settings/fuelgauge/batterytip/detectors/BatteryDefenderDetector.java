@@ -17,6 +17,7 @@
 package com.android.settings.fuelgauge.batterytip.detectors;
 
 import android.content.Context;
+import android.ext.power.BatteryChargeLimit;
 
 import com.android.settings.fuelgauge.BatteryInfo;
 import com.android.settings.fuelgauge.batterytip.tips.BatteryDefenderTip;
@@ -34,8 +35,12 @@ public class BatteryDefenderDetector implements BatteryTipDetector {
 
     @Override
     public BatteryTip detect() {
+        // Outside Pixels, a hold with the charge limit on is the user's own limit: the battery
+        // header says charging is on hold, and the tip's "Charge anyway" cannot lift the limit.
+        final boolean chargeLimitHold = !BatteryChargeLimit.isGoogleDevice()
+                && BatteryChargeLimit.getSetting().get(mContext);
         final int state =
-                mBatteryInfo.isBatteryDefender
+                mBatteryInfo.isBatteryDefender && !chargeLimitHold
                         ? BatteryTip.StateType.NEW
                         : BatteryTip.StateType.INVISIBLE;
         final boolean isPluggedIn = mBatteryInfo.pluggedStatus != 0;
