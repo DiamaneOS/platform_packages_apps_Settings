@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+  SPDX-License-Identifier: Apache-2.0
+
+  Spanish for values/download_servers.xml, translated by the DiamaneOS project.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="download_servers_title">"Servidores de descarga"</string>
+    <string name="download_servers_summary">"Descargas del SO y de Apps"</string>
+    <string name="download_server_europe_only">"Solo Europa"</string>
+    <string name="download_server_canada_only">"Solo Canadá"</string>
+    <string name="download_servers_automatic_footer">"Con Automático, las descargas proceden del más rápido de los servidores de DiamaneOS en Alemania y Canadá. Si uno no está disponible o una descarga se detiene, el otro la continúa. Ambos los gestiona DiamaneOS y solo ven tu dirección IP y qué descarga pides."</string>
+    <string name="download_servers_main_user_only">"Cambia estos ajustes desde el usuario principal."</string>
+    <string name="download_servers_unavailable">"Los ajustes de los servidores de descarga no están disponibles. Prueba a abrir esta página de nuevo."</string>
+</resources>

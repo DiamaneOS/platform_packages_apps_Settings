@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+  SPDX-License-Identifier: Apache-2.0
+
+  Italian for values/tally_strings.xml, translated by the DiamaneOS project.
+  Android's own words, with their translations: tally_hw_video_decoding_never_title from Settings battery_saver_turn_on_automatically_never.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="tally_about_based_on">"DiamaneOS è basato su GrapheneOS. Non è realizzato né approvato dal produttore del dispositivo."</string>
+    <string name="tally_vendor_security_patch">"Aggiornamento della sicurezza del produttore"</string>
+    <string name="tally_firmware_release">"Firmware Fairphone"</string>
+    <string name="tally_firmware_release_mixed">"Versioni miste"</string>
+    <string name="tally_grapheneos_documentation">"Documentazione di GrapheneOS"</string>
+    <string name="tally_refresh_rate_title">"Frequenza di aggiornamento massima"</string>
+    <string name="tally_refresh_rate_summary">"Fino a <xliff:g id="refresh_rate" example="120">%1$d</xliff:g> Hz"</string>
+    <string name="tally_refresh_rate_intro">"Lo schermo riduce la frequenza di aggiornamento quando non c'è movimento, per risparmiare batteria. Un valore massimo più alto rende lo scorrimento e le animazioni più fluidi e consuma più batteria."</string>
+    <string name="tally_hw_video_decoding_title">"Decodifica video hardware"</string>
+    <string name="tally_hw_video_decoding_protected_title">"Solo video protetti (predefinito)"</string>
+    <string name="tally_hw_video_decoding_protected_unavailable_title">"Solo video protetti"</string>
+    <string name="tally_hw_video_decoding_protected_summary">"Solo i video che un'app riproduce con protezione dalla copia, come i film dei servizi di streaming, usano il decoder hardware. Tutti gli altri video restano nel decoder software isolato."</string>
+    <string name="tally_hw_video_decoding_all_title">"Tutti i video"</string>
+    <string name="tally_hw_video_decoding_all_summary">"Ogni app decodifica i video con il decoder hardware, risparmiando batteria e riproducendo i video ad alta risoluzione in modo più fluido."</string>
+    <string name="tally_hw_video_decoding_never_default_title">"Mai (predefinito)"</string>
+    <string name="tally_hw_video_decoding_never_summary">"Nessun video usa il decoder hardware e i video protetti dalla copia ricevono una protezione più debole, quindi alcuni servizi di streaming li riproducono con qualità inferiore o non li riproducono affatto."</string>
+    <string name="tally_hw_video_decoding_never_summary_without_protected">"Ogni app decodifica i video con il decoder software isolato."</string>
+    <string name="tally_hw_video_decoding_summary_after_restart">"Dopo il riavvio: <xliff:g id="choice" example="All video">%1$s</xliff:g>"</string>
+    <string name="tally_hw_video_decoding_footer">"Il decoder hardware è codice chiuso del produttore del chip, con driver e firmware propri, e un video dannoso che lo raggiunge può attaccarli. Il decoder software viene eseguito in una sandbox. Consuma più batteria e può scattare alle risoluzioni elevate. Un'app può richiedere la riproduzione protetta dalla copia per i propri video, quindi l'impostazione predefinita tiene lontani dal decoder hardware i video ordinari, non tutte le app. Una modifica ha effetto dopo il riavvio del telefono."</string>
+    <string name="tally_hw_video_decoding_footer_without_protected">"Il decoder hardware è codice chiuso del produttore del chip, con driver e firmware propri, e un video dannoso che lo raggiunge può attaccarli. Il decoder software viene eseguito in una sandbox. Consuma più batteria e può scattare alle risoluzioni elevate. Una modifica ha effetto dopo il riavvio del telefono."</string>
+    <string name="tally_hotspot_clients_note">"Un dispositivo sceglie il proprio nome, quindi un nome può essere falso. La maggior parte dei dispositivi mostra un indirizzo MAC casuale e alcuni lo cambiano a ogni connessione."</string>
+    <string name="tally_hotspot_join_notice_title">"Avvisa quando si connette un dispositivo"</string>
+    <string name="tally_hotspot_join_notice_summary">"Con suono per un nuovo dispositivo, in silenzio quando ne ritorna uno noto"</string>
+    <string name="tally_add_sim_esim_support_off">"«eSIM support» è disattivato. Per aggiungere una eSIM, attivalo in Rete e internet."</string>
+    <string name="tally_reset_esim_support_off">"«eSIM support» è disattivato, quindi le eSIM restano sul telefono. Per resettarle, attiva prima «eSIM support» in Rete e internet."</string>
+    <string name="tally_power_volume_down_screenshot_title">"Screenshot con Accensione e Volume giù"</string>
+    <string name="tally_hw_video_decoding_never_title">"Mai"</string>
+</resources>
