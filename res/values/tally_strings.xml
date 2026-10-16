@@ -22,9 +22,9 @@
      privacy_header, header_category_system). -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- About phone: the line under the DiamaneOS mark, saying what the system is based on and
-         who does not make it. "DiamaneOS", "GrapheneOS" and "Fairphone" are names.
+         who does not make it. "DiamaneOS" and "GrapheneOS" are names.
          [CHAR LIMIT=NONE] -->
-    <string name="tally_about_based_on">DiamaneOS is based on GrapheneOS. It is not made or endorsed by Fairphone.</string>
+    <string name="tally_about_based_on">DiamaneOS is based on GrapheneOS. It is not made or endorsed by the device maker.</string>
     <!-- About phone > Android version: label of the vendor security patch level, the date of
          the last security update of the device maker's vendor software, shown under "Android
          security update" in the same date format. [CHAR LIMIT=60] -->
