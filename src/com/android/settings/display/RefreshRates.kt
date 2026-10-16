@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
  * DiamaneOS: the user's maximum refresh rate, kept in Settings.System.PEAK_REFRESH_RATE.
  *
  * Only the peak is set: MIN_REFRESH_RATE stays as it is, so content detection and the panel's idle
- * drop (10 Hz on the FP6) keep saving battery. The highest supported rate is stored as infinity, as
+ * drop (to 10 Hz, for example) keep saving battery. The highest supported rate is stored as infinity, as
  * the AOSP Smooth display switch does, so the platform treats it as uncapped.
  */
 object RefreshRates {

@@ -7,7 +7,7 @@ package com.android.settings.password.passphrase;
 /**
  * Rates a passphrase a person chose, on a coarse scale.
  *
- * <p>There is no implementation yet. Entropy cannot be computed for a chosen phrase, so a rater
+ * <p>{@link ShapeRater} implements it. Entropy cannot be computed for a chosen phrase, so a rater
  * gives a coarse {@link Rating} and never a number of bits or a time to guess.
  *
  * <p>Rules for an implementation:
