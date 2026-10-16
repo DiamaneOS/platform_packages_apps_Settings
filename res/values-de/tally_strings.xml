@@ -7,7 +7,7 @@
   Android's own words, with their translations: tally_hw_video_decoding_never_title from Settings battery_saver_turn_on_automatically_never.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="tally_about_based_on">"DiamaneOS basiert auf GrapheneOS. Es wird nicht von Fairphone entwickelt oder befürwortet."</string>
+    <string name="tally_about_based_on">"DiamaneOS basiert auf GrapheneOS. Es wird nicht vom Gerätehersteller entwickelt oder befürwortet."</string>
     <string name="tally_vendor_security_patch">"Sicherheitsupdate des Herstellers"</string>
     <string name="tally_firmware_release">"Fairphone-Firmware"</string>
     <string name="tally_firmware_release_mixed">"Gemischte Versionen"</string>
