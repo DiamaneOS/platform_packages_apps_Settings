@@ -53,7 +53,7 @@ public final class GuessTimeEstimate {
          * @param amount two significant figures: one decimal below 10 (4.6), whole from 10
          *     (15), tens from 100 (190), and for years on to 990,000 (4,600 or 450,000).
          *     1 with {@link Wording#LESS_THAN}, 1000 with {@link Wording#MORE_THAN}.
-         * @param unit the unit of the amount; minutes with {@link Wording#LESS_THAN}
+         * @param unit the unit of the amount. Minutes with {@link Wording#LESS_THAN}
          */
         T format(Wording wording, double amount, Unit unit);
     }
@@ -86,7 +86,7 @@ public final class GuessTimeEstimate {
     /**
      * Puts an estimated number of seconds on the coarse scale.
      *
-     * @param seconds 0 or more; may be infinite
+     * @param seconds 0 or more. May be infinite
      */
     static GuessTimeEstimate of(double seconds, GuessingAssumptions assumptions) {
         if (!(seconds >= 0)) {

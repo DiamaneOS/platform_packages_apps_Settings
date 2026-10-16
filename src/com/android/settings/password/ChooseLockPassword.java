@@ -1111,7 +1111,7 @@ public class ChooseLockPassword extends SettingsActivity {
                     } else if (mRiskGate.isNeededFor(mChosenPassword,
                             mGeneratedPanel != null)) {
                         // Reached without the risk screen, for example by an intent that
-                        // names the kind of lock. It is shown now; agreeing saves.
+                        // names the kind of lock. It is shown now. Agreeing saves.
                         mSaveRefused = true;
                         mRiskGate.show(getRiskKind());
                     } else {
@@ -1306,7 +1306,7 @@ public class ChooseLockPassword extends SettingsActivity {
 
             if (mGeneratedPanel != null && mUiStage == Stage.Introduction) {
                 // The phone's passphrase or PIN is being shown. There is nothing to type and
-                // no rule to meet; Next opens once it was looked at.
+                // no rule to meet. Next opens once it was looked at.
                 mPasswordRestrictionView.setVisibility(View.GONE);
                 setHeaderText(mGeneratedPanel.headerText(false));
                 setNextEnabled(canInput && mGeneratedPanel.canContinue());
@@ -1386,7 +1386,7 @@ public class ChooseLockPassword extends SettingsActivity {
          * counts as strong or as weaker on this phone, and why. A check of its shape only.
          */
         private OwnPassphraseFeedback getOwnPassphraseFeedback(LockscreenCredential password) {
-            // The characters are ASCII if the entry is valid; anything else fails the floor.
+            // The characters are ASCII if the entry is valid. Anything else fails the floor.
             final byte[] bytes = password.getCredential();
             final char[] chars = new char[bytes.length];
             for (int i = 0; i < bytes.length; i++) {
@@ -1527,7 +1527,7 @@ public class ChooseLockPassword extends SettingsActivity {
         @Override
         public void onChosenLockSaveRefused() {
             // The lock settings want the user's agreement to the risk first. Nothing was
-            // changed. Show the risk; agreeing saves again.
+            // changed. Show the risk. Agreeing saves again.
             if (mSaveAndFinishWorker != null) {
                 getFragmentManager().beginTransaction().remove(mSaveAndFinishWorker)
                         .commitAllowingStateLoss();

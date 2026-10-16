@@ -35,7 +35,7 @@ open class MainSwitchBarPreference(context: Context, private val metadata: MainS
 
     /**
      * Tally: for a main switch whose change takes effect later, whether the system has confirmed
-     * it; the bar's lamp lights only once it has (see [TallyConfirmedSwitch]).
+     * it. The bar's lamp lights only once it has (see [TallyConfirmedSwitch]).
      */
     override var confirmedOn: Boolean? = null
         set(value) {

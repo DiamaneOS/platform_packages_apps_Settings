@@ -51,7 +51,7 @@ class FirmwareReleasePreferenceTest {
 
     @Test
     fun isAvailable_setAfterTheFirstCheck_available() {
-        // The vendor sets the release after boot completes; the row appears then.
+        // The vendor sets the release after boot completes. The row appears then.
         val preference = FirmwareReleasePreference()
         setFirmwareRelease("")
         assertThat(preference.isAvailable(context)).isFalse()

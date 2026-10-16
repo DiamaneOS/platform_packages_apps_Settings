@@ -76,7 +76,7 @@ public final class CredentialStrength {
         if (!(entropyBits >= 0) || Double.isInfinite(entropyBits)) {
             throw new IllegalArgumentException("entropy must be a number from 0 up");
         }
-        // guesses = 2^bits * share searched; seconds = guesses * seconds per guess / units.
+        // guesses = 2^bits * share searched, and seconds = guesses * seconds per guess / units.
         final double log2Seconds = entropyBits
                 + log2(assumptions.searchedShare)
                 + log2(assumptions.secondsPerGuess)

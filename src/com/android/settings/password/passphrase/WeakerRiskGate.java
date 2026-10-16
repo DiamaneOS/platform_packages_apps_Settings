@@ -25,7 +25,7 @@ public final class WeakerRiskGate {
     private final LockSetupHolder mHolder;
 
     /**
-     * @param fragment the screen; it implements {@link WeakerRiskDialog.Listener}
+     * @param fragment the screen. It implements {@link WeakerRiskDialog.Listener}
      * @param userId the user whose lock is set
      */
     public WeakerRiskGate(Fragment fragment, LockPatternUtils utils, int userId) {

@@ -68,7 +68,7 @@ final class GeneratedSecret {
 
     /**
      * @param isPassphrase a passphrase if true, a PIN otherwise
-     * @param context any context; only the application's is kept
+     * @param context any context. Only the application's is kept
      */
     GeneratedSecret(boolean isPassphrase, Context context) {
         mIsPassphrase = isPassphrase;
@@ -76,7 +76,7 @@ final class GeneratedSecret {
     }
 
     /**
-     * A screen shows the secret from now on. The first one starts the making of a secret; a
+     * A screen shows the secret from now on. The first one starts the making of a secret. A
      * later one finds the secret and the step as the screen before it left them.
      */
     void attach(Screen screen) {
@@ -147,7 +147,7 @@ final class GeneratedSecret {
     /**
      * The secret as the card shows it, numbered words in one or two columns or grouped digits.
      *
-     * @return two new arrays, the second one empty for a PIN; the caller wipes them. Null if
+     * @return two new arrays, the second one empty for a PIN. The caller wipes them. Null if
      *     there is no secret.
      */
     @Nullable
@@ -169,7 +169,7 @@ final class GeneratedSecret {
         return new char[][] {grouped, new char[0]};
     }
 
-    /** A copy of the secret as a credential; the caller zeroizes it. Null if there is none. */
+    /** A copy of the secret as a credential. The caller zeroizes it. Null if there is none. */
     @Nullable
     LockscreenCredential newCredential() {
         if (mPassphrase != null) {

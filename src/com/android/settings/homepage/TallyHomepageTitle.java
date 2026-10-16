@@ -60,7 +60,7 @@ final class TallyHomepageTitle implements View.OnScrollChangeListener,
         mGap = res.getDimensionPixelSize(R.dimen.tally_homepage_title_gap);
     }
 
-    /** Sets up the title in the homepage's layout; does nothing if the layout has none. */
+    /** Sets up the title in the homepage's layout. Does nothing if the layout has none. */
     static void attach(@NonNull Activity activity) {
         final TextView title = activity.findViewById(R.id.tally_homepage_title);
         final View divider = activity.findViewById(R.id.tally_homepage_bar_divider);
@@ -133,7 +133,7 @@ final class TallyHomepageTitle implements View.OnScrollChangeListener,
         return Math.min(1f, Math.max(0f, scrollY / travel));
     }
 
-    /** From rest to centred in the bar; scaling about its centre keeps it centred there. */
+    /** From rest to centred in the bar. Scaling about its centre keeps it centred there. */
     @VisibleForTesting
     static float travel(int restOffset, int titleHeight, int barHeight) {
         return Math.max(1f, restOffset - (barHeight - titleHeight) / 2f);

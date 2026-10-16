@@ -21,8 +21,8 @@
     android:key="top_level_settings">
 
     <!-- Tally: the prototype's four sections (Connectivity, Device, Privacy, System), each a
-         titled card. Every entry keeps its key, controller, fragment and visibility conditions;
-         only its section, its place in it and its icon (the plain glyph from its own keyed icon)
+         titled card. Every entry keeps its key, controller, fragment and visibility conditions.
+         Only its section, its place in it and its icon (the plain glyph from its own keyed icon)
          changed. The category keys stay, so tiles injected into a category still find it. -->
     <com.android.settingslib.widget.UntitledPreferenceCategory
         android:order="-140"

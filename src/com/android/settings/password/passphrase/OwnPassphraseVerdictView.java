@@ -98,7 +98,7 @@ public final class OwnPassphraseVerdictView {
         }
     }
 
-    // Quiet while nothing is typed; a positive colour for strong; a calm warning colour for
+    // Quiet while nothing is typed. A positive colour for strong. A calm warning colour for
     // everything that is weaker or looks easy to guess.
     private static int color(Verdict verdict) {
         switch (verdict) {

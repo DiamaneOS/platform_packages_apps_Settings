@@ -469,7 +469,7 @@ public class HighlightablePreferenceGroupAdapter extends SettingsPreferenceGroup
 
         colorAnimation.addListener(
                 new AnimatorListenerAdapter() {
-                    // Tally: cancel() reports a cancel and then an end; the row's own background
+                    // Tally: cancel() reports a cancel and then an end. The row's own background
                     // goes back once, so the end does not replace it with stock's.
                     private boolean mRestored;
 

@@ -32,7 +32,7 @@ import com.android.settingslib.widget.mainswitch.R as MainSwitchR
 /**
  * A switch whose change takes effect later (Wi-Fi, Bluetooth, NFC): its Tally switch moves at once
  * and lights its lamp only once the system confirms that what it controls is on, as the Tally
- * prototype's switch does. Only the lamp follows [confirmedOn]; checking, clicks, restrictions and
+ * prototype's switch does. Only the lamp follows [confirmedOn]. Checking, clicks, restrictions and
  * accessibility stay the switch's own.
  */
 interface TallyConfirmedSwitch {
@@ -47,7 +47,7 @@ interface TallyConfirmedSwitch {
 /** Sets a Tally switch's lamp confirmation (see [TallySwitch.confirmedOn]). */
 object TallySwitchLamp {
     /**
-     * Sets [confirmedOn] on [switchView] when it is a Tally switch; other switches light as ever.
+     * Sets [confirmedOn] on [switchView] when it is a Tally switch. Other switches light as ever.
      */
     @JvmStatic
     fun show(switchView: View?, confirmedOn: Boolean?) {

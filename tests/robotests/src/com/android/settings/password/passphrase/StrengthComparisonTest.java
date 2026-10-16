@@ -28,7 +28,7 @@ public class StrengthComparisonTest {
 
     /**
      * The estimate in the words of the screen, in English. The screen takes them from its
-     * string resources; this copy of those words is here to check the figures and units.
+     * string resources. This copy of those words is here to check the figures and units.
      */
     private static String inWords(Row row) {
         return row.estimate.describe((wording, amount, unit) -> {

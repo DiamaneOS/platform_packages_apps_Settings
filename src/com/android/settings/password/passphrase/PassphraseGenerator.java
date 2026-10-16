@@ -22,14 +22,14 @@ import java.util.Random;
  *
  * <p><b>The floor.</b> A phrase that does not meet {@link PassphraseFloor} is thrown away and all
  * of its words are drawn again. Only a whole new draw keeps every acceptable phrase equally
- * likely; replacing one word or adding one would favour some phrases. With the EFF list this
+ * likely. Replacing one word or adding one would favour some phrases. With the EFF list this
  * happens to about one 5-word phrase in 7.6 billion (five words of three letters make 19
- * characters) and costs 1.9e-10 bits; see {@link #rejectionLossBits}.
+ * characters) and costs 1.9e-10 bits. See {@link #rejectionLossBits}.
  *
  * <p><b>Secret handling.</b> The phrase is built in char arrays. Every array that held a part of
  * it is overwritten before {@link #generate} returns, except the one inside the returned
  * {@link Passphrase}, which the caller closes. Nothing is logged and no String of the phrase is
- * made. This narrows where the phrase is in memory; it cannot rule out copies the runtime makes
+ * made. This narrows where the phrase is in memory. It cannot rule out copies the runtime makes
  * when it moves objects, or state inside the random number generator.
  *
  * <p><b>What a screen that shows the phrase must do</b> to keep that true:
@@ -90,8 +90,8 @@ public final class PassphraseGenerator {
     private final Random mRandom;
 
     /**
-     * @param list the word list; its words with a character other than a to z are never drawn
-     * @param random the source of randomness; {@code new SecureRandom()} is the right one
+     * @param list the word list. Its words with a character other than a to z are never drawn
+     * @param random the source of randomness. {@code new SecureRandom()} is the right one
      */
     public PassphraseGenerator(WordList list, SecureRandom random) {
         this(list, (Random) random);

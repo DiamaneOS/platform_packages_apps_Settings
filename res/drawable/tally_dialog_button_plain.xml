@@ -15,7 +15,7 @@
   limitations under the License.
   -->
 
-<!-- The text button of tally_stacked_dialog_buttons.xml: nothing at rest; when pressed or
+<!-- The text button of tally_stacked_dialog_buttons.xml: nothing at rest. When pressed or
      focused, a highlight in the shape of the filled button above it, not a rectangle. -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="?android:attr/colorControlHighlight">

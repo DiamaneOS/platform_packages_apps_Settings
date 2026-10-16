@@ -28,7 +28,7 @@
          the last security update of the device maker's vendor software, shown under "Android
          security update" in the same date format. [CHAR LIMIT=60] -->
     <string name="tally_vendor_security_patch">Vendor security update</string>
-    <!-- What the vendor security update row reports, for the preferences API; not shown. -->
+    <!-- What the vendor security update row reports, for the preferences API. Not shown. -->
     <string name="tally_vendor_security_patch_purpose" translatable="false">The date of the last vendor security update</string>
     <!-- About phone > Android version: label of the Fairphone firmware release the phone runs (boot
          chain, modem and signal processor firmware), shown under "Vendor security update" as a
@@ -37,7 +37,7 @@
     <!-- About phone > Android version > Fairphone firmware: shown instead of a release number when
          the firmware parts come from different Fairphone releases. [CHAR LIMIT=60] -->
     <string name="tally_firmware_release_mixed">Mixed releases</string>
-    <!-- What the Fairphone firmware row reports, for the preferences API; not shown. -->
+    <!-- What the Fairphone firmware row reports, for the preferences API. Not shown. -->
     <string name="tally_firmware_release_purpose" translatable="false">The installed Fairphone firmware release</string>
     <!-- Link text in the footers of Secure app spawning, App info > Hardened memory allocator and
          Auto reboot: opens GrapheneOS's own documentation of the feature, which DiamaneOS
@@ -45,7 +45,7 @@
     <string name="tally_grapheneos_documentation">GrapheneOS documentation</string>
     <!-- Display > Maximum refresh rate: replaces the Smooth display switch. [CHAR LIMIT=40] -->
     <string name="tally_refresh_rate_title">Maximum refresh rate</string>
-    <!-- What the Maximum refresh rate setting controls, for the preferences API; not shown. -->
+    <!-- What the Maximum refresh rate setting controls, for the preferences API. Not shown. -->
     <string name="tally_refresh_rate_purpose" translatable="false">The highest refresh rate the screen may use</string>
     <!-- Summary of Display > Maximum refresh rate, for example "Up to 120 Hz". [CHAR LIMIT=40] -->
     <string name="tally_refresh_rate_summary">Up to <xliff:g id="refresh_rate" example="120">%1$d</xliff:g> Hz</string>

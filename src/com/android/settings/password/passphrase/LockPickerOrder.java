@@ -11,7 +11,7 @@ import com.android.settings.password.ScreenLockType;
 
 /**
  * The order of the choices in the screen lock picker: the strong ones first, the passphrase the
- * phone generates at the top; then the weaker ones; no lock last.
+ * phone generates at the top. Then the weaker ones. No lock last.
  *
  * <p>Set in code, so that the picker's layout files keep the order they have upstream.
  */

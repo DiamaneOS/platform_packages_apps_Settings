@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * {@link #toString()} is not overridden to show anything of it. The screen that takes it owns
  * the entries from then on. If no screen takes it, {@link #wipe()} overwrites them.
  *
- * @param <C> the kind of credential; overwritten by the wiper given to the constructor
+ * @param <C> the kind of credential. Overwritten by the wiper given to the constructor
  */
 public final class KeptEntry<C> {
 
@@ -33,13 +33,13 @@ public final class KeptEntry<C> {
     /**
      * @param wiper overwrites a credential
      * @param stage name of the step the screen was on
-     * @param first the first entry, or the generated secret, to compare the next entry with;
-     *     may be null
+     * @param first the first entry, or the generated secret, to compare the next entry with.
+     *     May be null
      * @param chosen the entry that waits for the user's answer about its risk, or that is being
-     *     saved; may be null, and may be the same object as {@code first}
+     *     saved. May be null, and may be the same object as {@code first}
      * @param chosenIsBeingSaved a save that is running uses {@code chosen}: it is then never
      *     overwritten here
-     * @param typed a copy of the characters in the entry field; owned by this object
+     * @param typed a copy of the characters in the entry field. Owned by this object
      */
     public KeptEntry(Consumer<C> wiper, String stage, C first, C chosen,
             boolean chosenIsBeingSaved, char[] typed, boolean riskAskedForFirstEntry,
@@ -60,12 +60,12 @@ public final class KeptEntry<C> {
         return mStage;
     }
 
-    /** The first entry or the generated secret; null if there was none. */
+    /** The first entry or the generated secret. Null if there was none. */
     public C first() {
         return mFirst;
     }
 
-    /** The entry that waits for an answer or is being saved; null if there was none. */
+    /** The entry that waits for an answer or is being saved. Null if there was none. */
     public C chosen() {
         return mChosen;
     }

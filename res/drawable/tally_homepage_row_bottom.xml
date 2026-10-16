@@ -15,7 +15,7 @@
   limitations under the License.
   -->
 
-<!-- The only row under a section title: rounded bottom corners, side and bottom edges; its top
+<!-- The only row under a section title: rounded bottom corners, side and bottom edges. Its top
      edge lies outside the view, so no line runs between the title and the row. -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="?android:attr/colorControlHighlight">

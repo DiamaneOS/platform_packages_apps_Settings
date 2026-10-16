@@ -74,7 +74,7 @@ public class HomepagePreferenceLayoutHelper {
         void setLampState(@LampState int state);
     }
 
-    /** Tally: sets the state lamp of a homepage entry; does nothing for other preferences. */
+    /** Tally: sets the state lamp of a homepage entry. Does nothing for other preferences. */
     public static void setLamp(@Nullable Preference preference, @LampState int state) {
         if (preference instanceof HomepagePreferenceLayout) {
             ((HomepagePreferenceLayout) preference).setLampState(state);
@@ -172,7 +172,7 @@ public class HomepagePreferenceLayoutHelper {
      * Draws the lamp as the prototype's static glyph (10 dp), which changes at once both ways. A
      * lamp always carries its words: it shows only beside the controller's own summary, never
      * beside text that took its place (for example "Controlled by admin"). Screen readers read
-     * the summary; the lamp itself is not announced.
+     * the summary. The lamp itself is not announced.
      */
     private void bindLamp(PreferenceViewHolder holder) {
         final View lampView = holder.findViewById(R.id.tally_state_lamp);

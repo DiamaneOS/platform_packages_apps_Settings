@@ -28,13 +28,13 @@ import java.util.Objects;
 import java.util.TreeSet;
 
 /**
- * Works out who is on the Wi-Fi hotspot. The Wi-Fi service decides who is listed; Tethering's
+ * Works out who is on the Wi-Fi hotspot. The Wi-Fi service decides who is listed. Tethering's
  * address leases add the IP address and the name each device claims. A name is never proof.
  *
  * <p>No Android classes, so the rules run in plain JUnit.
  */
 final class TallyHotspotClients {
-    /** Longest name shown; a longer one is cut and ends in "…". */
+    /** Longest name shown. A longer one is cut and ends in "…". */
     static final int MAX_NAME_LENGTH = 40;
 
     private TallyHotspotClients() {

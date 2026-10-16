@@ -59,7 +59,7 @@ public class CredentialStrengthTest {
     @Test
     public void rejectionLossBits_fiveWords() {
         // 3,707,401,867 of 7772^5 = 28,357,240,052,037,573,632 phrases are never returned.
-        // The share is 1.30739e-10; divided by ln 2 that is 1.88616744e-10 bits.
+        // The share is 1.30739e-10. Divided by ln 2 that is 1.88616744e-10 bits.
         final BigInteger rejected = new BigInteger("3707401867");
 
         assertEquals(1.88616744e-10, CredentialStrength.rejectionLossBits(5, 7772, rejected),

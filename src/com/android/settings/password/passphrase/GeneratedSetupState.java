@@ -7,8 +7,8 @@ package com.android.settings.password.passphrase;
 /**
  * Where the user is in setting up a generated passphrase or PIN, and whether it is on screen.
  *
- * <p>The steps: the secret is shown on request and copied to paper; it is typed back; it is
- * typed once more for practice; then it is saved. The secret itself is not in here.
+ * <p>The steps: the secret is shown on request and copied to paper. It is typed back. It is
+ * typed once more for practice. Then it is saved. The secret itself is not in here.
  *
  * <p>It also knows when a shown secret has been on screen long enough. That time runs on, and
  * does not start again, when the screen is created anew while the secret is shown.

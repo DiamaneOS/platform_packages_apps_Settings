@@ -77,7 +77,7 @@ public final class LockScreenSafetySource {
         final boolean lockScreenAllowedByAdmin = isLockScreenAllowedByAdmin(context,
                 screenLockPreferenceDetailsUtils);
         final boolean isLockPatternSecure = screenLockPreferenceDetailsUtils.isLockPatternSecure();
-        // A weaker lock is a recommendation; a password of unknown strength makes no claim.
+        // A weaker lock is a recommendation. A password of unknown strength makes no claim.
         final TallyLockScreenSafety tally = TallyLockScreenSafety.of(context,
                 screenLockPreferenceDetailsUtils, lockScreenAllowedByAdmin, isLockPatternSecure);
         final int severityLevel =

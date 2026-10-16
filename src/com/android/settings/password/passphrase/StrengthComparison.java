@@ -24,7 +24,7 @@ public final class StrengthComparison {
         WORDS_6(false),
         WORDS_7(false),
         WORDS_8(false),
-        /** A PIN of twelve digits picked at random. Not offered; shown for comparison. */
+        /** A PIN of twelve digits picked at random. Not offered. Shown for comparison. */
         RANDOM_PIN_12(false),
         /** A PIN of twenty digits that the phone generated. */
         RANDOM_PIN_20(false);
@@ -43,9 +43,9 @@ public final class StrengthComparison {
     /** One line of the comparison. */
     public static final class Row {
         public final Choice choice;
-        /** Entropy in bits; an upper limit when {@link Choice#atBest}. */
+        /** Entropy in bits. An upper limit when {@link Choice#atBest}. */
         public final double entropyBits;
-        /** Estimated time to guess; an upper limit when {@link Choice#atBest}. */
+        /** Estimated time to guess. An upper limit when {@link Choice#atBest}. */
         public final GuessTimeEstimate estimate;
 
         Row(Choice choice, double entropyBits, GuessTimeEstimate estimate) {

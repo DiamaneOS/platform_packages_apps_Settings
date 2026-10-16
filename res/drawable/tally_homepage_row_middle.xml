@@ -16,7 +16,7 @@
   -->
 
 <!-- The first row under a section title, with more rows below: only the card's side edges
-     show; its top and bottom edges lie outside the view. -->
+     show. Its top and bottom edges lie outside the view. -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="?android:attr/colorControlHighlight">
     <item

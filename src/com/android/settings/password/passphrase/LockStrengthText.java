@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * The words for strength figures. A time to guess never appears without "about" or "more
- * than", or it is just "seconds"; what it rests on is said in four fixed sentences.
+ * than", or it is just "seconds". What it rests on is said in four fixed sentences.
  */
 public final class LockStrengthText {
 

@@ -16,7 +16,7 @@
   -->
 
 <!-- The first row of a Tally homepage card that has no title: rounded top corners and the
-     hairline edge; its bottom edge lies outside the view, where the next row continues the card. -->
+     hairline edge. Its bottom edge lies outside the view, where the next row continues the card. -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="?android:attr/colorControlHighlight">
     <item

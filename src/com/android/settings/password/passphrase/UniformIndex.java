@@ -11,7 +11,7 @@ import java.util.Random;
  *
  * <p>How: take just enough random bytes, keep the lowest {@code b} bits, where {@code 2^b} is the
  * smallest power of two that is not below the bound, and draw again if the value is not below
- * the bound. If the bytes are uniform, the kept bits are uniform over {@code 0..2^b-1}; every
+ * the bound. If the bytes are uniform, the kept bits are uniform over {@code 0..2^b-1}. Every
  * index below the bound is one of those values, so each has the same chance, {@code 1/2^b} per
  * draw, and a draw that is thrown away tells nothing about the next one. Nothing is reduced with
  * a remainder, so there is no modulo bias.
@@ -34,7 +34,7 @@ final class UniformIndex {
     /**
      * Returns an index from 0 to {@code bound} - 1, each equally likely.
      *
-     * @param buffer filled with random bytes on each draw; it must be {@link #bytesNeeded} long.
+     * @param buffer filled with random bytes on each draw. It must be {@link #bytesNeeded} long.
      *     The caller wipes it: it holds the bytes the index came from.
      */
     static int next(Random random, int bound, byte[] buffer) {

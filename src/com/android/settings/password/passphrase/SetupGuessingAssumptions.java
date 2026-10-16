@@ -14,7 +14,7 @@ package com.android.settings.password.passphrase;
  * 2026, put a top graphics card at no more than about 100 guesses a second, and processors at
  * about the same cost for each guess. A million guesses every second therefore takes more
  * than 10,000 top graphics cards today. Machines built for the purpose, which only a
- * government could pay for, might be a thousand times faster; nothing of the kind is publicly
+ * government could pay for, might be a thousand times faster. Nothing of the kind is publicly
  * known.
  *
  * <p>This is the only place to change. The screens take the numbers they print from here as
@@ -27,13 +27,13 @@ public final class SetupGuessingAssumptions {
 
     /**
      * Top graphics cards it takes today to reach {@link #GUESSES_PER_SECOND}: more than this
-     * many. Stated next to the rate; not used in the estimate.
+     * many. Stated next to the rate. Not used in the estimate.
      */
     public static final int GRAPHICS_CARDS_NEEDED = 10_000;
 
     /**
      * How many times faster than {@link #GUESSES_PER_SECOND} a government with purpose-built
-     * machines could be. Stated as a caveat; not used in the estimate.
+     * machines could be. Stated as a caveat. Not used in the estimate.
      */
     public static final int PURPOSE_BUILT_SPEEDUP = 1_000;
 

@@ -300,12 +300,12 @@ public class SaveAndFinishWorker extends Fragment {
 
     /**
      * A {@link Listener} that can show the risk screen for a weaker lock. Only such a listener
-     * is told about a refusal; for any other, a refused save ends like a failed one.
+     * is told about a refusal. For any other, a refused save ends like a failed one.
      */
     interface RefusalListener {
         /**
          * The lock was not set, because it is of the weaker class and the user's agreement was
-         * not there. The worker is done; a new one is needed to try again.
+         * not there. The worker is done. A new one is needed to try again.
          */
         void onChosenLockSaveRefused();
     }

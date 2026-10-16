@@ -38,7 +38,7 @@ public final class SecretDisplay {
      * words of {@code phrase} are separated by single spaces. With one column the second
      * array is empty.
      *
-     * @return two arrays; the caller wipes both
+     * @return two arrays. The caller wipes both
      */
     public static char[][] wordColumns(char[] phrase, boolean twoColumns) {
         int words = 1;

@@ -1056,7 +1056,7 @@ public class ChooseLockPattern extends SettingsActivity {
         @Override
         public void onChosenLockSaveRefused() {
             // The lock settings want the user's agreement to the risk first. Nothing was
-            // changed. Show the risk; agreeing saves again.
+            // changed. Show the risk. Agreeing saves again.
             if (mSaveAndFinishWorker != null) {
                 getFragmentManager().beginTransaction().remove(mSaveAndFinishWorker)
                         .commitAllowingStateLoss();

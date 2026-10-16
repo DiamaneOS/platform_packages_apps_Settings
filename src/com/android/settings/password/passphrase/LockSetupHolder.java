@@ -19,7 +19,7 @@ import com.android.internal.widget.LockscreenCredential;
  * step, the entries of the password screen, and the user's agreement to a weaker lock.
  *
  * <p>It belongs to the activity that sets the lock. The system keeps it across such a change
- * and hands it to the new screen; it is never written to a saved state. When the activity is
+ * and hands it to the new screen. It is never written to a saved state. When the activity is
  * left for good, and whenever its process is gone, there is nothing to restore: the choice
  * starts again. {@link #onCleared()} overwrites every secret in here at that point.
  */
@@ -32,7 +32,7 @@ public final class LockSetupHolder extends ViewModel {
     /** Made by the system, through {@link #of}. */
     public LockSetupHolder() {}
 
-    /** The holder of the activity that sets the lock; the same one after a recreation. */
+    /** The holder of the activity that sets the lock. The same one after a recreation. */
     public static LockSetupHolder of(FragmentActivity activity) {
         return new ViewModelProvider(activity).get(LockSetupHolder.class);
     }

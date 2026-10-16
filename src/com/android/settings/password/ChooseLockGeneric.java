@@ -1314,7 +1314,7 @@ public class ChooseLockGeneric extends SettingsActivity {
                 final Bundle args = getArguments();
 
                 // One sentence, in plain words, on what having no lock means. The stock
-                // message, which differs with the lock and the biometrics, is not shown; its
+                // message, which differs with the lock and the biometrics, is not shown. Its
                 // resource only tells here whether a lock is being removed.
                 final boolean removesLock = args.getInt(ARG_MESSAGE_RES) != 0;
                 // The filled button keeps a lock. Having none is the plain one under it.

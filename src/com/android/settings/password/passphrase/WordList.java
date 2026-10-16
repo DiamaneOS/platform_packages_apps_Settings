@@ -26,7 +26,7 @@ import java.util.Set;
  * from them in a char array, see {@link PassphraseGenerator}.
  *
  * <p>No word is the start of another word, and no word contains a space. 7,772 words are
- * lowercase a to z only; four contain a hyphen (drop-down, felt-tip, t-shirt, yo-yo). The file
+ * lowercase a to z only. Four contain a hyphen (drop-down, felt-tip, t-shirt, yo-yo). The file
  * stays the published list. Passphrases are made from {@link #lettersOnly()}.
  */
 public final class WordList {
@@ -76,7 +76,7 @@ public final class WordList {
     /**
      * Reads the EFF large word list and checks it against the pinned hash.
      *
-     * @param in the list as shipped in {@link #EFF_LARGE_ASSET}; the caller closes it
+     * @param in the list as shipped in {@link #EFF_LARGE_ASSET}. The caller closes it
      * @throws IOException if reading fails or the content is not the pinned list
      */
     public static WordList loadEffLarge(InputStream in) throws IOException {

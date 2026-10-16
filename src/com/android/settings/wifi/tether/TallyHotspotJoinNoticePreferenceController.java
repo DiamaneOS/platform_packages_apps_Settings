@@ -29,7 +29,7 @@ import com.android.settingslib.wifi.WifiEnterpriseRestrictionUtils;
 /**
  * Switch for a notification when a device joins the Wi-Fi hotspot. Off by default.
  *
- * <p>Stores the choice only; SystemUI posts the notification. Shown to an admin user who may
+ * <p>Stores the choice only. SystemUI posts the notification. Shown to an admin user who may
  * set up the hotspot, the rule SystemUI applies too.
  */
 public class TallyHotspotJoinNoticePreferenceController extends TogglePreferenceController {

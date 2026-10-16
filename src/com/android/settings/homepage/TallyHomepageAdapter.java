@@ -36,7 +36,7 @@ import com.android.settings.R;
  * Draws the Settings homepage as Tally's section cards (the prototype's Settings sections): each
  * category is one card with a hairline edge and 12 dp corners, its title inside the card's top,
  * hairline dividers between rows and 24 dp between cards. It changes only backgrounds, bottom
- * margins and whether a category item takes room; what every row shows and does stays the row's.
+ * margins and whether a category item takes room. What every row shows and does stays the row's.
  */
 public class TallyHomepageAdapter extends PreferenceGroupAdapter {
 
@@ -77,7 +77,7 @@ public class TallyHomepageAdapter extends PreferenceGroupAdapter {
         final int background;
         int bottomMargin = 0;
         if (preference instanceof PreferenceGroup) {
-            // The cards' own gaps space the page; a category layout's margin (the stock untitled
+            // The cards' own gaps space the page. A category layout's margin (the stock untitled
             // one has 12 dp) would add to them.
             if (params instanceof ViewGroup.MarginLayoutParams) {
                 ((ViewGroup.MarginLayoutParams) params).topMargin = 0;

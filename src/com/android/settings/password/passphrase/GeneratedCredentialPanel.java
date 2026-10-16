@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * The part of the password screen that sets up a passphrase or PIN the phone generates: a card
  * that shows the secret on request, a choice of how many words, one strength row and two
- * paragraphs of advice; then it guides the typing back.
+ * paragraphs of advice. Then it guides the typing back.
  *
  * <p>The password screen keeps its own steps and its entry field. This panel sits above the
  * field, tells the screen when the user may go on, and hands over the credential to compare
@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  * new panel that shows the same secret on the same step, still shown if it was shown.
  *
  * <p>Secret handling: the panel only has the char arrays its text views show. The secret is on
- * screen only after "Show"; it leaves the screen on "Hide", when the screen is left, after
+ * screen only after "Show". It leaves the screen on "Hide", when the screen is left, after
  * {@link #REVEAL_TIMEOUT_MS} in all, and when the typing starts, and the arrays are overwritten
  * then. Nothing of it is logged, put in a String, or saved.
  */
@@ -111,9 +111,9 @@ public final class GeneratedCredentialPanel {
 
     /**
      * Adds the panel to the screen, above the entry field. The first panel of an activity
-     * starts the making of a secret; a later one shows the secret the holder kept.
+     * starts the making of a secret. A later one shows the secret the holder kept.
      *
-     * @param entryContainer the view that holds the entry field; hidden while the secret is
+     * @param entryContainer the view that holds the entry field. Hidden while the secret is
      *     shown
      * @param holder the activity's holder of what outlives a screen
      * @param isPassphrase a passphrase if true, a PIN otherwise
@@ -247,7 +247,7 @@ public final class GeneratedCredentialPanel {
     /**
      * Hides the secret and moves on to typing it back.
      *
-     * @return a copy of the secret as a credential, to compare the entries with; the caller
+     * @return a copy of the secret as a credential, to compare the entries with. The caller
      *     zeroizes it. Null if the user may not go on yet.
      */
     @Nullable
@@ -266,7 +266,7 @@ public final class GeneratedCredentialPanel {
     /**
      * The entry matched the secret.
      *
-     * @return true when the secret may be saved now; false when it is to be typed once more
+     * @return true when the secret may be saved now. False when it is to be typed once more
      */
     public boolean onTypedCorrectly() {
         final boolean done = mState.onTypedCorrectly();
@@ -369,7 +369,7 @@ public final class GeneratedCredentialPanel {
     }
 
     // Fills the card: the secret if it is revealed, dots in the same places if it is not, so
-    // that the card has the same size either way; a note if there is no secret.
+    // that the card has the same size either way. A note if there is no secret.
     private void renderSecret() {
         clearSecretViews();
         final boolean hasSecret = mSecret.hasSecret();

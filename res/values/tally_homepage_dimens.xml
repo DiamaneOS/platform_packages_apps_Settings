@@ -27,7 +27,7 @@
     <dimen name="tally_homepage_row_min_height">64dp</dimen>
 
     <!-- The page title: a 48 dp bar under the status bar. At rest the title sits 56 dp below
-         the bar's top and the list starts 16 dp under the title; the title stops growing at
+         the bar's top and the list starts 16 dp under the title. The title stops growing at
          130 % text (28 sp type, 34 sp line). -->
     <dimen name="tally_homepage_bar_height">48dp</dimen>
     <dimen name="tally_homepage_title_margin_horizontal">24dp</dimen>

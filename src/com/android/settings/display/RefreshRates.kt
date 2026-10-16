@@ -50,7 +50,7 @@ object RefreshRates {
         return rates.firstOrNull { it <= peak.roundToInt() } ?: rates.last()
     }
 
-    /** Stores [rate] as the maximum; the highest supported rate means uncapped. */
+    /** Stores [rate] as the maximum. The highest supported rate means uncapped. */
     @JvmStatic
     fun set(context: Context, rate: Int) {
         val rates = supported(context)

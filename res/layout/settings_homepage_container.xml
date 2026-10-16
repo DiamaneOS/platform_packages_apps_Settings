@@ -18,7 +18,7 @@
 <!-- Tally: the page's title at the top, the entries under it, and search at the bottom
      (search sits at the bottom for one-handed reach). The title rides up with the
      list and docks, smaller, in the bar (TallyHomepageTitle). The ids are stock's, so the
-     homepage code finds the same views; the search slot's views are search_bar.xml's. -->
+     homepage code finds the same views. The search slot's views are search_bar.xml's. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <!-- The top padding leaves room for the title at rest; TallyHomepageTitle keeps it
+                <!-- The top padding leaves room for the title at rest. TallyHomepageTitle keeps it
                      16 dp under the title at every text size. -->
                 <LinearLayout
                     android:id="@+id/homepage_container"

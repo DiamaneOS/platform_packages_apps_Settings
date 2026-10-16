@@ -59,7 +59,7 @@ public final class LockLabels {
     /**
      * The row of the lock picker that stands for the lock in use, or null for no lock or a
      * kind this does not know. A password that counts as strong is on the "Passphrase" row,
-     * whether the phone generated it or not; a weaker one, or one not typed since the restart,
+     * whether the phone generated it or not. A weaker one, or one not typed since the restart,
      * on "Own passphrase". Only a PIN the phone generated is on "Long random PIN".
      */
     @Nullable

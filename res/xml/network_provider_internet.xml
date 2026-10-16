@@ -64,7 +64,7 @@
         settings:controller="com.android.settings.network.GoogleEuiccLpaController"
         settings:userRestriction="no_config_mobile_networks"/>
 
-    <!-- DiamaneOS: the eSIM manager has no launcher icon; this opens it while eSIM support is on. -->
+    <!-- DiamaneOS: the eSIM manager has no launcher icon. This opens it while eSIM support is on. -->
     <com.android.settingslib.RestrictedPreference
         android:key="manage_esims"
         android:title="@string/downloaded_sims_category_title"

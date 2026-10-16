@@ -63,7 +63,7 @@ public final class OwnPassphraseFeedback {
     }
 
     /**
-     * @param newClass the class the lock settings service gives the password; the service has
+     * @param newClass the class the lock settings service gives the password. The service has
      *     the last word on what is weaker
      * @param rating what the shape rater makes of it
      */

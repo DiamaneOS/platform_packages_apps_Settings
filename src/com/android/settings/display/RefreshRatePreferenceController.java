@@ -11,7 +11,7 @@ import com.android.settings.core.BasePreferenceController;
 
 /**
  * DiamaneOS: the Display > Maximum refresh rate entry in display_settings.xml, which the Display
- * screen still inflates; see {@link RefreshRates} and {@link RefreshRateScreen}.
+ * screen still inflates. See {@link RefreshRates} and {@link RefreshRateScreen}.
  */
 public class RefreshRatePreferenceController extends BasePreferenceController {
     public RefreshRatePreferenceController(Context context, String key) {

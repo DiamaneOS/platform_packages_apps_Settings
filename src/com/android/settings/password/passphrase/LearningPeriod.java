@@ -8,7 +8,7 @@ package com.android.settings.password.passphrase;
  * The learning period of a new strong screen lock, for text that tells the user about it.
  *
  * <p>While it runs, the lock is asked for about once a day even when a fingerprint is used, so
- * that it is practised. The lock settings service keeps the time; this only turns it into days.
+ * that it is practised. The lock settings service keeps the time. This only turns it into days.
  */
 public final class LearningPeriod {
 

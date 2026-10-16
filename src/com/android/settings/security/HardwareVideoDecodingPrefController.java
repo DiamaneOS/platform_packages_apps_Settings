@@ -61,7 +61,7 @@ public class HardwareVideoDecodingPrefController extends IntSettingPrefControlle
     @Override
     public void updateState(Preference preference) {
         super.updateState(preference);
-        // The entry names the choice; say so while the running boot still has another state.
+        // The entry names the choice. Say so while the running boot still has another state.
         CharSequence choice = preference.getSummary();
         if (choice != null && HardwareVideoDecoding.isRestartPending(mContext)) {
             preference.setSummary(mContext.getString(

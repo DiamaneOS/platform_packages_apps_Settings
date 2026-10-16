@@ -35,7 +35,7 @@ import com.android.settingslib.widget.TopIntroPreference
 
 /**
  * The Moments switch page: what the switch on the side of the phone does when it is on. The
- * choices are kept in system settings that only Settings, SystemUI and Launcher can read; SystemUI
+ * choices are kept in system settings that only Settings, SystemUI and Launcher can read. SystemUI
  * does the rest. Nothing is chosen until the user picks an action here.
  */
 class MomentsSwitchSettings : SettingsPreferenceFragment() {
@@ -174,7 +174,7 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
     }
 
     // An earlier "airplane mode and/or Lockdown" choice (action 3 with flags) becomes Lockdown
-    // if Lockdown was on and there is a screen lock, else airplane mode; SystemUI reads it the
+    // if Lockdown was on and there is a screen lock, else airplane mode. SystemUI reads it the
     // same way until this runs.
     private fun migrateOfflineChoice() {
         val flags = Secure.getString(contentResolver, Secure.TALLY_MOMENTS_OFFLINE)?.toIntOrNull()
@@ -239,7 +239,7 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
         greyscale.isChecked = Secure.getInt(resolver, Secure.TALLY_MOMENTS_GREYSCALE, 0) == 1
     }
 
-    // The kernel learns the choice once per boot; Android's block follows at once.
+    // The kernel learns the choice once per boot. Android's block follows at once.
     private fun refreshKernelFloor(action: Int?) {
         val chosen = action == Secure.MOMENTS_ACTION_SENSORS_OFF
         val mask = kernelMask()

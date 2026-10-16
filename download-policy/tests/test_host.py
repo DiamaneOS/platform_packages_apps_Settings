@@ -1,4 +1,4 @@
-"""Native JVM unit fixtures, with explicit minimal Android API doubles; no device or network."""
+"""Native JVM unit fixtures, with explicit minimal Android API doubles. No device or network."""
 import os
 from pathlib import Path
 import shutil

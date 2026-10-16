@@ -28,7 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 
 /**
  * DiamaneOS: Display > Maximum refresh rate. Replaces the Smooth display switch (60 Hz or the
- * panel's highest) with a choice of every supported rate from 30 Hz up; see [RefreshRates].
+ * panel's highest) with a choice of every supported rate from 30 Hz up. See [RefreshRates].
  */
 @ProvidePreferenceScreen(RefreshRateScreen.KEY)
 open class RefreshRateScreen :

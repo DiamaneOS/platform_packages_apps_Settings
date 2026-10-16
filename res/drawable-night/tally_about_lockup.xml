@@ -18,7 +18,7 @@
 <!-- DiamaneOS's horizontal lockup, Pleat and the wordmark, for About phone: the mark 36 dp high,
      "Diamane" in ink and "OS" in the muted colour. Dark theme: the bond is lit in the lamp colour.
      Paths from diamaneos-design design/branding/assets/lockup/diamaneos-lockup-light.svg
-     (sha256 f3c22c271fc543c7037bfdf5eabb70f47a61c715ada608cc198b34dbb1f36713; the dark file has
+     (sha256 f3c22c271fc543c7037bfdf5eabb70f47a61c715ada608cc198b34dbb1f36713, and the dark file has
      the same paths), with the colours taken from the theme as the brand asks inside the OS. The
      bond is drawn first, under the sheets. Never mirrored: autoMirrored stays off in RTL. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"

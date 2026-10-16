@@ -20,7 +20,7 @@ import com.android.settingslib.widget.TopIntroPreference;
 import java.util.ArrayList;
 import java.util.List;
 
-/** DiamaneOS: the choices for Display > Maximum refresh rate; see {@link RefreshRates}. */
+/** DiamaneOS: the choices for Display > Maximum refresh rate. See {@link RefreshRates}. */
 public class RefreshRatePreferenceFragment extends RadioButtonPickerFragment {
     private static final String KEY_PREFIX = "refresh_rate_";
 

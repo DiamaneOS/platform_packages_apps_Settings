@@ -23,7 +23,7 @@ import com.android.settings.core.BasePreferenceController;
 
 /**
  * DiamaneOS: "Manage eSIMs" under the eSIM support switch. DiamaneOS's eSIM manager has no
- * launcher icon; the row opens its profile list through the standard
+ * launcher icon. The row opens its profile list through the standard
  * EuiccManager.ACTION_MANAGE_EMBEDDED_SUBSCRIPTIONS (the preference's intent), which the phone
  * process forwards. Shown only while eSIM support is on.
  */
