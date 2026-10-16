@@ -96,6 +96,14 @@ public class MyDeviceInfoFragment extends DashboardFragment
     }
 
     @Override
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
+        // Tally: DiamaneOS's mark and what it is based on, at the top of the page. It is added
+        // here rather than in the page's XML so the Settings search index stays as it was.
+        setHeaderView(R.layout.tally_about_identity);
+    }
+
+    @Override
     protected @NonNull Set<String> getPreferenceKeysInHierarchy() {
         Set<String> keys = super.getPreferenceKeysInHierarchy();
         // add async preference key manually
