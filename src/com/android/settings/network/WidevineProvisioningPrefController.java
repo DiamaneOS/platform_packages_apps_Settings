@@ -23,11 +23,22 @@ import com.android.settings.R;
 import androidx.preference.PreferenceScreen;
 import com.android.settings.ext.IntSettingPrefController;
 import com.android.settings.ext.RadioButtonPickerFragment2;
+import com.android.settings.security.HardwareVideoDecoding;
 
 public class WidevineProvisioningPrefController extends IntSettingPrefController {
 
     public WidevineProvisioningPrefController(Context ctx, String key) {
         super(ctx, key, WidevineProvisioningSettings.SERVER_SETTING);
+    }
+
+    @Override
+    public int getAvailabilityStatus() {
+        // Without hardware decoders for protected video the device has no hardware-backed
+        // Widevine. Apps then provision at Google directly and this choice changes nothing.
+        if (!HardwareVideoDecoding.offersProtectedVideo(mContext)) {
+            return UNSUPPORTED_ON_DEVICE;
+        }
+        return super.getAvailabilityStatus();
     }
 
     @Override

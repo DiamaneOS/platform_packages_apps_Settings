@@ -14,6 +14,11 @@
          the choice is then shown disabled, and Never is the default. -->
     <bool name="config_hardware_video_decoding_protected_video">true</bool>
 
+    <!-- Network & internet > Remote key provisioning is offered. A device overlay turns it off
+         where the secure world never provisions remote keys for this OS, so the choice changes
+         nothing there. -->
+    <bool name="config_remote_key_provisioning_choice">true</bool>
+
     <!-- Security & privacy page, weaker screen lock. 0: reported as fine. 1: yellow row.
          2: yellow row and a card. -->
     <integer name="config_tally_weaker_lock_status">2</integer>
