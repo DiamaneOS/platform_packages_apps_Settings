@@ -32,6 +32,14 @@ public class RemoteProvisioningPrefController extends IntSettingPrefController {
     }
 
     @Override
+    public int getAvailabilityStatus() {
+        if (!mContext.getResources().getBoolean(R.bool.config_remote_key_provisioning_choice)) {
+            return UNSUPPORTED_ON_DEVICE;
+        }
+        return super.getAvailabilityStatus();
+    }
+
+    @Override
     public void addPrefsAfterList(RadioButtonPickerFragment2 fragment, PreferenceScreen screen) {
         addFooterPreference(screen, R.string.tally_remote_provisioning_footer);
     }
