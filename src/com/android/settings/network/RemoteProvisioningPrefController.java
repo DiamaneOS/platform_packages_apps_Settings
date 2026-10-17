@@ -19,13 +19,29 @@ package com.android.settings.network;
 import android.content.Context;
 import android.ext.settings.RemoteKeyProvisioningSettings;
 
+import androidx.preference.PreferenceScreen;
+
 import com.android.settings.R;
 import com.android.settings.ext.IntSettingPrefController;
+import com.android.settings.ext.RadioButtonPickerFragment2;
 
 public class RemoteProvisioningPrefController extends IntSettingPrefController {
 
     public RemoteProvisioningPrefController(Context ctx, String key) {
         super(ctx, key, RemoteKeyProvisioningSettings.SERVER_SETTING);
+    }
+
+    @Override
+    public int getAvailabilityStatus() {
+        if (!mContext.getResources().getBoolean(R.bool.config_remote_key_provisioning_choice)) {
+            return UNSUPPORTED_ON_DEVICE;
+        }
+        return super.getAvailabilityStatus();
+    }
+
+    @Override
+    public void addPrefsAfterList(RadioButtonPickerFragment2 fragment, PreferenceScreen screen) {
+        addFooterPreference(screen, R.string.tally_remote_provisioning_footer);
     }
 
     @Override
