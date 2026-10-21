@@ -21,7 +21,7 @@ import android.hardware.display.AmbientDisplayConfiguration
 import android.os.UserHandle
 import android.provider.Settings.Secure
 import com.android.settings.R
-import com.android.settings.display.TapToWakePreferenceController
+import com.android.settings.display.DozeDoubleTapWake
 import com.android.settings.flags.Flags
 import com.android.settingslib.metadata.ProvidePreferenceScreen
 import com.android.settingslib.metadata.SensitivityLevel
@@ -47,7 +47,7 @@ class DoubleTapApiScreen :
             // Display > Tap to wake switches the same setting on such devices
             if (
                 config.doubleTapSensorAvailable() &&
-                    !TapToWakePreferenceController.usesDozeDoubleTap(context, config)
+                    !DozeDoubleTapWake.usesDozeDoubleTap(context, config)
             ) {
                 Allowed
             } else {

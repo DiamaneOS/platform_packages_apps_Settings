@@ -42,19 +42,6 @@ public class TapToWakePreferenceController extends AbstractPreferenceController 
         return this;
     }
 
-    /**
-     * Whether Tap to wake switches Android's doze double tap (DOZE_DOUBLE_TAP_GESTURE) instead
-     * of the power HAL mode (DOUBLE_TAP_TO_WAKE): the device supports double tap to wake and
-     * reports the double tap as a doze sensor (config_dozeDoubleTapSensorType). SystemUI then
-     * wakes the device on it after its doze checks, such as the proximity sensor, and
-     * "Double-tap to check phone" is not offered as a second switch for the same setting.
-     */
-    public static boolean usesDozeDoubleTap(Context context, AmbientDisplayConfiguration config) {
-        return context.getResources().getBoolean(
-                com.android.internal.R.bool.config_supportDoubleTapWake)
-                && config.doubleTapSensorAvailable();
-    }
-
     @Override
     public String getPreferenceKey() {
         return KEY_TAP_TO_WAKE;
@@ -69,7 +56,7 @@ public class TapToWakePreferenceController extends AbstractPreferenceController 
     @Override
     public void updateState(Preference preference) {
         final boolean checked;
-        if (usesDozeDoubleTap(mContext, getAmbientConfig())) {
+        if (DozeDoubleTapWake.usesDozeDoubleTap(mContext, getAmbientConfig())) {
             checked = getAmbientConfig().doubleTapGestureEnabled(UserHandle.myUserId());
         } else {
             checked = Settings.Secure.getInt(
@@ -82,7 +69,7 @@ public class TapToWakePreferenceController extends AbstractPreferenceController 
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         boolean value = (Boolean) newValue;
         Settings.Secure.putInt(mContext.getContentResolver(),
-                usesDozeDoubleTap(mContext, getAmbientConfig())
+                DozeDoubleTapWake.usesDozeDoubleTap(mContext, getAmbientConfig())
                         ? Settings.Secure.DOZE_DOUBLE_TAP_GESTURE
                         : Settings.Secure.DOUBLE_TAP_TO_WAKE,
                 value ? 1 : 0);

@@ -58,7 +58,7 @@ public class TapToWakePreferenceControllerTest {
     public void usesDozeDoubleTap_withDoubleTapSensor_true() {
         when(mAmbientDisplayConfiguration.doubleTapSensorAvailable()).thenReturn(true);
 
-        assertThat(TapToWakePreferenceController.usesDozeDoubleTap(
+        assertThat(DozeDoubleTapWake.usesDozeDoubleTap(
                 mContext, mAmbientDisplayConfiguration)).isTrue();
     }
 
@@ -66,7 +66,7 @@ public class TapToWakePreferenceControllerTest {
     public void usesDozeDoubleTap_withoutDoubleTapSensor_false() {
         when(mAmbientDisplayConfiguration.doubleTapSensorAvailable()).thenReturn(false);
 
-        assertThat(TapToWakePreferenceController.usesDozeDoubleTap(
+        assertThat(DozeDoubleTapWake.usesDozeDoubleTap(
                 mContext, mAmbientDisplayConfiguration)).isFalse();
     }
 
