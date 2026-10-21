@@ -50,15 +50,11 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import com.android.settings.R;
 import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.accessibility.AccessibilityUtil;
-import com.android.settingslib.widget.DrawableStateLayout;
 import com.android.settingslib.widget.Expandable;
 import com.android.settingslib.widget.SettingsPreferenceGroupAdapter;
 import com.android.settingslib.widget.SettingsThemeHelper;
 
 import com.google.android.material.appbar.AppBarLayout;
-
-import java.util.Map;
-import java.util.WeakHashMap;
 
 public class HighlightablePreferenceGroupAdapter extends SettingsPreferenceGroupAdapter {
 
@@ -80,7 +76,7 @@ public class HighlightablePreferenceGroupAdapter extends SettingsPreferenceGroup
     private boolean mHighlightRequested;
     private int mHighlightPosition = RecyclerView.NO_POSITION;
     // Tally: the own backgrounds of highlighted drawable-state rows, to put back afterwards.
-    private final Map<View, Drawable> mOwnBackgrounds = new WeakHashMap<>();
+    private final TallyRowBackgrounds mOwnBackgrounds = new TallyRowBackgrounds();
 
     /**
      * Tries to override initial expanded child count.
@@ -329,7 +325,7 @@ public class HighlightablePreferenceGroupAdapter extends SettingsPreferenceGroup
         if (oldAnimatorTag instanceof ValueAnimator) {
             ((ValueAnimator) oldAnimatorTag).cancel();
         }
-        rememberOwnBackground(v);
+        mOwnBackgrounds.rememberOwnBackground(v);
 
         v.setTag(R.id.active_background_animator, null);
         v.setTag(R.id.preference_highlighted, true);
@@ -412,7 +408,7 @@ public class HighlightablePreferenceGroupAdapter extends SettingsPreferenceGroup
                     v.setBackgroundResource(backgroundTo);
                     requestRemoveHighlightDelayed(holder, position);
                 } else {
-                    setNormalBackground(v, backgroundFrom);
+                    mOwnBackgrounds.setNormalBackground(v, backgroundFrom);
                     mHighlightVisible = false;
                     holder.setIsRecyclable(true);
                 }
@@ -439,7 +435,7 @@ public class HighlightablePreferenceGroupAdapter extends SettingsPreferenceGroup
         Drawable backgroundToDrawable = ContextCompat.getDrawable(context, backgroundTo);
 
         if (!animate || backgroundFromDrawable == null || backgroundToDrawable == null) {
-            setNormalBackground(v, backgroundTo);
+            mOwnBackgrounds.setNormalBackground(v, backgroundTo);
             v.setTag(R.id.preference_highlighted, false);
             holder.setIsRecyclable(true);
             Log.d(TAG, "RemoveHighlight: No animation requested - setting normal background");
@@ -496,7 +492,7 @@ public class HighlightablePreferenceGroupAdapter extends SettingsPreferenceGroup
                             return;
                         }
                         mRestored = true;
-                        setNormalBackground(v, backgroundTo);
+                        mOwnBackgrounds.setNormalBackground(v, backgroundTo);
                         v.setTag(R.id.preference_highlighted, false);
                         holder.setIsRecyclable(true);
 
@@ -507,29 +503,6 @@ public class HighlightablePreferenceGroupAdapter extends SettingsPreferenceGroup
                 });
         colorAnimation.start();
         Log.d(TAG, "Starting fade out animation");
-    }
-
-    /**
-     * Tally: keeps a drawable-state row's own background (a switch row's card has no ripple) as
-     * its highlight starts. Other rows take their background from the adapter on every bind, which
-     * is the one stock's highlight puts back.
-     */
-    private void rememberOwnBackground(View v) {
-        if (v instanceof DrawableStateLayout
-                && !Boolean.TRUE.equals(v.getTag(R.id.preference_highlighted))
-                && !mOwnBackgrounds.containsKey(v)) {
-            mOwnBackgrounds.put(v, v.getBackground());
-        }
-    }
-
-    /** Tally: after a highlight, puts back the row's own background, or else stock's. */
-    private void setNormalBackground(View v, @DrawableRes int backgroundRes) {
-        final Drawable own = mOwnBackgrounds.remove(v);
-        if (own != null) {
-            v.setBackground(own);
-        } else {
-            v.setBackgroundResource(backgroundRes);
-        }
     }
 
     private @DrawableRes int getBackgroundRes(int position, boolean isHighlighted) {
