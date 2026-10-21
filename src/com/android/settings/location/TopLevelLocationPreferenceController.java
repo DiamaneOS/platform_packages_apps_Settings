@@ -18,7 +18,7 @@ import androidx.preference.Preference;
 import com.android.settings.R;
 import com.android.settings.Utils;
 import com.android.settings.core.BasePreferenceController;
-import com.android.settings.widget.HomepagePreferenceLayoutHelper;
+import com.android.settings.widget.TallyLamp;
 import com.android.settingslib.core.lifecycle.LifecycleObserver;
 import com.android.settingslib.core.lifecycle.events.OnStart;
 import com.android.settingslib.core.lifecycle.events.OnStop;
@@ -76,8 +76,8 @@ public class TopLevelLocationPreferenceController extends BasePreferenceControll
         mPreference = preference;
         // Tally: the lamp says what the summary says, from the same read: lit while location is
         // on, the off ring beside "Off".
-        HomepagePreferenceLayoutHelper.setLamp(preference, mLocationManager.isLocationEnabled()
-                ? HomepagePreferenceLayoutHelper.LAMP_ON : HomepagePreferenceLayoutHelper.LAMP_OFF);
+        TallyLamp.setLamp(preference, mLocationManager.isLocationEnabled()
+                ? TallyLamp.LAMP_ON : TallyLamp.LAMP_OFF);
         refreshSummary(preference);
         // Bail out if location has been disabled, or there's another loading request in progress.
         if (!mLocationManager.isLocationEnabled() ||

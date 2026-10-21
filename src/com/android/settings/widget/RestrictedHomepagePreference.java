@@ -62,8 +62,8 @@ public class RestrictedHomepagePreference extends RestrictedTopLevelPreference i
     }
 
     @Override
-    public void setLampState(@HomepagePreferenceLayoutHelper.LampState int state) {
-        if (mHelper.setLampState(state)) {
+    public void setLampState(@TallyLamp.LampState int state) {
+        if (mHelper.mLamp.setLampState(state)) {
             notifyChanged();
         }
     }
