@@ -24,7 +24,7 @@ import androidx.preference.PreferenceScreen;
 
 import com.android.settings.Utils;
 import com.android.settings.core.BasePreferenceController;
-import com.android.settings.widget.HomepagePreferenceLayoutHelper;
+import com.android.settings.widget.TallyLamp;
 import com.android.settingslib.core.lifecycle.LifecycleObserver;
 import com.android.settingslib.core.lifecycle.events.OnStart;
 import com.android.settingslib.core.lifecycle.events.OnStop;
@@ -84,10 +84,10 @@ public class ZenModesLinkPreferenceController extends BasePreferenceController
             final List<ZenMode> modes = mBackend.getModes();
             preference.setSummary(mSummaryBuilder.getModesSummary(modes));
             // Tally: lit while a mode is on, when the summary says which is active.
-            HomepagePreferenceLayoutHelper.setLamp(preference,
+            TallyLamp.setLamp(preference,
                     modes.stream().anyMatch(ZenMode::isActive)
-                            ? HomepagePreferenceLayoutHelper.LAMP_ON
-                            : HomepagePreferenceLayoutHelper.LAMP_NONE);
+                            ? TallyLamp.LAMP_ON
+                            : TallyLamp.LAMP_NONE);
         } catch (SecurityException e) {
             // Standard usage should have the correct permissions to read zen state. But if we don't
             // for whatever reason, don't crash.
