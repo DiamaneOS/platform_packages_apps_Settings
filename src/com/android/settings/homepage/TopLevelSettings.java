@@ -390,7 +390,7 @@ public class TopLevelSettings extends DashboardFragment implements SplitLayoutLi
         }
 
         return SettingsThemeHelper.isExpressiveTheme(context)
-                ? R.xml.top_level_settings_expressive
+                ? R.xml.tally_top_level_settings
                 : R.xml.top_level_settings;
     }
 
