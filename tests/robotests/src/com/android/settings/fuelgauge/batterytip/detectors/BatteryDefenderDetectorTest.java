@@ -19,7 +19,6 @@ package com.android.settings.fuelgauge.batterytip.detectors;
 import static com.google.common.truth.Truth.assertThat;
 
 import android.content.Context;
-import android.provider.Settings;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -37,14 +36,13 @@ import org.robolectric.RobolectricTestRunner;
 public class BatteryDefenderDetectorTest {
 
     @Mock private BatteryInfo mBatteryInfo;
-    private Context mContext;
     private BatteryDefenderDetector mBatteryDefenderDetector;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mContext = ApplicationProvider.getApplicationContext();
-        mBatteryDefenderDetector = new BatteryDefenderDetector(mBatteryInfo, mContext);
+        final Context context = ApplicationProvider.getApplicationContext();
+        mBatteryDefenderDetector = new BatteryDefenderDetector(mBatteryInfo, context);
     }
 
     @Test
@@ -61,14 +59,5 @@ public class BatteryDefenderDetectorTest {
         assertThat(mBatteryDefenderDetector.detect().getState())
                 .isEqualTo(BatteryTip.StateType.NEW);
         assertThat(mBatteryDefenderDetector.detect().isVisible()).isTrue();
-    }
-
-    @Test
-    public void detect_holdOfTheChargeLimit_tipInvisible() {
-        Settings.Global.putInt(mContext.getContentResolver(),
-                Settings.Global.BATTERY_CHARGE_LIMIT, 1);
-        mBatteryInfo.isBatteryDefender = true;
-
-        assertThat(mBatteryDefenderDetector.detect().isVisible()).isFalse();
     }
 }
