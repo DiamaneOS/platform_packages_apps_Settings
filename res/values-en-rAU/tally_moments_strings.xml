@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 The DiamaneOS Project
+  SPDX-License-Identifier: Apache-2.0
+
+  The values/tally_moments_strings.xml texts that name airplane mode, in the spelling of Settings'
+  airplane_mode for this locale ("Aeroplane mode"). The others stay as in values/.
+-->
+<resources>
+    <string name="tally_moments_action_airplane_summary">"Turns on aeroplane mode"</string>
+    <string name="tally_moments_footer">"Sliding the switch on works on the lock screen too. Sliding it back turns aeroplane mode and paused apps back only after you unlock. Camera and microphone access comes back at once if the kernel blocked it, and otherwise after you unlock. Settings you changed yourself meanwhile stay as you set them."</string>
+</resources>
