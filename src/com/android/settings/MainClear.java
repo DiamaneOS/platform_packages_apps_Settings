@@ -398,7 +398,8 @@ public class MainClear extends InstrumentedFragment implements OnGlobalLayoutLis
             mEsimStorage.setChecked(false);
             mEsimStorage.setEnabled(false);
             final TextView esimDesc = mEsimStorageContainer.findViewById(R.id.erase_esim_desc);
-            esimDesc.setText(R.string.tally_reset_esim_support_off);
+            esimDesc.setText(getString(R.string.tally_reset_esim_support_off,
+                    getString(R.string.network_dashboard_title)));
         } else if (showWipeEuicc()) {
             if (showWipeEuiccCheckbox()) {
                 mEsimStorageContainer.setVisibility(View.VISIBLE);

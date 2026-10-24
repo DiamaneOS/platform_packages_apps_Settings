@@ -88,10 +88,12 @@
     <string name="tally_hotspot_join_notice_summary">With sound for a new device, silent when a known one returns</string>
     <!-- Toast when the user taps "Add SIM" while the eSIM support switch on Network & internet
          is off, where nothing would open. "eSIM support" is that switch's title, which is
-         English only. A physical SIM needs no "Add SIM". [CHAR LIMIT=NONE] -->
-    <string name="tally_add_sim_esim_support_off">eSIM support is off. To add an eSIM, turn it on in Network &amp; internet.</string>
-    <!-- Factory reset: why "Erase eSIMs" is greyed out while eSIM support is off. -->
-    <string name="tally_reset_esim_support_off">eSIM support is off, so eSIMs stay on the phone. To erase them, turn on eSIM support in Network &amp; internet first.</string>
+         English only. A physical SIM needs no "Add SIM". The placeholder is Settings' own
+         network_dashboard_title. [CHAR LIMIT=NONE] -->
+    <string name="tally_add_sim_esim_support_off">eSIM support is off. To add an eSIM, turn it on in <xliff:g id="network_and_internet" example="Network &amp; internet">%1$s</xliff:g>.</string>
+    <!-- Factory reset: why "Erase eSIMs" is greyed out while eSIM support is off. The
+         placeholder is network_dashboard_title. [CHAR LIMIT=NONE] -->
+    <string name="tally_reset_esim_support_off">eSIM support is off, so eSIMs stay on the phone. To erase them, turn on eSIM support in <xliff:g id="network_and_internet" example="Network &amp; internet">%1$s</xliff:g> first.</string>
     <!-- System > Gestures: switch for taking a screenshot by pressing the power and volume down
          buttons together. Screenshots from the power menu and Quick Settings work either way.
          [CHAR LIMIT=50] -->

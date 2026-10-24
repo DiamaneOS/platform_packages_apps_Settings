@@ -67,7 +67,8 @@ public class AddSimFlowTest {
         SimsSectionKt.startAddSimFlow(mContext);
 
         assertThat(ShadowToast.getTextOfLatestToast())
-                .isEqualTo(mContext.getString(R.string.tally_add_sim_esim_support_off));
+                .isEqualTo("eSIM support is off. To add an eSIM, turn it on in "
+                        + mContext.getString(R.string.network_dashboard_title) + ".");
         verify(mContext, never()).startActivity(any(Intent.class));
     }
 
