@@ -161,7 +161,12 @@ fun startAddSimFlow(context: Context) {
     // DiamaneOS: with eSIM support off no eSIM manager answers the request and nothing opens.
     val lpa = GoogleEuiccLpaController.findLpa(context.packageManager)
     if (lpa != null && !lpa.enabled) {
-        Toast.makeText(context, R.string.tally_add_sim_esim_support_off, Toast.LENGTH_LONG).show()
+        val text =
+            context.getString(
+                R.string.tally_add_sim_esim_support_off,
+                context.getString(R.string.network_dashboard_title),
+            )
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
         return
     }
     context.startActivity(getAddSimIntent())

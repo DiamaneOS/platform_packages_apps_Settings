@@ -30,8 +30,8 @@
     <string name="tally_hotspot_clients_note">"Un dispositivo sceglie il proprio nome, quindi un nome può essere falso. La maggior parte dei dispositivi mostra un indirizzo MAC casuale e alcuni lo cambiano a ogni connessione."</string>
     <string name="tally_hotspot_join_notice_title">"Avvisa quando si connette un dispositivo"</string>
     <string name="tally_hotspot_join_notice_summary">"Con suono per un nuovo dispositivo, in silenzio quando ne ritorna uno noto"</string>
-    <string name="tally_add_sim_esim_support_off">"«eSIM support» è disattivato. Per aggiungere una eSIM, attivalo in Rete e internet."</string>
-    <string name="tally_reset_esim_support_off">"«eSIM support» è disattivato, quindi le eSIM restano sul telefono. Per resettarle, attiva prima «eSIM support» in Rete e internet."</string>
+    <string name="tally_add_sim_esim_support_off">"«eSIM support» è disattivato. Per aggiungere una eSIM, attivalo in <xliff:g id="network_and_internet">%1$s</xliff:g>."</string>
+    <string name="tally_reset_esim_support_off">"«eSIM support» è disattivato, quindi le eSIM restano sul telefono. Per resettarle, attiva prima «eSIM support» in <xliff:g id="network_and_internet">%1$s</xliff:g>."</string>
     <string name="tally_power_volume_down_screenshot_title">"Screenshot con Accensione e Volume giù"</string>
     <string name="tally_hw_video_decoding_never_title">"Mai"</string>
 </resources>
