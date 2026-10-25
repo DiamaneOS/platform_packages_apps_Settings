@@ -397,6 +397,22 @@ public class AddAppNetworksFragmentTest {
                 R.string.wifi_add_app_network_save_failed_summary));
     }
 
+    @Test
+    public void saveNetwork_takesNewMacPerConnection() {
+        mAddAppNetworksFragment.mWifiManager = mWifiManager;
+        mAddAppNetworksFragment.mUiToRequestedList = List.of(
+                new AddAppNetworksFragment.UiConfigurationItem(FAKE_NEW_WPA_SSID,
+                        mNewWpaSuggestionEntry, 0 /* index */, 4 /* level */));
+
+        mAddAppNetworksFragment.saveNetwork(0 /* index */);
+
+        final ArgumentCaptor<WifiConfiguration> configCaptor =
+                ArgumentCaptor.forClass(WifiConfiguration.class);
+        verify(mWifiManager).save(configCaptor.capture(), any());
+        assertThat(configCaptor.getValue().getMacRandomizationSetting())
+                .isEqualTo(WifiConfiguration.RANDOMIZATION_ALWAYS);
+    }
+
     @Ignore
     @Test
     public void saveOneNetwork_shouldCallWifiManagerSaveOnce() {
