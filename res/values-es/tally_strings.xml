@@ -31,7 +31,6 @@
     <string name="tally_hotspot_join_notice_title">"Notificar cuando se conecte un dispositivo"</string>
     <string name="tally_hotspot_join_notice_summary">"Con sonido para un dispositivo nuevo y en silencio cuando vuelve uno conocido"</string>
     <string name="tally_add_sim_esim_support_off">"«eSIM support» está desactivado. Para añadir una eSIM, actívalo en <xliff:g id="network_and_internet">%1$s</xliff:g>."</string>
-    <string name="tally_reset_esim_support_off">"«eSIM support» está desactivado, así que las eSIMs se quedan en el teléfono. Para borrarlas, activa primero «eSIM support» en <xliff:g id="network_and_internet">%1$s</xliff:g>."</string>
     <string name="tally_power_volume_down_screenshot_title">"Captura con encendido y bajar volumen"</string>
     <string name="tally_hw_video_decoding_never_title">"Nunca"</string>
 </resources>
