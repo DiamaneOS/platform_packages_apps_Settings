@@ -136,7 +136,8 @@ public class AddAppNetworksFragment extends InstrumentedFragment implements
     private int mSavingIndex;
     private UiConfigurationItemAdapter mUiConfigurationItemAdapter;
     private WifiManager.ActionListener mSaveListener;
-    private WifiManager mWifiManager;
+    @VisibleForTesting
+    WifiManager mWifiManager;
 
     @VisibleForTesting
     final Handler mHandler = new Handler() {
@@ -677,8 +678,9 @@ public class AddAppNetworksFragment extends InstrumentedFragment implements
             wifiConfiguration.SSID = addQuotationIfNeeded(wifiConfiguration.SSID);
 
             // (force) enable MAC randomization on new credentials
+            // DiamaneOS: a new MAC per connection, the default for networks added elsewhere.
             wifiConfiguration.setMacRandomizationSetting(
-                    WifiConfiguration.RANDOMIZATION_PERSISTENT);
+                    WifiConfiguration.RANDOMIZATION_ALWAYS);
             mWifiManager.save(wifiConfiguration, mSaveListener);
         }
     }
