@@ -38,8 +38,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
@@ -267,23 +265,6 @@ public class MainClearTest {
         assertThat(intent.getValue().getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS)
             .getBoolean(MainClear.ERASE_ESIMS_EXTRA, false))
             .isFalse();
-    }
-
-    @Test
-    public void testIsEsimSupportOff_systemLpaDisabled() {
-        ApplicationInfo lpa = new ApplicationInfo();
-        lpa.packageName = "de.diamaneos.euicc";
-        lpa.flags = ApplicationInfo.FLAG_SYSTEM;
-        lpa.enabled = false;
-        PackageInfo info = new PackageInfo();
-        info.packageName = lpa.packageName;
-        info.applicationInfo = lpa;
-        Shadows.shadowOf(mActivity.getPackageManager()).installPackage(info);
-        doReturn(mActivity).when(mMainClear).getContext();
-        assertThat(mMainClear.isEsimSupportOff()).isTrue();
-        lpa.enabled = true;
-        Shadows.shadowOf(mActivity.getPackageManager()).installPackage(info);
-        assertThat(mMainClear.isEsimSupportOff()).isFalse();
     }
 
     @Test

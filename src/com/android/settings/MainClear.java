@@ -35,7 +35,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.UserInfo;
@@ -71,7 +70,6 @@ import androidx.core.view.insets.ProtectionLayout;
 import com.android.settings.biometrics.IdentityCheckBiometricErrorDialog;
 import com.android.settings.core.InstrumentedFragment;
 import com.android.settings.enterprise.ActionDisabledByAdminDialogHelper;
-import com.android.settings.network.GoogleEuiccLpaController;
 import com.android.settings.password.ChooseLockSettingsHelper;
 import com.android.settings.password.ConfirmDeviceCredentialActivity;
 import com.android.settings.password.ConfirmLockPattern;
@@ -390,17 +388,7 @@ public class MainClear extends InstrumentedFragment implements OnGlobalLayoutLis
             });
         }
 
-        if (isEsimSupportOff()) {
-            // With eSIM support off no eSIM manager can erase eSIMs, although EuiccManager still
-            // reports the chip as enabled: show the choice greyed out and say why.
-            mEsimStorageContainer.setVisibility(View.VISIBLE);
-            mEsimStorageContainer.setEnabled(false);
-            mEsimStorage.setChecked(false);
-            mEsimStorage.setEnabled(false);
-            final TextView esimDesc = mEsimStorageContainer.findViewById(R.id.erase_esim_desc);
-            esimDesc.setText(getString(R.string.tally_reset_esim_support_off,
-                    getString(R.string.network_dashboard_title)));
-        } else if (showWipeEuicc()) {
+        if (showWipeEuicc()) {
             if (showWipeEuiccCheckbox()) {
                 mEsimStorageContainer.setVisibility(View.VISIBLE);
                 mEsimStorageContainer.setOnClickListener(new View.OnClickListener() {
@@ -497,17 +485,6 @@ public class MainClear extends InstrumentedFragment implements OnGlobalLayoutLis
         ContentResolver cr = context.getContentResolver();
         return Settings.Global.getInt(cr, Settings.Global.EUICC_PROVISIONED, 0) != 0
                 || DevelopmentSettingsEnabler.isDevelopmentSettingsEnabled(context);
-    }
-
-    /** Whether the system eSIM manager is there but switched off (eSIM support off). */
-    @VisibleForTesting
-    boolean isEsimSupportOff() {
-        final Context context = getContext();
-        if (!showAnySubscriptionInfo(context)) {
-            return false;
-        }
-        final ApplicationInfo lpa = GoogleEuiccLpaController.findLpa(context.getPackageManager());
-        return lpa != null && !lpa.enabled;
     }
 
     @VisibleForTesting

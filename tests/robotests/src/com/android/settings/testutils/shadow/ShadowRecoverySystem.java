@@ -27,16 +27,22 @@ import org.robolectric.annotation.Resetter;
 public class ShadowRecoverySystem {
 
     private static int sWipeEuiccCalledCount;
+    private static boolean sWipeEuiccResult = true;
 
     @Implementation
     protected static boolean wipeEuiccData(Context context, final String packageName) {
         sWipeEuiccCalledCount++;
-        return true;
+        return sWipeEuiccResult;
     }
 
     @Resetter
     public static void reset() {
         sWipeEuiccCalledCount = 0;
+        sWipeEuiccResult = true;
+    }
+
+    public static void setWipeEuiccResult(boolean result) {
+        sWipeEuiccResult = result;
     }
 
     public static int getWipeEuiccCalledCount() {

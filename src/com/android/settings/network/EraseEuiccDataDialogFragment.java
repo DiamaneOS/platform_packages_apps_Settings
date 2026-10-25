@@ -16,16 +16,21 @@
 
 package com.android.settings.network;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -83,9 +88,34 @@ public class EraseEuiccDataDialogFragment extends InstrumentedDialogFragment imp
     }
 
     private void runAsyncWipe(Context context) {
-        Runnable runnable = (new ResetNetworkOperationBuilder(context))
+        AsyncTask.execute(newWipe(context));
+    }
+
+    /** DiamaneOS: the erase, which says when it fails, as resetting the network settings does. */
+    @VisibleForTesting
+    static Runnable newWipe(Context context) {
+        final Handler mainHandler = new Handler(Looper.getMainLooper());
+        return new ResetNetworkOperationBuilder(context)
                 .resetEsim(PACKAGE_NAME_EUICC_DATA_MANAGEMENT_CALLBACK)
+                .resetEsimResultCallback(wiped -> {
+                    if (!wiped) {
+                        mainHandler.post(() -> showWipeFailed(context));
+                    }
+                })
                 .build();
-        AsyncTask.execute(runnable);
+    }
+
+    private static void showWipeFailed(Context context) {
+        if (!(context instanceof Activity)
+                || ((Activity) context).isFinishing() || ((Activity) context).isDestroyed()) {
+            Toast.makeText(context.getApplicationContext(), R.string.reset_esim_error_msg,
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+        new AlertDialog.Builder(context)
+                .setTitle(R.string.reset_esim_error_title)
+                .setMessage(R.string.reset_esim_error_msg)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 }
