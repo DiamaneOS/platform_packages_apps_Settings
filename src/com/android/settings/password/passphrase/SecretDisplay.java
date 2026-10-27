@@ -124,12 +124,12 @@ public final class SecretDisplay {
      * spaces for reading: "unc aba fox gem oat pry". The spaces are not typed.
      */
     public static char[] groupedLetters(char[] letters) {
-        return grouped(letters, ShortListGenerator.PREFIX_LENGTH);
+        return grouped(letters, ShortList.PREFIX_LENGTH);
     }
 
     /** Dots in place of a short-list credential, grouped as {@link #groupedLetters}. */
     public static String maskedLetters() {
-        final char[] dots = new char[ShortListGenerator.LENGTH];
+        final char[] dots = new char[ShortList.LENGTH];
         Arrays.fill(dots, DIGIT_MASK);
         return new String(groupedLetters(dots));
     }
@@ -143,7 +143,7 @@ public final class SecretDisplay {
      * @throws IllegalArgumentException if a group starts no word of the list
      */
     public static char[][] shortListWords(char[] letters, WordList list) {
-        final int length = ShortListGenerator.PREFIX_LENGTH;
+        final int length = ShortList.PREFIX_LENGTH;
         final char[][] words = new char[letters.length / length][];
         for (int i = 0; i < words.length; i++) {
             final int index = list.indexOfPrefix(letters, i * length, length);

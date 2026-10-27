@@ -34,8 +34,8 @@ public final class LockStrength {
     /**
      * The class the lock settings service will give a credential when it is set.
      *
-     * @param generated whether it is a PIN that came from
-     *     {@link LockPatternUtils#generateStrongPin} in this flow
+     * @param generated whether it came from {@link LockPatternUtils#generateStrongPin} or
+     *     {@link LockPatternUtils#generateShortListPassword} in this flow
      */
     public static StrengthClass of(LockscreenCredential credential, boolean generated) {
         return fromPolicy(LockCredentialPolicy.getStrength(credential, generated));

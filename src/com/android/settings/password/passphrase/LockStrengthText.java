@@ -127,7 +127,7 @@ public final class LockStrengthText {
                 return context.getString(R.string.tally_compare_random_pin, 20, time);
             case SHORT_LIST:
                 return context.getString(R.string.tally_compare_short_list,
-                        ShortListGenerator.WORDS, ShortListGenerator.PREFIX_LENGTH, time);
+                        ShortList.WORDS, ShortList.PREFIX_LENGTH, time);
             case WORDS_5:
                 return context.getString(R.string.tally_compare_words, 5, time);
             case WORDS_6:

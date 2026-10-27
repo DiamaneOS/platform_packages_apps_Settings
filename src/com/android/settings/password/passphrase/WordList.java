@@ -21,7 +21,7 @@ import java.util.Set;
  * <p>The list that ships is the EFF large word list: 7,776 words, one for each roll of five dice.
  * It is stored without the dice numbers, one word per line, and is only used when its SHA-256
  * matches {@link #EFF_LARGE_SHA256}. EFF's short word list 2 ships the same way, for
- * {@link ShortListGenerator}: 1,296 words, one for each roll of four dice, pinned by
+ * {@link ShortList}: 1,296 words, one for each roll of four dice, pinned by
  * {@link #EFF_SHORT_SHA256}.
  *
  * <p>The words are public, so they are held as strings. A generated phrase is not: it is built

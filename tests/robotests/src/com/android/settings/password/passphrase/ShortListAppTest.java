@@ -32,7 +32,7 @@ public class ShortListAppTest {
 
     @Test
     public void strengthText_countsTenPointThreeBitsAWord() {
-        assertThat(LockStrengthText.strengthLine(mContext, ShortListGenerator.ESTIMATE_BITS))
+        assertThat(LockStrengthText.strengthLine(mContext, ShortList.ESTIMATE_BITS))
                 .isEqualTo("Estimate: about 63,000 years to guess");
         assertThat(LockStrengthText.details(mContext))
                 .contains("\n6 × 3 letters: about 63,000 years\n");

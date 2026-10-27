@@ -71,10 +71,8 @@ public final class OwnPassphraseFeedback {
         if (newClass != StrengthClass.STRONG) {
             return new OwnPassphraseFeedback(Verdict.WEAKER);
         }
-        // Strong for the service but under the floor: the 18 letters of a short-list password,
-        // which only the generator makes at random. Typed by a person, it may be easy to guess.
-        return new OwnPassphraseFeedback(rating == Rating.NOT_EASILY_GUESSED
-                ? Verdict.STRONG : Verdict.STRONG_LOOKS_GUESSABLE);
+        return new OwnPassphraseFeedback(rating == Rating.GUESSABLE
+                ? Verdict.STRONG_LOOKS_GUESSABLE : Verdict.STRONG);
     }
 
     /**
