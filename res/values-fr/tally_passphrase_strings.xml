@@ -87,4 +87,9 @@
     <string name="tally_lock_none_confirm">"Pas de verrouillage"</string>
     <string name="tally_generated_another_pin">"Nouveau code PIN"</string>
     <string name="tally_weaker_risk_decline_pattern">"Retour"</string>
+    <string name="tally_generated_kind_words">"Mots entiers"</string>
+    <string name="tally_generated_kind_letters">"3 premières lettres"</string>
+    <string name="tally_generated_letters_caption">"Pour déverrouiller, saisissez ces <xliff:g id="letters" example="18">%1$d</xliff:g> lettres :"</string>
+    <string name="tally_generated_type_back_letters_hint">"Saisissez les <xliff:g id="letters" example="18">%1$d</xliff:g> lettres sans espace."</string>
+    <string name="tally_compare_short_list">"<xliff:g id="words" example="6">%1$d</xliff:g> × <xliff:g id="letters" example="3">%2$d</xliff:g> lettres : <xliff:g id="time">%3$s</xliff:g>"</string>
 </resources>

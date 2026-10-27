@@ -27,7 +27,7 @@ public final class LockStrengthText {
     // The locks in the details, in the order shown. All figures are for values picked at
     // random, on the assumptions of SetupGuessingAssumptions.
     private static final Choice[] COMPARED = {
-        Choice.PIN_6_DIGITS, Choice.RANDOM_PIN_12, Choice.RANDOM_PIN_20,
+        Choice.PIN_6_DIGITS, Choice.RANDOM_PIN_12, Choice.RANDOM_PIN_20, Choice.SHORT_LIST,
         Choice.WORDS_5, Choice.WORDS_6, Choice.WORDS_7, Choice.WORDS_8,
     };
 
@@ -125,6 +125,9 @@ public final class LockStrengthText {
                 return context.getString(R.string.tally_compare_random_pin, 12, time);
             case RANDOM_PIN_20:
                 return context.getString(R.string.tally_compare_random_pin, 20, time);
+            case SHORT_LIST:
+                return context.getString(R.string.tally_compare_short_list,
+                        ShortListGenerator.WORDS, ShortListGenerator.PREFIX_LENGTH, time);
             case WORDS_5:
                 return context.getString(R.string.tally_compare_words, 5, time);
             case WORDS_6:

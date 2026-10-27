@@ -109,18 +109,7 @@ public final class SecretDisplay {
 
     /** The digits in groups of {@link #DIGIT_GROUP}, separated by spaces: "1234 5678 9012". */
     public static char[] groupedDigits(char[] digits) {
-        if (digits.length == 0) {
-            return new char[0];
-        }
-        final char[] result = new char[digits.length + (digits.length - 1) / DIGIT_GROUP];
-        int length = 0;
-        for (int i = 0; i < digits.length; i++) {
-            if (i > 0 && i % DIGIT_GROUP == 0) {
-                result[length++] = ' ';
-            }
-            result[length++] = digits[i];
-        }
-        return result;
+        return grouped(digits, DIGIT_GROUP);
     }
 
     /** Dots in place of {@code digits} digits, grouped as {@link #groupedDigits}. */
@@ -128,6 +117,60 @@ public final class SecretDisplay {
         final char[] dots = new char[digits];
         Arrays.fill(dots, DIGIT_MASK);
         return new String(groupedDigits(dots));
+    }
+
+    /**
+     * The letters of a short-list credential in groups of three, one for each word, separated by
+     * spaces for reading: "unc aba fox gem oat pry". The spaces are not typed.
+     */
+    public static char[] groupedLetters(char[] letters) {
+        return grouped(letters, ShortListGenerator.PREFIX_LENGTH);
+    }
+
+    /** Dots in place of a short-list credential, grouped as {@link #groupedLetters}. */
+    public static String maskedLetters() {
+        final char[] dots = new char[ShortListGenerator.LENGTH];
+        Arrays.fill(dots, DIGIT_MASK);
+        return new String(groupedLetters(dots));
+    }
+
+    /**
+     * The words a short-list credential stands for, in order: the word of {@code list} that
+     * starts with each group of three letters.
+     *
+     * @param list the list the credential was drawn from
+     * @return one new array for each word. The caller wipes them
+     * @throws IllegalArgumentException if a group starts no word of the list
+     */
+    public static char[][] shortListWords(char[] letters, WordList list) {
+        final int length = ShortListGenerator.PREFIX_LENGTH;
+        final char[][] words = new char[letters.length / length][];
+        for (int i = 0; i < words.length; i++) {
+            final int index = list.indexOfPrefix(letters, i * length, length);
+            if (index < 0) {
+                for (int j = 0; j < i; j++) {
+                    wipe(words[j]);
+                }
+                throw new IllegalArgumentException("not a credential of this list");
+            }
+            words[i] = list.word(index).toCharArray();
+        }
+        return words;
+    }
+
+    private static char[] grouped(char[] chars, int group) {
+        if (chars.length == 0) {
+            return new char[0];
+        }
+        final char[] result = new char[chars.length + (chars.length - 1) / group];
+        int length = 0;
+        for (int i = 0; i < chars.length; i++) {
+            if (i > 0 && i % group == 0) {
+                result[length++] = ' ';
+            }
+            result[length++] = chars[i];
+        }
+        return result;
     }
 
     /** Overwrites {@code chars} with zeros. */

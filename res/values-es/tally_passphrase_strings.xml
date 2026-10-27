@@ -87,4 +87,9 @@
     <string name="tally_lock_none_confirm">"No usar bloqueo"</string>
     <string name="tally_generated_another_pin">"PIN nuevo"</string>
     <string name="tally_weaker_risk_decline_pattern">"Volver"</string>
+    <string name="tally_generated_kind_words">"Palabras enteras"</string>
+    <string name="tally_generated_kind_letters">"Primeras 3 letras"</string>
+    <string name="tally_generated_letters_caption">"Para desbloquear, escribe estas <xliff:g id="letters" example="18">%1$d</xliff:g> letras:"</string>
+    <string name="tally_generated_type_back_letters_hint">"Escribe las <xliff:g id="letters" example="18">%1$d</xliff:g> letras sin espacios."</string>
+    <string name="tally_compare_short_list">"<xliff:g id="words" example="6">%1$d</xliff:g> × <xliff:g id="letters" example="3">%2$d</xliff:g> letras: <xliff:g id="time">%3$s</xliff:g>"</string>
 </resources>

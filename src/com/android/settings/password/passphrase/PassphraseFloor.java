@@ -14,7 +14,8 @@ import java.util.Map;
  *
  * <p>The lock settings service applies the same floor to every password it is asked to set. The
  * numbers here must not be looser than the service's, or a phrase the user already confirmed
- * could be refused when it is saved.
+ * could be refused when it is saved. The service also counts the 18 letters of a short-list
+ * password as strong, see {@link ShortListGenerator}.
  *
  * <p>The floor is a shape check, and it can be wrong in both directions. A short random password
  * is under it and may be hard to guess. A long phrase that is easy to guess is over it. A screen

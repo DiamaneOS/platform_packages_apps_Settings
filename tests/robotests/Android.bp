@@ -104,7 +104,10 @@ android_robolectric_test {
         "config",
         "resources",
     ],
-    java_resources: [":Settings_passphrase_wordlist"],
+    java_resources: [
+        ":Settings_passphrase_wordlist",
+        ":Settings_notice",
+    ],
 
     // Required for TestParameterInjector
     javacflags: ["-parameters"],

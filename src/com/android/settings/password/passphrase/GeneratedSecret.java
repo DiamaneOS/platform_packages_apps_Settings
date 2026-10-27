@@ -20,7 +20,7 @@ import java.security.SecureRandom;
 
 /**
  * The passphrase or PIN the phone generated for a lock that is being set up, the number of
- * words chosen for it, and the step the user is on.
+ * words or the short list chosen for it, and the step the user is on.
  *
  * <p>It lives in the {@link LockSetupHolder}, in memory only, so that a screen that is created
  * anew for a rotation shows the same secret on the same step. The screen that shows it attaches
@@ -57,7 +57,10 @@ final class GeneratedSecret {
     @Nullable private Passphrase mPassphrase;
     @Nullable private LockscreenCredential mPin;
     @Nullable private PassphraseGenerator mGenerator;
+    @Nullable private ShortListGenerator mShortListGenerator;
     private int mWords = PassphraseGenerator.DEFAULT_WORDS;
+    // Whether the passphrase is the short-list one: only the first letters of its words.
+    private boolean mShortList;
     private boolean mStarted;
     private boolean mPreparing;
     private boolean mBlockedByRules;
@@ -123,9 +126,23 @@ final class GeneratedSecret {
         return mBlockedByRules;
     }
 
-    /** Number of words of the passphrase. */
+    /** Number of words of a passphrase of whole words. */
     int words() {
         return mWords;
+    }
+
+    /** Whether the passphrase is the short-list one, typed as the first letters of its words. */
+    boolean isShortList() {
+        return mShortList;
+    }
+
+    /** Chooses whole words or the short list, and makes a new passphrase of that kind. */
+    void setShortList(boolean shortList) {
+        if (!mIsPassphrase || shortList == mShortList) {
+            return;
+        }
+        mShortList = shortList;
+        generate();
     }
 
     /** Chooses the number of words, and makes a new passphrase of that length. */
@@ -138,10 +155,16 @@ final class GeneratedSecret {
         generate();
     }
 
-    /** Exact entropy of the secret, in bits. It depends on the number of words or digits only. */
+    /**
+     * Entropy of the secret in bits, as estimates take it: exact for whole words and a PIN, and
+     * {@link ShortListGenerator#ESTIMATE_BITS} for the short list. It depends on the kind and the
+     * number of words or digits only.
+     */
     double entropyBits() {
-        return mIsPassphrase ? mEntropyBits[mWords]
-                : CredentialStrength.generatedPinEntropyBits(PIN_LENGTH);
+        if (!mIsPassphrase) {
+            return CredentialStrength.generatedPinEntropyBits(PIN_LENGTH);
+        }
+        return mShortList ? ShortListGenerator.ESTIMATE_BITS : mEntropyBits[mWords];
     }
 
     /**
@@ -167,6 +190,32 @@ final class GeneratedSecret {
         final char[] grouped = SecretDisplay.groupedDigits(digits);
         SecretDisplay.wipe(digits);
         return new char[][] {grouped, new char[0]};
+    }
+
+    /**
+     * The words of the short-list passphrase, whose first letters are the credential.
+     *
+     * @return one new array for each word. The caller wipes them. Null if there is no
+     *     short-list passphrase.
+     */
+    @Nullable
+    char[][] shortListWords() {
+        if (mPassphrase == null || !mShortList || mShortListGenerator == null) {
+            return null;
+        }
+        return SecretDisplay.shortListWords(mPassphrase.chars(),
+                mShortListGenerator.drawnWords());
+    }
+
+    /**
+     * The letters of the short-list passphrase in groups for reading.
+     *
+     * @return a new array. The caller wipes it. Null if there is no short-list passphrase.
+     */
+    @Nullable
+    char[] groupedLetters() {
+        return mPassphrase != null && mShortList
+                ? SecretDisplay.groupedLetters(mPassphrase.chars()) : null;
     }
 
     /** A copy of the secret as a credential. The caller zeroizes it. Null if there is none. */
@@ -202,12 +251,20 @@ final class GeneratedSecret {
                 Log.e(TAG, "The word list cannot be used", e);
                 loaded = null;
             }
+            ShortListGenerator loadedShort = null;
+            try (InputStream in = appContext.getAssets().open(WordList.EFF_SHORT_ASSET)) {
+                loadedShort = new ShortListGenerator(WordList.loadEffShort(in), new SecureRandom());
+            } catch (IOException | RuntimeException e) {
+                Log.e(TAG, "The short word list cannot be used", e);
+            }
             final PassphraseGenerator generator = loaded;
+            final ShortListGenerator shortListGenerator = loadedShort;
             ThreadUtils.postOnMainThread(() -> {
                 if (mWiped) {
                     return;
                 }
                 mGenerator = generator;
+                mShortListGenerator = shortListGenerator;
                 System.arraycopy(bits, 0, mEntropyBits, 0, bits.length);
                 mPreparing = false;
                 generate();
@@ -248,10 +305,18 @@ final class GeneratedSecret {
     }
 
     private void generatePassphrase(Screen screen) {
-        if (mGenerator == null) {
-            return;
+        final Passphrase phrase;
+        if (mShortList) {
+            if (mShortListGenerator == null) {
+                return;
+            }
+            phrase = mShortListGenerator.generate();
+        } else {
+            if (mGenerator == null) {
+                return;
+            }
+            phrase = mGenerator.generate(mWords);
         }
-        final Passphrase phrase = mGenerator.generate(mWords);
         boolean accepted = false;
         try (LockscreenCredential credential =
                 LockscreenCredential.createPassword(CharBuffer.wrap(phrase.chars()))) {
@@ -266,7 +331,7 @@ final class GeneratedSecret {
         if (accepted) {
             mPassphrase = phrase;
         } else {
-            // Another phrase of letters and spaces would be refused for the same reason.
+            // Another phrase of the same kind would be refused for the same reason.
             mBlockedByRules = true;
         }
     }

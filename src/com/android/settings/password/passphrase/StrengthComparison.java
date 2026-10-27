@@ -27,7 +27,9 @@ public final class StrengthComparison {
         /** A PIN of twelve digits picked at random. Not offered. Shown for comparison. */
         RANDOM_PIN_12(false),
         /** A PIN of twenty digits that the phone generated. */
-        RANDOM_PIN_20(false);
+        RANDOM_PIN_20(false),
+        /** The first three letters of six words of the short list, see ShortListGenerator. */
+        SHORT_LIST(false);
 
         /**
          * Whether the figures are an upper limit. A PIN or pattern a person picks is easier to
@@ -75,6 +77,7 @@ public final class StrengthComparison {
      * Entropy in bits of a choice. For words it is {@code words * log2(7772)}: the phrases the
      * generator throws away for being too short change it by less than a billionth of a bit,
      * which is left out here. {@link PassphraseGenerator#entropyBits} gives the exact figure.
+     * The short list counts {@link ShortListGenerator#ESTIMATE_BITS_PER_WORD} a word.
      */
     public static double entropyBits(Choice choice) {
         switch (choice) {
@@ -94,6 +97,8 @@ public final class StrengthComparison {
                 return CredentialStrength.generatedPinEntropyBits(12);
             case RANDOM_PIN_20:
                 return CredentialStrength.generatedPinEntropyBits(20);
+            case SHORT_LIST:
+                return ShortListGenerator.ESTIMATE_BITS;
             default:
                 throw new IllegalArgumentException("unknown choice");
         }

@@ -84,6 +84,8 @@ public class StrengthComparisonTest {
                 1e-12);
         assertEquals(66.43856189774725, StrengthComparison.entropyBits(Choice.RANDOM_PIN_20),
                 1e-12);
+        // 10.3 bits a word, as the user decided, below log2(1,295) = 10.34.
+        assertEquals(61.8, StrengthComparison.entropyBits(Choice.SHORT_LIST), 1e-12);
     }
 
     @Test
@@ -105,7 +107,7 @@ public class StrengthComparisonTest {
 
         // A million guesses a second, half of all values tried, 31,557,600 seconds to the
         // year, rounded down to two figures.
-        assertEquals(8, rows.size());
+        assertEquals(9, rows.size());
         assertEquals("LESS_THAN 1.0 MINUTES", shown(rows.get(0)));           // 0.5 s
         assertEquals("LESS_THAN 1.0 MINUTES", shown(rows.get(1)));           // 0.19 s
         assertEquals("ABOUT 440000.0 YEARS", shown(rows.get(2)));            // 449,296
@@ -114,6 +116,7 @@ public class StrengthComparisonTest {
         assertEquals("MORE_THAN 1000.0 BILLIONS_OF_YEARS", shown(rows.get(5)));
         assertEquals("ABOUT 5.7 DAYS", shown(rows.get(6)));                  // 5.787
         assertEquals("ABOUT 1.5 MILLIONS_OF_YEARS", shown(rows.get(7)));     // 1.5844e6
+        assertEquals("ABOUT 63000.0 YEARS", shown(rows.get(8)));             // 63,609
         for (int i = 0; i < rows.size(); i++) {
             assertSame(Choice.values()[i], rows.get(i).choice);
             assertSame(assumptions, rows.get(i).estimate.assumptions);
@@ -126,7 +129,8 @@ public class StrengthComparisonTest {
     public void rows_inTheWordsOfTheScreen() {
         final List<Row> rows = StrengthComparison.rows(SetupGuessingAssumptions.get(),
                 Choice.PIN_6_DIGITS, Choice.RANDOM_PIN_12, Choice.RANDOM_PIN_20,
-                Choice.WORDS_5, Choice.WORDS_6, Choice.WORDS_7, Choice.WORDS_8);
+                Choice.WORDS_5, Choice.WORDS_6, Choice.WORDS_7, Choice.WORDS_8,
+                Choice.SHORT_LIST);
 
         // The researched figures are 0.5 s, 5.8 days, 1.6 million, 450,000 and 3.5 billion
         // years when rounded to the nearest. Shown times are rounded down.
@@ -137,6 +141,7 @@ public class StrengthComparisonTest {
         assertEquals("about 3.4 billion years", inWords(rows.get(4)));
         assertEquals("more than a trillion years", inWords(rows.get(5)));
         assertEquals("more than a trillion years", inWords(rows.get(6)));
+        assertEquals("about 63,000 years", inWords(rows.get(7)));
     }
 
     @Test
@@ -149,6 +154,7 @@ public class StrengthComparisonTest {
         assertFalse(Choice.WORDS_8.atBest);
         assertFalse(Choice.RANDOM_PIN_12.atBest);
         assertFalse(Choice.RANDOM_PIN_20.atBest);
+        assertFalse(Choice.SHORT_LIST.atBest);
     }
 
     @Test

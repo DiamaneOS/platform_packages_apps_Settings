@@ -28,8 +28,12 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * The part of the password screen that sets up a passphrase or PIN the phone generates: a card
- * that shows the secret on request, a choice of how many words, one strength row and two
- * paragraphs of advice. Then it guides the typing back.
+ * that shows the secret on request, a choice of whole words or the short list, a choice of how
+ * many words, one strength row and two paragraphs of advice. Then it guides the typing back.
+ *
+ * <p>The short list: six words, of which only the first three letters are typed. The card
+ * shows each word with those letters in bold, then the 18 letters on their own in groups of
+ * three. The groups are only for reading: the hints say to type the letters without spaces.
  *
  * <p>The password screen keeps its own steps and its entry field. This panel sits above the
  * field, tells the screen when the user may go on, and hands over the credential to compare
@@ -86,6 +90,18 @@ public final class GeneratedCredentialPanel {
     };
 
     private final View mEntryContainer;
+    private final RadioGroup mKindChoice;
+    private final View mWordsCaption;
+    private final View mRowFiller;
+    private final View mShortGrid;
+    private final ViewGroup mShortLeft;
+    private final ViewGroup mShortRight;
+    private final TextView mLettersCaption;
+    private final TextView mLetters;
+    // The rows of the short list, one for each word: number, letters that are typed, the rest.
+    private final View[] mShortRows = new View[ShortListGenerator.WORDS];
+    private final TextView[] mShortPrefixes = new TextView[ShortListGenerator.WORDS];
+    private final TextView[] mShortRests = new TextView[ShortListGenerator.WORDS];
     private final View mShowSection;
     private final View mTypeSection;
     private final View mGrid;
@@ -104,6 +120,8 @@ public final class GeneratedCredentialPanel {
     // What the two secret views show while the secret is revealed. Wiped when it is hidden.
     private char[] mDisplayLeft = new char[0];
     private char[] mDisplayRight = new char[0];
+    private char[][] mDisplayWords = new char[0][];
+    private char[] mDisplayLetters = new char[0];
 
     private boolean mDestroyed;
     // The host is not called back before the constructor is done: it has no panel yet.
@@ -166,12 +184,30 @@ public final class GeneratedCredentialPanel {
         mHintView = root.findViewById(R.id.tally_generated_hint);
         mRevealButton = root.findViewById(R.id.tally_generated_reveal);
         mAnotherButton = root.findViewById(R.id.tally_generated_another);
+        mKindChoice = root.findViewById(R.id.tally_generated_kind_choice);
+        mWordsCaption = root.findViewById(R.id.tally_generated_words_caption);
+        mRowFiller = root.findViewById(R.id.tally_generated_row_filler);
+        mShortGrid = root.findViewById(R.id.tally_generated_short_grid);
+        mShortLeft = root.findViewById(R.id.tally_generated_short_left);
+        mShortRight = root.findViewById(R.id.tally_generated_short_right);
+        mLettersCaption = root.findViewById(R.id.tally_generated_letters_caption);
+        mLetters = root.findViewById(R.id.tally_generated_letters);
+        mLettersCaption.setText(mContext.getString(R.string.tally_generated_letters_caption,
+                ShortListGenerator.LENGTH));
+        final NumberFormat numbers = NumberFormat.getIntegerInstance();
+        for (int i = 0; i < ShortListGenerator.WORDS; i++) {
+            mShortRows[i] = inflater.inflate(R.layout.tally_generated_short_row, mShortLeft, false);
+            mShortRows[i].<TextView>findViewById(R.id.tally_short_number)
+                    .setText(numbers.format(i + 1));
+            mShortPrefixes[i] = mShortRows[i].findViewById(R.id.tally_short_prefix);
+            mShortRests[i] = mShortRows[i].findViewById(R.id.tally_short_rest);
+        }
 
         // Only accessibility services that are tools for the user get to read the secret.
-        mSecretLeft.setAccessibilityDataSensitive(View.ACCESSIBILITY_DATA_SENSITIVE_YES);
-        mSecretRight.setAccessibilityDataSensitive(View.ACCESSIBILITY_DATA_SENSITIVE_YES);
-        mSecretLeft.setSaveEnabled(false);
-        mSecretRight.setSaveEnabled(false);
+        for (TextView view : secretViews()) {
+            view.setAccessibilityDataSensitive(View.ACCESSIBILITY_DATA_SENSITIVE_YES);
+            view.setSaveEnabled(false);
+        }
 
         mRevealButton.setOnClickListener(v -> {
             if (mState.isRevealed()) {
@@ -205,11 +241,16 @@ public final class GeneratedCredentialPanel {
                     }
                 }
             });
+            mKindChoice.check(mSecret.isShortList()
+                    ? R.id.tally_generated_kind_letters : R.id.tally_generated_kind_words);
+            mKindChoice.setOnCheckedChangeListener((group, checkedId) ->
+                    mSecret.setShortList(checkedId == R.id.tally_generated_kind_letters));
         } else {
             // A PIN has one length: no choice, and the button stays at the end of its row.
+            mKindChoice.setVisibility(View.GONE);
             mWordsChoice.setVisibility(View.GONE);
-            root.findViewById(R.id.tally_generated_words_caption).setVisibility(View.GONE);
-            root.findViewById(R.id.tally_generated_row_filler).setVisibility(View.VISIBLE);
+            mWordsCaption.setVisibility(View.GONE);
+            mRowFiller.setVisibility(View.VISIBLE);
             mNumbersLeft.setVisibility(View.GONE);
             mNumbersRight.setVisibility(View.GONE);
             mSecretRight.setVisibility(View.GONE);
@@ -337,16 +378,35 @@ public final class GeneratedCredentialPanel {
         }
     }
 
+    // Every view that can show a part of the secret.
+    private TextView[] secretViews() {
+        final TextView[] views = new TextView[3 + 2 * ShortListGenerator.WORDS];
+        views[0] = mSecretLeft;
+        views[1] = mSecretRight;
+        views[2] = mLetters;
+        System.arraycopy(mShortPrefixes, 0, views, 3, ShortListGenerator.WORDS);
+        System.arraycopy(mShortRests, 0, views, 3 + ShortListGenerator.WORDS,
+                ShortListGenerator.WORDS);
+        return views;
+    }
+
     // Takes the secret off the screen and overwrites what the views showed.
     private void clearSecretViews() {
         mSecretLeft.removeCallbacks(mHideWhenTimeIsUp);
-        // The views let go of the arrays before they are overwritten.
-        mSecretLeft.setText("");
-        mSecretRight.setText("");
+        // The views show nothing before the arrays they last showed are overwritten.
+        for (TextView view : secretViews()) {
+            view.setText("");
+        }
         SecretDisplay.wipe(mDisplayLeft);
         SecretDisplay.wipe(mDisplayRight);
+        SecretDisplay.wipe(mDisplayLetters);
+        for (char[] word : mDisplayWords) {
+            SecretDisplay.wipe(word);
+        }
         mDisplayLeft = new char[0];
         mDisplayRight = new char[0];
+        mDisplayLetters = new char[0];
+        mDisplayWords = new char[0][];
     }
 
     private void render() {
@@ -361,6 +421,9 @@ public final class GeneratedCredentialPanel {
             // The last step: the one place that says what the first two weeks are like.
             mHintView.setText(mContext.getString(R.string.tally_generated_practise_hint) + "\n"
                     + learningPeriodNote(mContext));
+        } else if (mIsPassphrase && mSecret.isShortList()) {
+            mHintView.setText(mContext.getString(R.string.tally_generated_type_back_letters_hint,
+                    ShortListGenerator.LENGTH));
         } else {
             mHintView.setText(mIsPassphrase
                     ? R.string.tally_generated_type_back_passphrase_hint
@@ -374,9 +437,20 @@ public final class GeneratedCredentialPanel {
         clearSecretViews();
         final boolean hasSecret = mSecret.hasSecret();
         final boolean revealed = mState.isRevealed() && hasSecret;
-        mGrid.setVisibility(hasSecret ? View.VISIBLE : View.GONE);
+        final boolean shortList = mIsPassphrase && mSecret.isShortList();
+        mGrid.setVisibility(hasSecret && !shortList ? View.VISIBLE : View.GONE);
+        final int shortVisibility = hasSecret && shortList ? View.VISIBLE : View.GONE;
+        mShortGrid.setVisibility(shortVisibility);
+        mLettersCaption.setVisibility(shortVisibility);
+        mLetters.setVisibility(shortVisibility);
         mPlaceholder.setVisibility(hasSecret ? View.GONE : View.VISIBLE);
         final boolean twoColumns = mIsPassphrase && fitsTwoColumns();
+        if (mIsPassphrase) {
+            // The short list has six words: no choice of the number.
+            mWordsChoice.setVisibility(shortList ? View.GONE : View.VISIBLE);
+            mWordsCaption.setVisibility(shortList ? View.GONE : View.VISIBLE);
+            mRowFiller.setVisibility(shortList ? View.VISIBLE : View.GONE);
+        }
         if (!hasSecret) {
             if (mSecret.isPreparing()) {
                 mPlaceholder.setText(R.string.tally_generated_preparing);
@@ -385,6 +459,8 @@ public final class GeneratedCredentialPanel {
                         ? R.string.tally_generated_blocked_by_rules
                         : R.string.tally_generated_unavailable);
             }
+        } else if (shortList) {
+            renderShortList(revealed, twoColumns);
         } else if (mIsPassphrase) {
             final String[] numbers = SecretDisplay.numberColumns(mSecret.words(), twoColumns);
             mNumbersLeft.setText(numbers[0]);
@@ -401,7 +477,7 @@ public final class GeneratedCredentialPanel {
         } else if (!revealed) {
             mSecretLeft.setText(SecretDisplay.maskedDigits(PIN_LENGTH));
         }
-        final char[][] shown = revealed ? mSecret.displayColumns(twoColumns) : null;
+        final char[][] shown = revealed && !shortList ? mSecret.displayColumns(twoColumns) : null;
         if (shown != null) {
             mDisplayLeft = shown[0];
             mDisplayRight = shown[1];
@@ -416,6 +492,11 @@ public final class GeneratedCredentialPanel {
                 ? mContext.getString(R.string.tally_generated_hidden_description) : null;
         mSecretLeft.setContentDescription(hidden);
         mSecretRight.setContentDescription(hidden);
+        mLetters.setContentDescription(hidden);
+        // A row of the short list is read as one item: once "Hidden", not for each part.
+        for (View row : mShortRows) {
+            row.setContentDescription(hidden);
+        }
         mRevealButton.setText(mState.isRevealed()
                 ? R.string.condition_expand_hide : R.string.condition_expand_show);
         mRevealButton.setEnabled(hasSecret);
@@ -423,6 +504,48 @@ public final class GeneratedCredentialPanel {
         for (int id : WORD_CHOICES) {
             mWordsChoice.findViewById(id).setEnabled(hasSecret);
         }
+        // Also without a secret: the other kind may be available when this one is not.
+        for (int i = 0; i < mKindChoice.getChildCount(); i++) {
+            mKindChoice.getChildAt(i).setEnabled(!mSecret.isPreparing());
+        }
+    }
+
+    // The short list on the card: each word with the letters that are typed in bold, then the
+    // letters alone, in groups. Dots in the same places while it is hidden.
+    private void renderShortList(boolean revealed, boolean twoColumns) {
+        mShortLeft.removeAllViews();
+        mShortRight.removeAllViews();
+        final int firstColumn = SecretDisplay.firstColumnWords(ShortListGenerator.WORDS,
+                twoColumns);
+        for (int i = 0; i < ShortListGenerator.WORDS; i++) {
+            final View row = mShortRows[i];
+            // As far apart as the lines of the other grid, with no space above a column.
+            ((ViewGroup.MarginLayoutParams) row.getLayoutParams()).topMargin = i == 0
+                    || i == firstColumn ? 0 : mContext.getResources().getDimensionPixelSize(
+                            R.dimen.tally_passphrase_secret_line_extra);
+            (i < firstColumn ? mShortLeft : mShortRight).addView(row);
+        }
+        mShortRight.setVisibility(twoColumns ? View.VISIBLE : View.GONE);
+        final int prefix = ShortListGenerator.PREFIX_LENGTH;
+        final char[][] words = revealed ? mSecret.shortListWords() : null;
+        if (words == null) {
+            for (int i = 0; i < ShortListGenerator.WORDS; i++) {
+                mShortPrefixes[i].setText(SecretDisplay.WORD_MASK.substring(0, prefix));
+                mShortRests[i].setText(SecretDisplay.WORD_MASK.substring(prefix));
+            }
+            mLetters.setText(SecretDisplay.maskedLetters());
+            return;
+        }
+        final char[] letters = mSecret.groupedLetters();
+        mDisplayWords = words;
+        mDisplayLetters = letters;
+        for (int i = 0; i < words.length; i++) {
+            mShortPrefixes[i].setText(words[i], 0, prefix);
+            mShortRests[i].setText(words[i], prefix, words[i].length - prefix);
+        }
+        mLetters.setText(letters, 0, letters.length);
+        mSecretLeft.postDelayed(mHideWhenTimeIsUp,
+                mState.revealMillisLeft(SystemClock.elapsedRealtime()));
     }
 
     // Two columns of words need room: at a large text size, or on a narrow screen, the words

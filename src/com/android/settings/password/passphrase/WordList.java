@@ -20,7 +20,9 @@ import java.util.Set;
  *
  * <p>The list that ships is the EFF large word list: 7,776 words, one for each roll of five dice.
  * It is stored without the dice numbers, one word per line, and is only used when its SHA-256
- * matches {@link #EFF_LARGE_SHA256}.
+ * matches {@link #EFF_LARGE_SHA256}. EFF's short word list 2 ships the same way, for
+ * {@link ShortListGenerator}: 1,296 words, one for each roll of four dice, pinned by
+ * {@link #EFF_SHORT_SHA256}.
  *
  * <p>The words are public, so they are held as strings. A generated phrase is not: it is built
  * from them in a char array, see {@link PassphraseGenerator}.
@@ -47,6 +49,26 @@ public final class WordList {
      */
     static final String EFF_LARGE_SHA256 =
             "6d557f0693958fb5e650b68b5bee585eb82cf4da32965505c789e924743bc522";
+
+    /** Where EFF's short word list 2 is in the app's assets. */
+    public static final String EFF_SHORT_ASSET = "passphrase/eff_short_wordlist_2_0.txt";
+
+    /** Number of words in EFF's short word list 2: 6^4. */
+    public static final int EFF_SHORT_SIZE = 1296;
+
+    /** Number of words of EFF's short word list 2 that are made of a to z only: all but yo-yo. */
+    public static final int EFF_SHORT_LETTERS_ONLY_SIZE = 1295;
+
+    /** Every word of the short list has a different start of this many letters. */
+    public static final int EFF_SHORT_PREFIX_LENGTH = 3;
+
+    /**
+     * SHA-256 of the short list as shipped. The file EFF publishes, with a dice number and a tab
+     * in front of each word, has the SHA-256
+     * 22b45c52e0bd0bbf03aa522240b111eb4c7c0c1d86c4e518e1be2a7eb2a625e4.
+     */
+    static final String EFF_SHORT_SHA256 =
+            "7aa57a4d3ecf6581729992bad9575bacdebf7c28378af2aec6a50f11aec326f5";
 
     // The shipped list is 62,144 bytes. Nothing near this size is read into memory unchecked.
     private static final int MAX_FILE_BYTES = 1 << 17;
@@ -80,15 +102,30 @@ public final class WordList {
      * @throws IOException if reading fails or the content is not the pinned list
      */
     public static WordList loadEffLarge(InputStream in) throws IOException {
+        return load(in, EFF_LARGE_SHA256, EFF_LARGE_SIZE);
+    }
+
+    /**
+     * Reads EFF's short word list 2 and checks it against the pinned hash.
+     *
+     * @param in the list as shipped in {@link #EFF_SHORT_ASSET}. The caller closes it
+     * @throws IOException if reading fails or the content is not the pinned list
+     */
+    public static WordList loadEffShort(InputStream in) throws IOException {
+        return load(in, EFF_SHORT_SHA256, EFF_SHORT_SIZE);
+    }
+
+    private static WordList load(InputStream in, String pinnedSha256, int size)
+            throws IOException {
         final byte[] bytes = in.readNBytes(MAX_FILE_BYTES + 1);
         if (bytes.length > MAX_FILE_BYTES) {
             throw new IOException("word list is too large");
         }
-        final byte[] expected = HexFormat.of().parseHex(EFF_LARGE_SHA256);
+        final byte[] expected = HexFormat.of().parseHex(pinnedSha256);
         if (!MessageDigest.isEqual(expected, sha256(bytes))) {
             throw new IOException("word list does not match its pinned hash");
         }
-        final List<String> words = new ArrayList<>(EFF_LARGE_SIZE);
+        final List<String> words = new ArrayList<>(size);
         int start = 0;
         for (int i = 0; i < bytes.length; i++) {
             if (bytes[i] == '\n') {
@@ -96,8 +133,8 @@ public final class WordList {
                 start = i + 1;
             }
         }
-        if (start != bytes.length || words.size() != EFF_LARGE_SIZE) {
-            throw new IOException("word list is not " + EFF_LARGE_SIZE + " lines");
+        if (start != bytes.length || words.size() != size) {
+            throw new IOException("word list is not " + size + " lines");
         }
         return new WordList(words.toArray(new String[0]));
     }
@@ -141,6 +178,47 @@ public final class WordList {
     /** Length of the longest word. */
     public int longestWord() {
         return mLongestWord;
+    }
+
+    /**
+     * Whether the words are in order and no two of them start with the same {@code length}
+     * letters, so that those letters name one word. Every word must be that long.
+     */
+    public boolean hasUniqueSortedPrefixes(int length) {
+        for (int i = 0; i < mWords.length; i++) {
+            if (mWords[i].length() < length
+                    || i > 0 && mWords[i - 1].regionMatches(0, mWords[i], 0, length)
+                    || i > 0 && mWords[i - 1].compareTo(mWords[i]) >= 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * The index of the word that starts with {@code chars[offset]} to
+     * {@code chars[offset + length - 1]}, or -1 if none does. Only for a list with
+     * {@link #hasUniqueSortedPrefixes}. The characters may be secret: no String is made of them.
+     */
+    int indexOfPrefix(char[] chars, int offset, int length) {
+        int low = 0;
+        int high = mWords.length - 1;
+        while (low <= high) {
+            final int middle = (low + high) >>> 1;
+            final String word = mWords[middle];
+            int order = 0;
+            for (int i = 0; i < length && order == 0; i++) {
+                order = chars[offset + i] - word.charAt(i);
+            }
+            if (order == 0) {
+                return middle;
+            } else if (order < 0) {
+                high = middle - 1;
+            } else {
+                low = middle + 1;
+            }
+        }
+        return -1;
     }
 
     /**

@@ -146,10 +146,11 @@ public class OwnPassphraseFeedbackTest {
         assertTrue(weaker.countsAsWeaker);
         assertFalse(weaker.learningPeriodApplies);
 
+        // Strong under the floor is a typed short-list password: it may be easy to guess.
         final OwnPassphraseFeedback strong =
                 OwnPassphraseFeedback.of(StrengthClass.STRONG, Rating.BELOW_MINIMUM);
         assertFalse(strong.countsAsWeaker);
-        assertFalse(strong.looksGuessable);
+        assertTrue(strong.looksGuessable);
         assertTrue(strong.learningPeriodApplies);
 
         // A class that is not known is not treated as strong.
