@@ -98,10 +98,4 @@
     <!-- Network & internet > Attestation key provisioning: what Google receives. English only,
          like the other text on this screen. [CHAR LIMIT=NONE] -->
     <string name="tally_remote_provisioning_footer">Attestation keys are provisioned by Google in the USA. The request carries keys unique to this phone, which let apps check its security. It carries no account, location or phone number. With the DiamaneOS proxy, Google sees the proxy\'s address instead of yours.</string>
-    <!-- NFC page: picker for turning NFC off after a time without use, like GrapheneOS's
-         "Turn off Bluetooth automatically". [CHAR LIMIT=50] -->
-    <string name="tally_nfc_auto_off_title">Turn off NFC automatically</string>
-    <!-- NFC page > Turn off NFC automatically: note on the picker. Use means a payment
-         terminal or another reader near the phone. [CHAR LIMIT=NONE] -->
-    <string name="tally_nfc_auto_off_footer">If NFC isn\'t used, it will turn off after the selected timeout once the screen is off.</string>
 </resources>

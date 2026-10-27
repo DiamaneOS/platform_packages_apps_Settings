@@ -33,6 +33,4 @@
     <string name="tally_add_sim_esim_support_off">"« eSIM support » est désactivé. Pour ajouter une eSIM, activez-le dans <xliff:g id="network_and_internet">%1$s</xliff:g>."</string>
     <string name="tally_power_volume_down_screenshot_title">"Capture d'écran avec Marche/Arrêt et Volume -"</string>
     <string name="tally_hw_video_decoding_never_title">"Jamais"</string>
-    <string name="tally_nfc_auto_off_title">"Désactiver le NFC automatiquement"</string>
-    <string name="tally_nfc_auto_off_footer">"Si le NFC n\'est pas utilisé, il sera désactivé après le délai sélectionné, une fois l\'écran éteint."</string>
 </resources>
