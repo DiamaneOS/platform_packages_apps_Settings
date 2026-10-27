@@ -6,6 +6,7 @@ package com.android.settings.password.passphrase;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 
@@ -133,6 +134,29 @@ public class SecretDisplayTest {
                 + "•••• ••••", dots);
         assertEquals(grouped("12345678901234567890").length(), dots.length());
         assertEquals("", SecretDisplay.maskedDigits(0));
+    }
+
+    @Test
+    public void groupedLetters_groupsOfThreeForReading() {
+        assertEquals("unc aba fox gem oat pry",
+                new String(SecretDisplay.groupedLetters("uncabafoxgemoatpry".toCharArray())));
+        assertEquals("••• ••• ••• ••• ••• •••", SecretDisplay.maskedLetters());
+    }
+
+    @Test
+    public void shortListWords_areTheWordsTheLettersStartWith() throws Exception {
+        final WordList drawn = PassphraseTestUtils.effShort().lettersOnly();
+
+        final char[][] words =
+                SecretDisplay.shortListWords("uncabafoxgemoatpry".toCharArray(), drawn);
+
+        assertEquals(6, words.length);
+        final String[] expected = {"uncle", "abandoned", "fox", "gem", "oat", "pry"};
+        for (int i = 0; i < 6; i++) {
+            assertArrayEquals(expected[i].toCharArray(), words[i]);
+        }
+        assertThrows(IllegalArgumentException.class, () -> SecretDisplay.shortListWords(
+                "uncabafoxgemoatqqq".toCharArray(), drawn));
     }
 
     @Test

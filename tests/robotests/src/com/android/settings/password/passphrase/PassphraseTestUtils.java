@@ -33,6 +33,24 @@ final class PassphraseTestUtils {
         return WordList.loadEffLarge(new ByteArrayInputStream(effLargeBytes()));
     }
 
+    /** The bytes of the short word list file that ships. */
+    static byte[] effShortBytes() throws IOException {
+        return resource("/" + WordList.EFF_SHORT_ASSET);
+    }
+
+    /** The short word list that ships, loaded the way the app loads it. */
+    static WordList effShort() throws IOException {
+        return WordList.loadEffShort(new ByteArrayInputStream(effShortBytes()));
+    }
+
+    /** A file the test build puts on the class path. */
+    static byte[] resource(String path) throws IOException {
+        try (InputStream in = PassphraseTestUtils.class.getResourceAsStream(path)) {
+            assertNotNull("not on the class path: " + path, in);
+            return in.readAllBytes();
+        }
+    }
+
     /**
      * Pearson's chi-square statistic of {@code counts} against the same expected count in every
      * cell.

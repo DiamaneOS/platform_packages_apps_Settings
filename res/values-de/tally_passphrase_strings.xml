@@ -87,4 +87,9 @@
     <string name="tally_lock_none_confirm">"Keine Sperre verwenden"</string>
     <string name="tally_generated_another_pin">"Neue PIN"</string>
     <string name="tally_weaker_risk_decline_pattern">"Zurück"</string>
+    <string name="tally_generated_kind_words">"Ganze Wörter"</string>
+    <string name="tally_generated_kind_letters">"Erste 3 Buchstaben"</string>
+    <string name="tally_generated_letters_caption">"Zum Entsperren gib diese <xliff:g id="letters" example="18">%1$d</xliff:g> Buchstaben ein:"</string>
+    <string name="tally_generated_type_back_letters_hint">"Gib die <xliff:g id="letters" example="18">%1$d</xliff:g> Buchstaben ohne Leerzeichen ein."</string>
+    <string name="tally_compare_short_list">"<xliff:g id="words" example="6">%1$d</xliff:g> × <xliff:g id="letters" example="3">%2$d</xliff:g> Buchstaben: <xliff:g id="time">%3$s</xliff:g>"</string>
 </resources>

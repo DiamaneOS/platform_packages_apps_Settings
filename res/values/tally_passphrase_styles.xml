@@ -69,6 +69,16 @@
         <item name="android:textColor">@color/tally_ink_muted</item>
     </style>
 
+    <!-- The letters of a short-list word that are typed: bold. -->
+    <style name="TallyPassphrase.Secret.Prefix">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- The rest of a short-list word, only a reminder: secondary colour. -->
+    <style name="TallyPassphrase.Secret.Rest">
+        <item name="android:textColor">@color/tally_ink_muted</item>
+    </style>
+
     <!-- A text control that starts exactly at the text margin: no padding at its start, an
          optional icon in front, the accent colour, paler when disabled. -->
     <style name="TallyPassphrase.Link" parent="">

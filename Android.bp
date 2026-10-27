@@ -235,10 +235,19 @@ filegroup {
     srcs: ["proguard.flags"],
 }
 
-// The passphrase word list, for tests that read it from the class path. The app reads it from
-// its assets.
+// The passphrase word lists, for tests that read them from the class path. The app reads them
+// from its assets.
 filegroup {
     name: "Settings_passphrase_wordlist",
-    srcs: ["assets/passphrase/eff_large_wordlist.txt"],
+    srcs: [
+        "assets/passphrase/eff_large_wordlist.txt",
+        "assets/passphrase/eff_short_wordlist_2_0.txt",
+    ],
     path: "assets",
+}
+
+// The notices, for the test that checks the word list attributions.
+filegroup {
+    name: "Settings_notice",
+    srcs: ["NOTICE"],
 }

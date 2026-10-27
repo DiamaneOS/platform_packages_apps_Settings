@@ -67,6 +67,13 @@
     <!-- Setting a strong lock, said once on the last step or after saving. %1$d is a number of
          days (14). [CHAR LIMIT=NONE] -->
     <string name="tally_lock_learning">For <xliff:g id="days" example="14">%1$d</xliff:g> days the phone asks for it once a day, so it sticks.</string>
+    <!-- Generated passphrase. The choice of whole words, or the first 3 letters of 6 words of
+         a shorter list, which are all that is typed. [CHAR LIMIT=24] -->
+    <string name="tally_generated_kind_words">Whole words</string>
+    <string name="tally_generated_kind_letters">First 3 letters</string>
+    <!-- Generated passphrase, first 3 letters. Above the letters that are typed, which are
+         shown in groups of 3 with spaces only for reading. %1$d is 18. [CHAR LIMIT=NONE] -->
+    <string name="tally_generated_letters_caption">To unlock, type these <xliff:g id="letters" example="18">%1$d</xliff:g> letters:</string>
     <!-- Generated passphrase. Small label of the choice of 5 to 8 words. [CHAR LIMIT=12] -->
     <string name="tally_generated_words_caption">Words</string>
     <!-- Generated passphrase. Spoken name of one choice: %1$d is 5 to 8. [CHAR LIMIT=NONE] -->
@@ -84,6 +91,8 @@
          [CHAR LIMIT=NONE] -->
     <string name="tally_generated_type_back_passphrase_hint">Type the words with a space between them.</string>
     <string name="tally_generated_type_back_pin_hint">Type the digits without spaces.</string>
+    <!-- %1$d is 18. -->
+    <string name="tally_generated_type_back_letters_hint">Type the <xliff:g id="letters" example="18">%1$d</xliff:g> letters without spaces.</string>
     <string name="tally_generated_practise_hint">Correct. Once more, then it\'s saved.</string>
     <!-- Generated passphrase or PIN. Nothing could be made. [CHAR LIMIT=NONE] -->
     <string name="tally_generated_unavailable">Couldn\'t make one on this phone. Go back and choose Own passphrase.</string>
@@ -117,6 +126,8 @@
     <string name="tally_compare_words"><xliff:g id="words" example="6">%1$d</xliff:g> words: <xliff:g id="time">%2$s</xliff:g></string>
     <!-- One line for two numbers of words with the same time, such as "7–8 words". -->
     <string name="tally_compare_words_range"><xliff:g id="words" example="7">%1$d</xliff:g>–<xliff:g id="more_words" example="8">%2$d</xliff:g> words: <xliff:g id="time">%3$s</xliff:g></string>
+    <!-- The first 3 letters of 6 words: "6 × 3 letters". -->
+    <string name="tally_compare_short_list"><xliff:g id="words" example="6">%1$d</xliff:g> × <xliff:g id="letters" example="3">%2$d</xliff:g> letters: <xliff:g id="time">%3$s</xliff:g></string>
     <string name="tally_compare_random_pin"><xliff:g id="digits" example="20">%1$d</xliff:g>-digit PIN: <xliff:g id="time">%2$s</xliff:g></string>
 
     <!-- An estimated time to guess. Always with "about" or "more than": it is an estimate.
