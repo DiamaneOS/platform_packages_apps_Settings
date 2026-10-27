@@ -16,7 +16,7 @@
     <string name="tally_moments_action_sensors_summary">"Désactive l'accès à l'appareil photo et au micro, comme les Réglages rapides. Il s'agit d'un réglage logiciel, pas d'une coupure matérielle."</string>
     <string name="tally_moments_action_sensors_summary_kernel">"Désactive l'accès à l'appareil photo et au micro, comme les Réglages rapides. Le noyau bloque aussi les caméras et les micros intégrés."</string>
     <string name="tally_moments_action_airplane_summary">"Active le mode Avion"</string>
-    <string name="tally_moments_action_lockdown_summary">"Verrouille le téléphone et désactive le déverrouillage par empreinte digitale et par reconnaissance faciale jusqu'à ce que vous saisissiez votre code, votre schéma ou votre mot de passe. Remettre le bouton en place n'y met pas fin."</string>
+    <string name="tally_moments_action_lockdown_summary">"Verrouille le téléphone. Tant que le bouton est activé, le déverrouillage par empreinte digitale et par reconnaissance faciale reste désactivé, donc chaque déverrouillage nécessite votre code, votre schéma ou votre mot de passe."</string>
     <string name="tally_moments_action_lockdown_needs_lock">"Nécessite un code, un schéma ou un mot de passe"</string>
     <string name="tally_moments_action_nothing">"Aucune action"</string>
     <string name="tally_moments_action_nothing_summary">"Le bouton n'a aucun effet"</string>

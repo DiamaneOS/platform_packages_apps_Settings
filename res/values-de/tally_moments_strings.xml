@@ -16,7 +16,7 @@
     <string name="tally_moments_action_sensors_summary">"Schaltet den Kamera- und Mikrofonzugriff aus, wie die Schnelleinstellungen. Das ist eine Software-Einstellung, keine Trennung in der Hardware."</string>
     <string name="tally_moments_action_sensors_summary_kernel">"Schaltet den Kamera- und Mikrofonzugriff aus, wie die Schnelleinstellungen. Zusätzlich blockiert der Kernel die eingebauten Kameras und Mikrofone."</string>
     <string name="tally_moments_action_airplane_summary">"Schaltet den Flugmodus ein"</string>
-    <string name="tally_moments_action_lockdown_summary">"Sperrt das Smartphone und schaltet die Entsperrung per Fingerabdruck und Gesichtserkennung aus, bis du deine PIN, dein Muster oder dein Passwort eingibst. Das Zurückschieben des Schalters beendet das nicht."</string>
+    <string name="tally_moments_action_lockdown_summary">"Sperrt das Smartphone. Solange der Schalter an ist, bleibt die Entsperrung per Fingerabdruck und Gesichtserkennung aus, du brauchst also für jede Entsperrung deine PIN, dein Muster oder dein Passwort."</string>
     <string name="tally_moments_action_lockdown_needs_lock">"Erfordert eine PIN, ein Muster oder ein Passwort"</string>
     <string name="tally_moments_action_nothing">"Nichts"</string>
     <string name="tally_moments_action_nothing_summary">"Der Schalter tut nichts"</string>

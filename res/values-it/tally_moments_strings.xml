@@ -16,7 +16,7 @@
     <string name="tally_moments_action_sensors_summary">"Disattiva l'accesso a fotocamera e microfono, come le Impostazioni rapide. È un'impostazione software, non un'interruzione hardware."</string>
     <string name="tally_moments_action_sensors_summary_kernel">"Disattiva l'accesso a fotocamera e microfono, come le Impostazioni rapide. Anche il kernel blocca le fotocamere e i microfoni integrati."</string>
     <string name="tally_moments_action_airplane_summary">"Attiva la modalità aereo"</string>
-    <string name="tally_moments_action_lockdown_summary">"Blocca il telefono e disattiva lo sblocco con l'impronta e con il volto finché non inserisci PIN, sequenza o password. Riportare indietro l'interruttore non lo annulla."</string>
+    <string name="tally_moments_action_lockdown_summary">"Blocca il telefono. Finché l'interruttore è attivo, lo sblocco con l'impronta e con il volto resta disattivato, quindi ogni sblocco richiede PIN, sequenza o password."</string>
     <string name="tally_moments_action_lockdown_needs_lock">"Richiede un PIN, una sequenza o una password"</string>
     <string name="tally_moments_action_nothing">"Niente"</string>
     <string name="tally_moments_action_nothing_summary">"L'interruttore non fa nulla"</string>
