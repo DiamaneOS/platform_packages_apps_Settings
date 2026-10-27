@@ -32,6 +32,11 @@
         settings:lottie_rawRes="@drawable/nfc_detection_point"
         settings:controller="com.android.settings.nfc.NfcDetectionPointController"/>
 
+    <Preference
+        android:key="nfc_auto_off"
+        android:title="@string/tally_nfc_auto_off_title"
+        settings:controller="com.android.settings.nfc.NfcAutoOffPrefController"/>
+
     <PreferenceCategory
         android:key="nfc_payment_category"
         android:title="@string/nfc_payment_settings_title">
