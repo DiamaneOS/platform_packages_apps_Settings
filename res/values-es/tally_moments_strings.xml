@@ -16,7 +16,7 @@
     <string name="tally_moments_action_sensors_summary">"Desactiva el acceso a la cámara y al micrófono, como los Ajustes rápidos. Es un ajuste de software, no un corte por hardware."</string>
     <string name="tally_moments_action_sensors_summary_kernel">"Desactiva el acceso a la cámara y al micrófono, como los Ajustes rápidos. El kernel también bloquea las cámaras y los micrófonos integrados."</string>
     <string name="tally_moments_action_airplane_summary">"Activa el modo Avión"</string>
-    <string name="tally_moments_action_lockdown_summary">"Bloquea el teléfono y desactiva el desbloqueo con huella digital y el desbloqueo facial hasta que introduzcas tu PIN, patrón o contraseña. Volver a deslizar el interruptor no lo desactiva."</string>
+    <string name="tally_moments_action_lockdown_summary">"Bloquea el teléfono. Mientras el interruptor esté activado, el desbloqueo con huella digital y el desbloqueo facial siguen desactivados, así que cada desbloqueo requiere tu PIN, patrón o contraseña."</string>
     <string name="tally_moments_action_lockdown_needs_lock">"Requiere un PIN, un patrón o una contraseña"</string>
     <string name="tally_moments_action_nothing">"Nada"</string>
     <string name="tally_moments_action_nothing_summary">"El interruptor no hace nada"</string>
