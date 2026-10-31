@@ -21,7 +21,10 @@ import android.app.settings.SettingsEnums
 import android.content.Context
 import android.hardware.SensorPrivacyManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemProperties
+import android.os.UserManager
 import android.provider.Settings.Secure
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
@@ -51,6 +54,8 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
     private lateinit var kernelCategory: PreferenceCategory
     private lateinit var kernelNote: Preference
     private lateinit var emergencyNote: Preference
+    private val handler = Handler(Looper.getMainLooper())
+    private val refreshAgain = Runnable { if (isAdded) refresh() }
 
     override fun getMetricsCategory() = SettingsEnums.PAGE_UNKNOWN
 
@@ -193,10 +198,18 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
     private fun hasScreenLock() =
         requireContext().getSystemService(KeyguardManager::class.java)?.isDeviceSecure == true
 
+    override fun onPause() {
+        handler.removeCallbacks(refreshAgain)
+        super.onPause()
+    }
+
     private fun setAction(value: Int) {
         // Saving a choice is what lets the switch act (SystemUI applies it at once if it is on).
         putInt(Secure.TALLY_MOMENTS_ACTION, value)
         refresh()
+        // The input service arms the kernel a moment later and then publishes what it enforces.
+        handler.removeCallbacks(refreshAgain)
+        handler.postDelayed(refreshAgain, KERNEL_REFRESH_DELAY_MS)
     }
 
     private fun refresh() {
@@ -209,7 +222,7 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
                 // Offered only where the phone has the software camera and microphone toggles.
                 Secure.MOMENTS_ACTION_SENSORS_OFF -> {
                     radio.isVisible = hasSensorToggles(requireContext())
-                    if (hasKernelFloor(requireContext())) {
+                    if (kernelApplies()) {
                         radio.setSummary(R.string.tally_moments_action_sensors_summary_kernel)
                     }
                 }
@@ -239,14 +252,22 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
         greyscale.isChecked = Secure.getInt(resolver, Secure.TALLY_MOMENTS_GREYSCALE, 0) == 1
     }
 
-    // The kernel learns the choice once per boot. Android's block follows at once.
+    // The kernel follows the system user's choice only. Another user's page leaves it out.
+    private fun kernelApplies() =
+        kernelApplies(
+            hasKernelFloor(requireContext()),
+            requireContext().getSystemService(UserManager::class.java).isSystemUser,
+        )
+
+    // The kernel takes "Camera and microphone off" at once and any other choice at the next
+    // boot. Android's block follows at once.
     private fun refreshKernelFloor(action: Int?) {
         val chosen = action == Secure.MOMENTS_ACTION_SENSORS_OFF
         val mask = kernelMask()
         val enforced = mask and KERNEL_MIC != 0
         val camera = mask and KERNEL_CAMERA != 0
         val note = kernelNoteFor(chosen, enforced, camera)
-        kernelCategory.isVisible = hasKernelFloor(requireContext()) && note != null
+        kernelCategory.isVisible = kernelApplies() && note != null
         // Only a kernel that enforces the microphones alone gets the microphone-only title.
         kernelNote.setTitle(
             if (enforced && !camera) R.string.tally_moments_kernel_title
@@ -306,6 +327,9 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
                 ),
             )
 
+        // How long after a choice the page reads again what the kernel enforces.
+        private const val KERNEL_REFRESH_DELAY_MS = 600L
+
         /** Whether this phone offers the camera or microphone access toggle. */
         fun hasSensorToggles(context: Context): Boolean {
             val manager = context.getSystemService(SensorPrivacyManager::class.java) ?: return false
@@ -321,13 +345,20 @@ class MomentsSwitchSettings : SettingsPreferenceFragment() {
             when {
                 chosen && enforced && camera -> R.string.tally_moments_kernel_on_camera
                 chosen && enforced -> R.string.tally_moments_kernel_on
-                // Only Android blocks them until a restart arms the kernel.
+                // The kernel did not take the choice at once, so only Android blocks them until a
+                // restart.
                 chosen -> R.string.tally_moments_kernel_after_restart
                 // Another choice, but the kernel keeps blocking until the next start.
                 enforced && camera -> R.string.tally_moments_kernel_until_restart_camera
                 enforced -> R.string.tally_moments_kernel_until_restart
                 else -> null
             }
+
+        /**
+         * Whether this page speaks for the kernel's block: the phone has one and the user is the
+         * system user, whose choice the kernel follows.
+         */
+        fun kernelApplies(hasFloor: Boolean, systemUser: Boolean): Boolean = hasFloor && systemUser
 
         /** Whether the kernel can block the microphones from the switch (see the framework). */
         fun hasKernelFloor(context: Context): Boolean =

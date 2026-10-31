@@ -64,11 +64,12 @@
     <string name="tally_moments_kernel_title_camera">Built-in cameras and microphones</string>
     <!-- The note when the kernel blocks the microphones in this boot and the action is still
          chosen. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_kernel_on">While the switch is down, the kernel mutes the built-in microphones and turns off their power. No app or Android service can turn them back on. Only the switch can, at once, also on the lock screen. A change of this choice reaches the kernel after a restart. Android\'s block changes at once.</string>
+    <string name="tally_moments_kernel_on">While the switch is down, the kernel mutes the built-in microphones and turns off their power. No app or Android service can turn them back on. Only the switch can, at once, also on the lock screen. Another choice reaches the kernel only after a restart. Android\'s block changes at once.</string>
     <!-- The note when the action is chosen but the kernel does not block the camera and microphone in
-         this boot (it learns the choice at the next start). Until then only Android blocks them.
+         this boot (it did not take the choice at once and learns it at the next start). Until
+         then only Android blocks them.
          Keep this wording. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_kernel_after_restart">Restart your phone so the switch also locks the camera and microphone off below Android.</string>
+    <string name="tally_moments_kernel_after_restart">The kernel does not block the camera and microphone yet. Restart your phone so the switch also locks them off below Android.</string>
     <!-- The note when another action was chosen but the kernel still blocks the microphones
          until the next start. Keep this wording. [CHAR LIMIT=NONE] -->
     <string name="tally_moments_kernel_until_restart">The microphone stays locked off with the switch down until you restart.</string>
@@ -76,7 +77,7 @@
     <string name="tally_moments_kernel_until_restart_camera">The camera and microphone stay locked off with the switch down until you restart.</string>
     <!-- The note when the kernel blocks the cameras and microphones in this boot and the action
          is still chosen. [CHAR LIMIT=NONE] -->
-    <string name="tally_moments_kernel_on_camera">While the switch is down, the kernel holds the cameras on a test image and mutes the built-in microphones, turning off their power. No app or Android service can undo this. Only the switch can, at once, also on the lock screen. A change of this choice reaches the kernel after a restart. Android\'s block changes at once.</string>
+    <string name="tally_moments_kernel_on_camera">While the switch is down, the kernel holds the cameras on a test image and mutes the built-in microphones, turning off their power. No app or Android service can undo this. Only the switch can, at once, also on the lock screen. Another choice reaches the kernel only after a restart. Android\'s block changes at once.</string>
     <!-- Emergency calls while the kernel blocks the microphones. Keep this wording.
          [CHAR LIMIT=NONE] -->
     <string name="tally_moments_kernel_emergency">While the switch is down, emergency calls have no microphone.</string>
