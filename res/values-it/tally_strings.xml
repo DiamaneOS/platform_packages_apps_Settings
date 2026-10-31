@@ -35,4 +35,6 @@
     <string name="tally_hw_video_decoding_never_title">"Mai"</string>
     <string name="tally_nfc_auto_off_title">"Disattiva NFC automaticamente"</string>
     <string name="tally_nfc_auto_off_footer">"Se NFC non viene usato, verrà disattivato dopo il tempo selezionato, quando lo schermo è spento."</string>
+    <string name="tally_pocket_check_title">"Rilevamento tasca"</string>
+    <string name="tally_pocket_check_summary">"Ignora i tocchi mentre il telefono è in tasca o in borsa. Consuma più batteria quando lo schermo è spento."</string>
 </resources>

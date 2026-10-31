@@ -228,6 +228,12 @@
             android:title="@string/tap_to_wake"
             android:summary="@string/tap_to_wake_summary"/>
 
+        <SwitchPreferenceCompat
+            android:key="tally_pocket_check"
+            android:title="@string/tally_pocket_check_title"
+            android:summary="@string/tally_pocket_check_summary"
+            settings:controller="com.android.settings.display.PocketCheckPreferenceController"/>
+
         <ListPreference
             android:key="theme"
             android:title="@string/device_theme"
