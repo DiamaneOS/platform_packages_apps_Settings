@@ -35,4 +35,6 @@
     <string name="tally_hw_video_decoding_never_title">"Nie"</string>
     <string name="tally_nfc_auto_off_title">"NFC automatisch deaktivieren"</string>
     <string name="tally_nfc_auto_off_footer">"Wird NFC nicht verwendet, wird es nach der ausgewählten Zeit deaktiviert, sobald das Display aus ist."</string>
+    <string name="tally_pocket_check_title">"Taschenerkennung"</string>
+    <string name="tally_pocket_check_summary">"Ignoriert Tippgesten, solange das Smartphone in einer Tasche steckt. Verbraucht mehr Akku, wenn das Display aus ist."</string>
 </resources>

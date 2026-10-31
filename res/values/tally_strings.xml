@@ -104,4 +104,9 @@
     <!-- NFC page > Turn off NFC automatically: note on the picker. Use means a payment
          terminal or another reader near the phone. [CHAR LIMIT=NONE] -->
     <string name="tally_nfc_auto_off_footer">If NFC isn\'t used, it will turn off after the selected timeout once the screen is off.</string>
+    <!-- Display > Tap to wake: switch that makes the phone ignore a tap while a pocket or bag
+         covers its proximity sensor. [CHAR LIMIT=50] -->
+    <string name="tally_pocket_check_title">Pocket check</string>
+    <!-- Display > Pocket check: what the switch does and costs. [CHAR LIMIT=NONE] -->
+    <string name="tally_pocket_check_summary">Ignores taps while the phone is in a pocket or bag. Uses more battery while the screen is off.</string>
 </resources>
