@@ -26,7 +26,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class MomentsSwitchSettingsTest {
     @Test
-    fun kernelNote_chosenNotArmed_asksForARestart() {
+    fun kernelNote_chosenButTheKernelDidNotTakeIt_asksForARestart() {
         assertThat(MomentsSwitchSettings.kernelNoteFor(chosen = true, enforced = false))
             .isEqualTo(R.string.tally_moments_kernel_after_restart)
     }
@@ -35,6 +35,35 @@ class MomentsSwitchSettingsTest {
     fun kernelNote_otherChoiceButArmed_saysItStaysUntilRestart() {
         assertThat(MomentsSwitchSettings.kernelNoteFor(chosen = false, enforced = true))
             .isEqualTo(R.string.tally_moments_kernel_until_restart)
+    }
+
+    @Test
+    fun kernelNote_otherChoiceButCameraAndMicArmed_saysBothStayUntilRestart() {
+        assertThat(
+                MomentsSwitchSettings.kernelNoteFor(
+                    chosen = false,
+                    enforced = true,
+                    camera = true,
+                )
+            )
+            .isEqualTo(R.string.tally_moments_kernel_until_restart_camera)
+    }
+
+    @Test
+    fun kernelNote_chosenAndCameraAndMicArmed_isTheCameraNote() {
+        assertThat(
+                MomentsSwitchSettings.kernelNoteFor(chosen = true, enforced = true, camera = true)
+            )
+            .isEqualTo(R.string.tally_moments_kernel_on_camera)
+    }
+
+    @Test
+    fun kernelApplies_onlyForTheSystemUserOnAPhoneWithAKernelBlock() {
+        assertThat(MomentsSwitchSettings.kernelApplies(hasFloor = true, systemUser = true)).isTrue()
+        assertThat(MomentsSwitchSettings.kernelApplies(hasFloor = true, systemUser = false))
+            .isFalse()
+        assertThat(MomentsSwitchSettings.kernelApplies(hasFloor = false, systemUser = true))
+            .isFalse()
     }
 
     @Test
