@@ -28,6 +28,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.UserHandle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.CheckBox;
@@ -43,6 +44,12 @@ import com.android.internal.app.AlertController;
  */
 public class AllowBindAppWidgetActivity extends AlertActivity implements
         DialogInterface.OnClickListener {
+
+    private static final int ALL_WIDGET_CATEGORIES =
+            AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN
+                    | AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD
+                    | AppWidgetProviderInfo.WIDGET_CATEGORY_SEARCHBOX
+                    | AppWidgetProviderInfo.WIDGET_CATEGORY_NOT_KEYGUARD;
 
     private CheckBox mAlwaysUse;
     private int mAppWidgetId;
@@ -124,7 +131,16 @@ public class AllowBindAppWidgetActivity extends AlertActivity implements
             }
         }
         mAppWidgetManager = AppWidgetManager.getInstance(this);
-        final String widgetLabel = getWidgetLabel();
+        // The user cannot consent to a widget the dialog does not name.
+        final CharSequence widgetLabel = getWidgetLabel();
+        if (TextUtils.isEmpty(widgetLabel)) {
+            Log.v("BIND_APPWIDGET", "No label for component " + mComponentName);
+            finish();
+            return;
+        }
+        if (TextUtils.isEmpty(label)) {
+            label = mCallingPackage;
+        }
         AlertController.AlertParams ap = mAlertParams;
         ap.mTitle = getString(R.string.allow_bind_app_widget_activity_allow_bind_title);
         ap.mMessage = getString(R.string.allow_bind_app_widget_activity_allow_bind, label,
@@ -147,20 +163,24 @@ public class AllowBindAppWidgetActivity extends AlertActivity implements
                         getResources().getDimension(
                                 R.dimen.bind_app_widget_dialog_checkbox_bottom_padding)));
 
-        mAlwaysUse.setChecked(mAppWidgetManager.hasBindAppWidgetPermission(mCallingPackage,
-                mProfile.getIdentifier()));
+        // The same user onClick() compares and writes.
+        mAlwaysUse.setChecked(mAppWidgetManager.hasBindAppWidgetPermission(mCallingPackage));
 
         setupAlert();
     }
 
-    private String getWidgetLabel() {
-        String label = "";
-        for (AppWidgetProviderInfo providerInfo : mAppWidgetManager.getInstalledProviders()) {
+    private CharSequence getWidgetLabel() {
+        if (mComponentName == null) {
+            return "";
+        }
+        for (AppWidgetProviderInfo providerInfo :
+                mAppWidgetManager.getInstalledProvidersForProfile(ALL_WIDGET_CATEGORIES, mProfile,
+                        mComponentName.getPackageName())) {
             if (providerInfo.provider.equals(mComponentName)) {
-                label = providerInfo.loadLabel(getPackageManager());
-                break;
+                final PackageManager pm = getPackageManager();
+                return pm.getUserBadgedLabel(providerInfo.loadLabel(pm), mProfile);
             }
         }
-        return label;
+        return "";
     }
 }
