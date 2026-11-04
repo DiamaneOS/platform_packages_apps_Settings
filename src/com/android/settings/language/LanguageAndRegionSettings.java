@@ -151,7 +151,7 @@ public class LanguageAndRegionSettings extends RestrictedDashboardFragment {
         Intent intent = getIntent();
         String action = intent != null ? intent.getAction() : "";
         Log.d(TAG, "action:" + action);
-        if (action.equals(Settings.ACTION_REGIONAL_PREFERENCES_SETTINGS)) {
+        if (Settings.ACTION_REGIONAL_PREFERENCES_SETTINGS.equals(action)) {
             scrollToPreference(KEY_TEMPERATURE_PREFERENCE);
         }
     }
