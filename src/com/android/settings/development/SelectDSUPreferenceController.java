@@ -18,6 +18,7 @@ package com.android.settings.development;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.SystemProperties;
 
 import androidx.preference.Preference;
@@ -30,9 +31,21 @@ class SelectDSUPreferenceController extends DeveloperOptionsPreferenceController
         PreferenceControllerMixin {
 
     private static final String DSU_LOADER_KEY = "dsu_loader";
+    private static final String DSU_INSTALLER_PACKAGE = "com.android.dynsystem";
 
     SelectDSUPreferenceController(Context context) {
         super(context);
+    }
+
+    /** A product can leave the installer out. Then there is nothing for the loader to start. */
+    @Override
+    public boolean isAvailable() {
+        try {
+            mContext.getPackageManager().getPackageInfo(DSU_INSTALLER_PACKAGE, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
     @Override
