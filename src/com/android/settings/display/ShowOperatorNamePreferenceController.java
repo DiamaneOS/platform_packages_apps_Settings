@@ -14,10 +14,7 @@
 package com.android.settings.display;
 
 import android.content.Context;
-import android.os.PersistableBundle;
 import android.provider.Settings;
-import android.telephony.CarrierConfigManager;
-import android.telephony.SubscriptionManager;
 
 import androidx.preference.Preference;
 import androidx.preference.TwoStatePreference;
@@ -36,15 +33,9 @@ public class ShowOperatorNamePreferenceController extends AbstractPreferenceCont
 
     @Override
     public boolean isAvailable() {
-        final CarrierConfigManager configMgr = mContext
-                .getSystemService(CarrierConfigManager.class);
-        if (configMgr == null) {
-            return false;
-        }
-        final PersistableBundle b = configMgr.getConfigForSubId(SubscriptionManager
-                .getDefaultDataSubscriptionId());
-        return b != null && b.getBoolean(CarrierConfigManager
-                .KEY_SHOW_OPERATOR_NAME_IN_STATUSBAR_BOOL, false);
+        // DiamaneOS: the status bar never shows the operator name, whatever the carrier config
+        // asks (SystemUI's HomeStatusBarInteractor), so there is nothing to switch.
+        return false;
     }
 
     @Override

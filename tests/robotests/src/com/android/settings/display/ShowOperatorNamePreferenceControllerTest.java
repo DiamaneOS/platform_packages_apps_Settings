@@ -75,10 +75,11 @@ public class ShowOperatorNamePreferenceControllerTest {
     }
 
     @Test
-    public void testIsAvailable_configIsTrue_ReturnTrue() {
+    public void testIsAvailable_configIsTrue_ReturnFalse() {
+        // DiamaneOS: the status bar never shows the operator name, so the switch is never offered.
         when(mConfig.getBoolean(CarrierConfigManager
                 .KEY_SHOW_OPERATOR_NAME_IN_STATUSBAR_BOOL, false)).thenReturn(true);
-        assertThat(mController.isAvailable()).isTrue();
+        assertThat(mController.isAvailable()).isFalse();
     }
 
     @Test
