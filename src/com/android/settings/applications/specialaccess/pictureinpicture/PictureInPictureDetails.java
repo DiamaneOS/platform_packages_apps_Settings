@@ -71,6 +71,10 @@ public class PictureInPictureDetails extends AppInfoWithHeader
 
     @Override
     protected boolean refreshUi() {
+        if (mPackageInfo == null) {
+            // Started without an installed app, which any app can do.
+            return false;
+        }
         boolean isAllowed = getEnterPipStateForPackage(getActivity(),
                 mPackageInfo.applicationInfo.uid, mPackageName);
         mSwitchPref.setChecked(isAllowed);

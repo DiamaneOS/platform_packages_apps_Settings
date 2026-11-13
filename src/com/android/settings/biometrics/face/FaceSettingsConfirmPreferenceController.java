@@ -87,6 +87,9 @@ public class FaceSettingsConfirmPreferenceController extends FaceSettingsPrefere
 
     @Override
     public int getAvailabilityStatus() {
+        if (mFaceManager == null) {
+            return UNSUPPORTED_ON_DEVICE;
+        }
         List<FaceSensorProperties> properties = mFaceManager.getSensorProperties();
         // If a sensor is convenience, it is possible that it becomes weak or strong with
         // an update. For this reason, the sensor is conditionally unavailable.

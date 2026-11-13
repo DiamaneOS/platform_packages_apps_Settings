@@ -98,6 +98,11 @@ public class UserAspectRatioDetails extends AppInfoBase implements
         super.onCreate(savedInstanceState);
 
         mUserAspectRatioManager = new UserAspectRatioManager(getContext());
+        if (mPackageInfo == null) {
+            // Started without an installed app, which any app can do. The page finishes when it
+            // resumes.
+            return;
+        }
         mIsOverrideToFullscreenEnabled = getAspectRatioManager()
                 .isOverrideToFullscreenEnabled(mPackageName, mUserId);
 
@@ -188,6 +193,9 @@ public class UserAspectRatioDetails extends AppInfoBase implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (mPackageInfo == null) {
+            return;
+        }
         final Preference pref = EntityHeaderController
                 .newInstance(getActivity(), this, null /* header */)
                 .setIcon(Utils.getBadgedIcon(getContext(), mPackageInfo.applicationInfo))

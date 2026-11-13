@@ -49,8 +49,10 @@ public class UserDictionaryAddWordActivity extends Activity {
         } else if (MODE_INSERT_ACTION.equals(action)) {
             mode = UserDictionaryAddWordContents.MODE_INSERT;
         } else {
-            // Can never come here because we only support these two actions in the manifest
-            throw new RuntimeException("Unsupported action: " + action);
+            // The manifest names these two actions only, but any app can start the activity by its
+            // component name with another action or with none.
+            finish();
+            return;
         }
 
         // The following will get the EXTRA_WORD and EXTRA_LOCALE fields that are in the intent.
@@ -72,7 +74,9 @@ public class UserDictionaryAddWordActivity extends Activity {
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
-        mContents.saveStateIntoBundle(outState);
+        if (mContents != null) {
+            mContents.saveStateIntoBundle(outState);
+        }
     }
 
     private void reportBackToCaller(final int resultCode, final Bundle result) {

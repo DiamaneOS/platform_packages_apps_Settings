@@ -50,6 +50,9 @@ public class AiCategoryPreferenceController extends NotificationPreferenceContro
 
     @Override
     public boolean isAvailable() {
+        if (mAppRow == null) {
+            return false;
+        }
         return (AdjustmentKeyPreferenceController.isAvailable(KEY_TYPE, mBackend, mAppRow.pkg,
                         mAppRow.uid)
                 || AdjustmentKeyPreferenceController.isAvailable(KEY_SUMMARIZATION, mBackend,

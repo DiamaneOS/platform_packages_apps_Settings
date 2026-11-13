@@ -35,10 +35,14 @@ public class AppDataUsageActivity extends SettingsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final Intent intent = getIntent();
-        final String packageName = intent.getData().getSchemeSpecificPart();
+        final String packageName =
+                intent.getData() != null ? intent.getData().getSchemeSpecificPart() : null;
         final PackageManager pm = getPackageManager();
         final int uid;
         try {
+            if (packageName == null) {
+                throw new PackageManager.NameNotFoundException("no package in the intent");
+            }
             uid = pm.getPackageUid(packageName, 0);
         } catch (PackageManager.NameNotFoundException e) {
             Log.w(TAG, "invalid package: " + packageName);

@@ -58,6 +58,11 @@ public class TetherProvisioningActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mResultReceiver = (ResultReceiver) getIntent().getParcelableExtra(EXTRA_PROVISION_CALLBACK);
+        if (mResultReceiver == null) {
+            // Nobody to report to: the start did not come from tethering.
+            finish();
+            return;
+        }
 
         final int tetherType = getIntent().getIntExtra(EXTRA_ADD_TETHER_TYPE, TETHERING_INVALID);
 

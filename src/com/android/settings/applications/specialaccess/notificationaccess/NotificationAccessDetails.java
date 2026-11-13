@@ -61,6 +61,7 @@ public class NotificationAccessDetails extends DashboardFragment {
     private static final String TAG = "NotifAccessDetails";
 
     private NotificationBackend mNm = new NotificationBackend();
+    private boolean mHasAppEntry;
     private ComponentName mComponentName;
     private CharSequence mServiceName;
     protected ServiceInfo mServiceInfo;
@@ -89,6 +90,7 @@ public class NotificationAccessDetails extends DashboardFragment {
             finish();
             return;
         }
+        mHasAppEntry = true;
 
         loadNotificationListenerService();
         NotificationBackend backend = new NotificationBackend();
@@ -142,6 +144,16 @@ public class NotificationAccessDetails extends DashboardFragment {
                 }
             });
         });
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        if (!mHasAppEntry) {
+            // Started without a listener, which any app can do. onAttach() has finished the page
+            // and has not set up the controllers.
+            return;
+        }
+        super.onCreatePreferences(savedInstanceState, rootKey);
     }
 
     @Override

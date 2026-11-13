@@ -88,6 +88,10 @@ public abstract class RadioButtonAppInfoFragment extends AppInfoWithHeader imple
 
     @Override
     protected boolean refreshUi() {
+        if (mPackageInfo == null) {
+            // Started without an installed app, which any app can do.
+            return false;
+        }
         Entry[] entries = getEntries();
         int entryCnt = entries.length;
 

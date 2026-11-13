@@ -47,6 +47,11 @@ public class NetworkProviderSetup extends NetworkProviderSettings {
         super.onViewCreated(view, savedInstanceState);
         Activity activity = getActivity();
         if (activity == null) return;
+        if (!(view instanceof GlifPreferenceLayout)) {
+            // Not started by the setup wizard, so the page has no setup layout.
+            activity.finish();
+            return;
+        }
         GlifPreferenceLayout layout = (GlifPreferenceLayout) view;
         layout.setDividerInsets(Integer.MAX_VALUE, 0);
         if (isSetupWizardModeWifi) {
@@ -88,6 +93,7 @@ public class NetworkProviderSetup extends NetworkProviderSettings {
 
     @Override
     void changeNextButtonState(boolean enabled) {
+        if (nextButton == null) return;
         nextButton.setEnabled(enabled);
         skipButton.setVisibility(enabled ? View.GONE : View.VISIBLE);
     }
@@ -95,6 +101,9 @@ public class NetworkProviderSetup extends NetworkProviderSettings {
     @Override
     public RecyclerView onCreateRecyclerView(LayoutInflater inflater, ViewGroup parent,
             Bundle savedInstanceState) {
+        if (!(parent instanceof GlifPreferenceLayout)) {
+            return super.onCreateRecyclerView(inflater, parent, savedInstanceState);
+        }
         GlifPreferenceLayout layout = (GlifPreferenceLayout) parent;
         return layout.onCreateRecyclerView(inflater, parent, savedInstanceState);
     }
@@ -123,8 +132,7 @@ public class NetworkProviderSetup extends NetworkProviderSettings {
 
     @Override
     protected void setProgressBarVisible(boolean visible) {
-        GlifPreferenceLayout glif = (GlifPreferenceLayout) getView();
-        if (glif == null) return;
+        if (!(getView() instanceof GlifPreferenceLayout glif)) return;
         glif.setProgressBarShown(visible);
     }
 

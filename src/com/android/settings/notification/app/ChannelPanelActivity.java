@@ -74,6 +74,11 @@ public class ChannelPanelActivity extends FragmentActivity {
 
     private void launchFullSettings() {
         Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            // Started without the app and channel: there is no page to open.
+            finish();
+            return;
+        }
         extras.remove(Settings.EXTRA_CHANNEL_FILTER_LIST);
         startActivity(new SubSettingLauncher(this)
                 .setDestination(ChannelNotificationSettings.class.getName())

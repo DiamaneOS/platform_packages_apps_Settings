@@ -123,12 +123,17 @@ public class InteractAcrossProfilesDetails extends AppInfoBase
         mPackageManager = mContext.getPackageManager();
 
         mWorkProfile = InteractAcrossProfilesSettings.getWorkProfile(mUserManager);
-        mPersonalProfile = mUserManager.getProfileParent(mWorkProfile);
-        mInstalledInWork = isPackageInstalled(mPackageName, mWorkProfile.getIdentifier());
-        mInstalledInPersonal = isPackageInstalled(mPackageName, mPersonalProfile.getIdentifier());
+        // Any app can start this page, also without a work profile or without an installed app.
+        // The page then finishes in onCreateView().
+        if (hasProfilesAndApp()) {
+            mPersonalProfile = mUserManager.getProfileParent(mWorkProfile);
+            mInstalledInWork = isPackageInstalled(mPackageName, mWorkProfile.getIdentifier());
+            mInstalledInPersonal =
+                    isPackageInstalled(mPackageName, mPersonalProfile.getIdentifier());
 
-        mAppLabel = mPackageInfo.applicationInfo.loadLabel(mPackageManager).toString();
-        mInstallAppIntent = AppStoreUtil.getAppStoreLink(mContext, mPackageName);
+            mAppLabel = mPackageInfo.applicationInfo.loadLabel(mPackageManager).toString();
+            mInstallAppIntent = AppStoreUtil.getAppStoreLink(mContext, mPackageName);
+        }
 
         if (SettingsThemeHelper.isExpressiveTheme(mContext)) {
             addPreferencesFromResource(
@@ -182,12 +187,19 @@ public class InteractAcrossProfilesDetails extends AppInfoBase
         if (!refreshUi()) {
             setIntentAndFinish(true/* appChanged */);
         }
+        if (!hasProfilesAndApp()) {
+            return view;
+        }
         addAppTitleAndIcons(mPersonalProfile, mWorkProfile);
         styleActionBar();
         maybeShowExtraSummary();
         logPageLaunchMetrics();
 
         return view;
+    }
+
+    private boolean hasProfilesAndApp() {
+        return mWorkProfile != null && mPackageInfo != null && mPackageInfo.applicationInfo != null;
     }
 
     private void maybeShowExtraSummary() {
@@ -460,7 +472,7 @@ public class InteractAcrossProfilesDetails extends AppInfoBase
 
     @Override
     protected boolean refreshUi() {
-        if (mPackageInfo == null || mPackageInfo.applicationInfo == null) {
+        if (!hasProfilesAndApp()) {
             return false;
         }
         if (!mCrossProfileApps.canUserAttemptToConfigureInteractAcrossProfiles(mPackageName)) {

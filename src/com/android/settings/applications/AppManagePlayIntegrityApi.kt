@@ -104,6 +104,10 @@ class AppManagePlayIntegrityApiFragment : AppInfoWithHeader() {
     }
 
     override fun refreshUi(): Boolean {
+        if (mPackageInfo == null) {
+            // Started without an installed app, which any app can do.
+            return false
+        }
         val appInfo = getAppInfo(mPackageName) ?: return false
         val gosPs = GosPackageState.get(mPackageName, mUserId)
 

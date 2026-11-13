@@ -87,7 +87,7 @@ public class BluetoothPermissionActivity extends AlertActivity implements
         getWindow().addPrivateFlags(SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS);
         Intent i = getIntent();
         String action = i.getAction();
-        if (!action.equals(BluetoothDevice.ACTION_CONNECTION_ACCESS_REQUEST)) {
+        if (!BluetoothDevice.ACTION_CONNECTION_ACCESS_REQUEST.equals(action)) {
             Log.e(TAG, "Error: this activity may be started only with intent "
                   + "ACTION_CONNECTION_ACCESS_REQUEST");
             finish();

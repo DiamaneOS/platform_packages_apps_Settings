@@ -82,7 +82,10 @@ public class DrawOverlayDetails extends AppInfoWithHeader implements OnPreferenc
             ViewGroup container,
             Bundle savedInstanceState) {
         // if we don't have a package info, show a page saying this is unsupported
-        if (mPackageInfo == null) {
+        // This layout has no list, so it only works while there are no preferences to bind to one.
+        // Started without an installed app, which any app can do, the page has them and finishes
+        // in refreshUi().
+        if (mPackageInfo == null && getPreferenceScreen() == null) {
             return inflater.inflate(R.layout.manage_applications_apps_unsupported, null);
         }
         return super.onCreateView(inflater, container, savedInstanceState);
@@ -135,7 +138,7 @@ public class DrawOverlayDetails extends AppInfoWithHeader implements OnPreferenc
     @Override
     protected boolean refreshUi() {
         if (mPackageInfo == null) {
-            return true;
+            return getPreferenceScreen() == null;
         }
 
         mOverlayState = mOverlayBridge.getOverlayInfo(mPackageName,

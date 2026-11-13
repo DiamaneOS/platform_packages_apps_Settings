@@ -42,6 +42,11 @@ public class PanelFeatureProviderImpl implements PanelFeatureProvider {
         final String mediaPackageName =
                 bundle.getString(SettingsPanelActivity.KEY_MEDIA_PACKAGE_NAME);
 
+        if (panelType == null) {
+            // Started by the component name, with no panel action.
+            return null;
+        }
+
         switch (panelType) {
             case Settings.Panel.ACTION_INTERNET_CONNECTIVITY:
                 // Redirect to the internet dialog in SystemUI.

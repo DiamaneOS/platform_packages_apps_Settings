@@ -88,6 +88,10 @@ public class RequestToggleWiFiActivity extends AlertActivity
         }
 
         String action = getIntent().getAction();
+        if (action == null) {
+            finish();
+            return;
+        }
         switch (action) {
             case WifiManager.ACTION_REQUEST_ENABLE: {
                 mState = STATE_ENABLE;

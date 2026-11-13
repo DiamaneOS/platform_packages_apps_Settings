@@ -156,7 +156,14 @@ public class SimDialogActivity extends FragmentActivity {
         SimDialogFragment fragment = (SimDialogFragment) fragmentManager.findFragmentByTag(tag);
 
         if (fragment == null) {
-            fragment = createFragment(dialogType);
+            try {
+                fragment = createFragment(dialogType);
+            } catch (IllegalArgumentException e) {
+                // Any app can start this activity, also with no dialog type or an unknown one.
+                Log.e(TAG, "Not a dialog this activity shows", e);
+                finish();
+                return;
+            }
             fragment.show(fragmentManager, tag);
         } else {
             fragment.updateDialog();

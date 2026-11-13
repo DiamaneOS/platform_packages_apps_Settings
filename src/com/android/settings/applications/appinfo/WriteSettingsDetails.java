@@ -95,6 +95,10 @@ public class WriteSettingsDetails extends AppInfoWithHeader implements OnPrefere
 
     @Override
     protected boolean refreshUi() {
+        if (mPackageInfo == null) {
+            // Started without an installed app, which any app can do.
+            return false;
+        }
         mWriteSettingsState = mAppBridge.getWriteSettingsInfo(mPackageName,
                 mPackageInfo.applicationInfo.uid);
 

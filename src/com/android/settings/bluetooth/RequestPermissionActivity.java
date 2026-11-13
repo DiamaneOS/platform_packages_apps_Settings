@@ -300,7 +300,7 @@ public class RequestPermissionActivity extends Activity implements
      */
     private boolean parseIntent() {
         Intent intent = getIntent();
-        if (intent == null) {
+        if (intent == null || intent.getAction() == null) {
             return true;
         }
         if (intent.getAction().equals(BluetoothAdapter.ACTION_REQUEST_ENABLE)) {

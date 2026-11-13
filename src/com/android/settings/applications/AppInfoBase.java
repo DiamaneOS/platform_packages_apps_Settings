@@ -209,7 +209,8 @@ public abstract class AppInfoBase extends SettingsPreferenceFragment
             finish();
             return "";
         }
-        mAppEntry = mState.getEntry(mPackageName, mUserId);
+        // A start without a package has nothing to look up, and the lookup does not take null.
+        mAppEntry = mPackageName != null ? mState.getEntry(mPackageName, mUserId) : null;
         if (mAppEntry != null && android.multiuser.Flags.hsuAppManagement()
                 && !HsuUtils.canControlHsuApp(getContext(), mAppEntry.info)) {
             Log.w(TAG, "Non-admin user cannot open App info page for HSU app.");
