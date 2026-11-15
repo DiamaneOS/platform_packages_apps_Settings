@@ -95,6 +95,13 @@
             android:title="@string/lockscreen_double_line_clock_setting_toggle"
             android:summary="@string/lockscreen_double_line_clock_summary"
             settings:controller="com.android.settings.display.LockscreenClockPreferenceController" />
+
+        <!-- DiamaneOS: a double tap on an empty part of the lock screen turns the screen off. -->
+        <SwitchPreferenceCompat
+            android:key="lockscreen_double_tap_sleep"
+            android:title="@string/tally_lockscreen_double_tap_sleep"
+            android:summary="@string/tally_lockscreen_double_tap_sleep_summary"
+            settings:controller="com.android.settings.display.LockscreenDoubleTapSleepPreferenceController" />
     </PreferenceCategory>
 
     <PreferenceCategory
