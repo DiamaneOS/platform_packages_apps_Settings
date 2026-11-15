@@ -5,18 +5,20 @@
 package com.android.settings.security;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import com.android.settings.R;
+import com.android.settings.applications.AswAdapterUseHardwareVideoDecoding;
 import com.android.settings.ext.IntSettingPrefController;
 import com.android.settings.ext.RadioButtonPickerFragment2;
 
 /**
  * Exploit protection > Hardware video decoding, on devices that can apply the choice: the entry
- * and its page with the three choices. Protected video only is shown disabled where the device
- * does not offer it.
+ * and its page with the choices. Protected video only is shown disabled where the device does not
+ * offer it. Selected apps is shown where the device offers it, with a link to the app list.
  */
 public class HardwareVideoDecodingPrefController extends IntSettingPrefController {
 
@@ -47,6 +49,11 @@ public class HardwareVideoDecodingPrefController extends IntSettingPrefControlle
         entries.add(R.string.tally_hw_video_decoding_all_title,
                 R.string.tally_hw_video_decoding_all_summary,
                 HardwareVideoDecoding.ALL_VIDEO);
+        if (HardwareVideoDecoding.offersSelectedApps(mContext)) {
+            entries.add(R.string.zen_mode_apps_priority_apps,
+                    R.string.tally_hw_video_decoding_selected_summary,
+                    HardwareVideoDecoding.SELECTED_APPS);
+        }
         if (offersProtected) {
             entries.add(R.string.tally_hw_video_decoding_never_title,
                     R.string.tally_hw_video_decoding_never_summary,
@@ -99,8 +106,23 @@ public class HardwareVideoDecodingPrefController extends IntSettingPrefControlle
 
     @Override
     public void addPrefsAfterList(RadioButtonPickerFragment2 fragment, PreferenceScreen screen) {
-        addFooterPreference(screen, HardwareVideoDecoding.offersProtectedVideo(mContext)
+        CharSequence footer = getText(HardwareVideoDecoding.offersProtectedVideo(mContext)
                 ? R.string.tally_hw_video_decoding_footer
                 : R.string.tally_hw_video_decoding_footer_without_protected);
+        if (HardwareVideoDecoding.offersSelectedApps(mContext)) {
+            // The apps to select. Only while the choice is Selected apps.
+            Preference apps = new Preference(screen.getContext());
+            apps.setPersistent(false);
+            apps.setTitle(R.string.default_see_all_apps_title);
+            apps.setEnabled(getCurrentValue() == HardwareVideoDecoding.SELECTED_APPS);
+            apps.setOnPreferenceClickListener(p -> {
+                AswAdapterUseHardwareVideoDecoding.INSTANCE.openAppListPage(p.getContext());
+                return true;
+            });
+            screen.addPreference(apps);
+            footer = TextUtils.concat(footer, "\n\n",
+                    getText(R.string.tally_hw_video_decoding_footer_selected_apps));
+        }
+        addFooterPreference(screen, footer, null, null);
     }
 }

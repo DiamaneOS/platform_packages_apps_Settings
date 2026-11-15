@@ -236,6 +236,7 @@ private fun AppInfoSettings(packageInfoPresenter: PackageInfoPresenter) {
             com.android.settings.applications.AppWebViewDynCodeLoadingPreference(app)
             com.android.settings.applications.AppMemoryDynCodeLoadingPreference(app)
             com.android.settings.applications.AppStorageDynCodeLoadingPreference(app)
+            com.android.settings.applications.AppHardwareVideoDecodingPreference(app)
         }
 
         Category(title = stringResource(R.string.app_install_details_group_title)) {

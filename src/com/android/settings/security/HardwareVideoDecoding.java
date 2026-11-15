@@ -6,6 +6,7 @@ package com.android.settings.security;
 
 import android.content.Context;
 import android.ext.settings.IntSysProperty;
+import android.ext.settings.app.AswUseHardwareVideoDecoding;
 import android.os.SystemProperties;
 
 import com.android.settings.R;
@@ -23,14 +24,16 @@ public final class HardwareVideoDecoding {
     public static final int ALL_VIDEO = 1;
     /** The hardware decoders for protected video only. */
     public static final int PROTECTED_VIDEO = 2;
+    /** The hardware decoders for the apps the user selects (AswUseHardwareVideoDecoding). */
+    public static final int SELECTED_APPS = AswUseHardwareVideoDecoding.MODE_SELECTED_APPS;
 
-    /** The user's choice, which only Settings may set ("0", "1" or "2"). */
+    /** The user's choice, which only Settings may set ("0", "1", "2" or "3"). */
     public static final IntSysProperty SETTING = new IntSysProperty(
-            "persist.diamaneos.hw_video_decode",
+            AswUseHardwareVideoDecoding.MODE_PROPERTY,
             context -> offersProtectedVideo(context) ? PROTECTED_VIDEO : NEVER,
-            NEVER, ALL_VIDEO, PROTECTED_VIDEO);
+            NEVER, ALL_VIDEO, PROTECTED_VIDEO, SELECTED_APPS);
 
-    // The state of the running boot, set by the device at boot ("0", "1" or "2").
+    // The state of the running boot, set by the device at boot ("0", "1", "2" or "3").
     private static final String BOOT_STATE = "ro.vendor.diamaneos.hw_video_decode";
 
     private HardwareVideoDecoding() {}
@@ -44,6 +47,12 @@ public final class HardwareVideoDecoding {
     public static boolean offersProtectedVideo(Context context) {
         return context.getResources().getBoolean(
                 R.bool.config_hardware_video_decoding_protected_video);
+    }
+
+    /** Whether the device offers selected apps (a device overlay sets it). */
+    public static boolean offersSelectedApps(Context context) {
+        return isSupported(context) && context.getResources().getBoolean(
+                R.bool.config_hardware_video_decoding_selected_apps);
     }
 
     /** Whether the user's choice differs from the state of the running boot. */

@@ -14,6 +14,12 @@
          the choice is then shown disabled, and Never is the default. -->
     <bool name="config_hardware_video_decoding_protected_video">true</bool>
 
+    <!-- Hardware video decoding: Selected apps is offered, with a per-app switch in App info. A
+         device overlay turns it on where the device's codec service creates the hardware decoders
+         only for the app UIDs system_server marks as selected
+         (diamaneos.hw_video_decode.uid.<uid>). -->
+    <bool name="config_hardware_video_decoding_selected_apps">false</bool>
+
     <!-- Network & internet > Remote key provisioning is offered. A device overlay turns it off
          where the secure world never provisions remote keys for this OS, so the choice changes
          nothing there. -->

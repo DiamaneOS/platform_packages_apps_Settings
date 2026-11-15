@@ -68,6 +68,14 @@
     <string name="tally_hw_video_decoding_never_title">Never</string>
     <!-- Hardware video decoding page, third choice and the default on a device without the first choice. Also the entry summary. [CHAR LIMIT=40] -->
     <string name="tally_hw_video_decoding_never_default_title">Never (default)</string>
+    <!-- Hardware video decoding page: what the Selected apps choice does. Its title is Settings' own "Selected apps". -->
+    <string name="tally_hw_video_decoding_selected_summary">Only the apps you select decode video with the hardware decoder. Every other app uses the sandboxed software decoder.</string>
+    <!-- Hardware video decoding page, added to the footer where Selected apps is offered. -->
+    <string name="tally_hw_video_decoding_footer_selected_apps">A selected app decodes every video it plays with the hardware decoder, also video on web pages and in files that other apps send it. Video played through the system media player and video thumbnails stay in the software decoder.</string>
+    <!-- App info > Hardware video decoding: why the choice cannot be changed while Hardware video decoding is set to All video or Never for every app. -->
+    <string name="tally_hw_video_decoding_app_set_for_all">Set for every app in Exploit protection &gt; Hardware video decoding. Choose Selected apps there to set it per app.</string>
+    <!-- App info > Hardware video decoding: footer. -->
+    <string name="tally_hw_video_decoding_app_footer">An allowed app decodes every video it plays with the hardware decoder, which is the chip maker\'s closed code. Other apps use the sandboxed software decoder. The app restarts when you change this.</string>
     <!-- Hardware video decoding page: what the third choice does. -->
     <string name="tally_hw_video_decoding_never_summary">No video uses the hardware decoder, and copy-protected video gets weaker protection, so some streaming services play it in lower quality or not at all.</string>
     <!-- Hardware video decoding page: what the third choice does on a device without the first choice. -->
