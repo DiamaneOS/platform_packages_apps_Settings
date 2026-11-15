@@ -33,6 +33,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -124,6 +125,14 @@ public abstract class SettingsPreferenceFragment extends InstrumentedPreferenceF
     @VisibleForTesting
     ViewGroup mPinnedHeaderFrameLayout;
     private AppBarLayout mAppBarLayout;
+    // The activity's main switch bar keeps a gap under its card. While the bar shows, the gap moves
+    // into this list as top padding the rows scroll through, so they end at the card's edge instead of
+    // a dark band below it.
+    private View mSwitchBar;
+    private int mListPaddingTop = -1;
+    private boolean mListClipToPadding;
+    private final ViewTreeObserver.OnGlobalLayoutListener mSwitchBarGapListener =
+            this::updateSwitchBarGap;
     private LayoutPreference mHeader;
     private View mEmptyView;
     private LinearLayoutManager mLayoutManager;
@@ -170,6 +179,61 @@ public abstract class SettingsPreferenceFragment extends InstrumentedPreferenceF
         mPinnedHeaderFrameLayout = root.findViewById(R.id.pinned_header);
         mAppBarLayout = getActivity().findViewById(R.id.app_bar);
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mSwitchBar = getActivity().findViewById(R.id.switch_bar);
+        final RecyclerView list = getListView();
+        if (mSwitchBar == null || list == null) {
+            mSwitchBar = null;
+            return;
+        }
+        // The bar's own gap, kept on the bar: another fragment of this activity may have moved it.
+        if (!(mSwitchBar.getTag(R.id.switch_bar) instanceof Integer)) {
+            mSwitchBar.setTag(R.id.switch_bar, mSwitchBar.getPaddingBottom());
+        }
+        mListPaddingTop = list.getPaddingTop();
+        mListClipToPadding = list.getClipToPadding();
+        mSwitchBar.getViewTreeObserver().addOnGlobalLayoutListener(mSwitchBarGapListener);
+        updateSwitchBarGap();
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mSwitchBar != null) {
+            mSwitchBar.getViewTreeObserver().removeOnGlobalLayoutListener(mSwitchBarGapListener);
+            final int gap = (Integer) mSwitchBar.getTag(R.id.switch_bar);
+            mSwitchBar.setPaddingRelative(mSwitchBar.getPaddingStart(), mSwitchBar.getPaddingTop(),
+                    mSwitchBar.getPaddingEnd(), gap);
+            mSwitchBar = null;
+        }
+        super.onDestroyView();
+    }
+
+    private void updateSwitchBarGap() {
+        final RecyclerView list = getListView();
+        if (mSwitchBar == null || list == null) {
+            return;
+        }
+        final int gap = (Integer) mSwitchBar.getTag(R.id.switch_bar);
+        final boolean shown = mSwitchBar.getVisibility() == View.VISIBLE;
+        final int barBottom = shown ? 0 : gap;
+        final int listTop = mListPaddingTop + (shown ? gap : 0);
+        if (mSwitchBar.getPaddingBottom() != barBottom) {
+            mSwitchBar.setPaddingRelative(mSwitchBar.getPaddingStart(), mSwitchBar.getPaddingTop(),
+                    mSwitchBar.getPaddingEnd(), barBottom);
+        }
+        if (list.getPaddingTop() != listTop) {
+            list.setPaddingRelative(list.getPaddingStart(), listTop, list.getPaddingEnd(),
+                    list.getPaddingBottom());
+        }
+        // RecyclerView asks for a new layout on every call: only on a change, or this listener loops.
+        final boolean clip = !shown && mListClipToPadding;
+        if (list.getClipToPadding() != clip) {
+            list.setClipToPadding(clip);
+        }
     }
 
     @NonNull
