@@ -129,6 +129,7 @@ public class StorageDashboardFragment extends DashboardFragment
                 case VolumeInfo.STATE_UNMOUNTABLE:
                 case VolumeInfo.STATE_UNMOUNTED:
                 case VolumeInfo.STATE_UNOPENABLE:
+                case VolumeInfo.STATE_NOT_WRITTEN_BACK:
                 case VolumeInfo.STATE_EJECTING:
                     // Add mounted or unmountable storage in the list and show it on spinner.
                     // Unmountable storages are the storages which has a problem format and android
