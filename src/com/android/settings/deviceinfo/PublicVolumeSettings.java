@@ -201,7 +201,10 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
         if (!mVolume.isMountedReadable()) {
             mUnmount.setVisibility(View.GONE);
         }
-        addPreference(mFormatPublic);
+        // DiamaneOS: a card the filesystem VM could not open is not offered for formatting.
+        if (mVolume.getState() != VolumeInfo.STATE_UNOPENABLE) {
+            addPreference(mFormatPublic);
+        }
 
         if (enableRenameInPublicVolumeSettings() && mRename != null) {
             addPreference(mRename);
