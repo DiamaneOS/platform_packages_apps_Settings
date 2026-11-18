@@ -195,7 +195,10 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
             mSummary.setPercent(usedBytes, totalBytes);
         }
 
-        if (mVolume.getState() == VolumeInfo.STATE_UNMOUNTED) {
+        // DiamaneOS: a card the filesystem VM could not open, or one not written back, can be mounted again too.
+        if (mVolume.getState() == VolumeInfo.STATE_UNMOUNTED
+                || mVolume.getState() == VolumeInfo.STATE_UNOPENABLE
+                || mVolume.getState() == VolumeInfo.STATE_NOT_WRITTEN_BACK) {
             addPreference(mMount);
         }
         if (!mVolume.isMountedReadable()) {
