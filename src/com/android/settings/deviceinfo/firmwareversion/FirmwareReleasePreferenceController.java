@@ -27,17 +27,20 @@ import com.android.settings.R;
 import com.android.settings.core.BasePreferenceController;
 
 /**
- * The Fairphone firmware release the phone runs, shown next to the vendor security update. The
- * vendor's fwrelease sets the property once per boot, after boot completes, from the hashes of
- * the booted slot's firmware partitions: a release such as 16.111.0, "mixed" when the partitions
- * come from different releases, or "unknown" when one matches no release. The row is hidden
- * while the property is empty and when it holds anything else.
+ * The device maker's firmware release the phone runs, shown next to the vendor security update.
+ * The device's vendor partition sets the property: the release in the maker's own form, "mixed"
+ * when the firmware parts come from different releases, or "unknown" when one matches no release.
+ * The row is hidden while the property is empty and when it holds anything else. A device overlay
+ * may name its maker in the row's title.
  */
 public class FirmwareReleasePreferenceController extends BasePreferenceController {
 
     static final String FIRMWARE_RELEASE_PROPERTY = "ro.vendor.diamaneos.firmware_release";
     static final String MIXED = "mixed";
     static final String UNKNOWN = "unknown";
+    // A release in any maker's form: one short token of letters, digits, dots, plus, minus and
+    // underscores, starting with a letter or digit.
+    private static final String RELEASE = "[0-9A-Za-z][0-9A-Za-z._+-]{0,39}";
 
     private final String mRelease;
 
@@ -62,21 +65,21 @@ public class FirmwareReleasePreferenceController extends BasePreferenceControlle
     }
 
     /**
-     * The text for a property value: the release number itself, "Mixed releases" or the
-     * translated "Unknown". Null for an empty or malformed value.
+     * The text for a property value: "Mixed releases", the translated "Unknown" or the release
+     * itself. Null for an empty or malformed value.
      */
     static @Nullable String describe(@NonNull Context context, @Nullable String value) {
         if (value == null) {
             return null;
-        }
-        if (value.matches("[0-9]{1,5}\\.[0-9]{1,5}\\.[0-9]{1,5}")) {
-            return value;
         }
         if (MIXED.equals(value)) {
             return context.getString(R.string.tally_firmware_release_mixed);
         }
         if (UNKNOWN.equals(value)) {
             return context.getString(R.string.device_info_default);
+        }
+        if (value.matches(RELEASE)) {
+            return value;
         }
         return null;
     }

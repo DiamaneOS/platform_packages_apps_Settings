@@ -9,7 +9,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="tally_about_based_on">"DiamaneOS está basado en GrapheneOS. No está creado ni respaldado por el fabricante del dispositivo."</string>
     <string name="tally_vendor_security_patch">"Actualización de seguridad del fabricante"</string>
-    <string name="tally_firmware_release">"Firmware de Fairphone"</string>
+    <string name="tally_firmware_release">"Firmware del dispositivo"</string>
     <string name="tally_firmware_release_mixed">"Versiones mixtas"</string>
     <string name="tally_grapheneos_documentation">"Documentación de GrapheneOS"</string>
     <string name="tally_refresh_rate_title">"Tasa de refresco máxima"</string>

@@ -59,9 +59,8 @@ public class FirmwareReleasePreferenceControllerTest {
     @Test
     public void getAvailabilityStatus_malformedValue_unavailable() {
         for (String value : new String[] {
-                "foobar", "16.111", "16.111.0.1", "v16.111.0", "FP6.QREL.16.111.0", "16.111.0 ",
-                " 16.111.0", "16.111.x", "16..0", "16.111.123456", "-16.111.0", "Mixed", "MIXED",
-                "mixed ", "Unknown", "unknown releases"}) {
+                "16.111.0 ", " 16.111.0", "-16.111.0", ".16", "_1", "mixed ", "unknown releases",
+                "16.111/0", "16,111,0", "1.0\u00e9", "1".repeat(41)}) {
             assertThat(controller(value).getAvailabilityStatus())
                     .isEqualTo(CONDITIONALLY_UNAVAILABLE);
         }
@@ -73,6 +72,17 @@ public class FirmwareReleasePreferenceControllerTest {
 
         assertThat(controller.getAvailabilityStatus()).isEqualTo(AVAILABLE);
         assertThat(controller.getSummary().toString()).isEqualTo("16.111.0");
+    }
+
+    @Test
+    public void getSummary_releaseInAnyMakersForm_showsIt() {
+        for (String value : new String[] {
+                "v2.3.1", "A015_2-release", "20261105", "1.0+build.7", "1".repeat(40)}) {
+            final FirmwareReleasePreferenceController controller = controller(value);
+
+            assertThat(controller.getAvailabilityStatus()).isEqualTo(AVAILABLE);
+            assertThat(controller.getSummary().toString()).isEqualTo(value);
+        }
     }
 
     @Test

@@ -43,7 +43,7 @@ class FirmwareReleasePreferenceTest {
 
     @Test
     fun isAvailable_malformedValue_unavailable() {
-        for (value in listOf("foobar", "16.111", "FP6.QREL.16.111.0", "16.111.0 ", "Mixed")) {
+        for (value in listOf("16.111.0 ", "-16.111.0", "unknown releases", "16.111/0")) {
             setFirmwareRelease(value)
             assertThat(FirmwareReleasePreference().isAvailable(context)).isFalse()
         }
