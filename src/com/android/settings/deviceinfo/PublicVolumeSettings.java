@@ -28,6 +28,7 @@ import android.os.UserManager;
 import android.os.storage.DiskInfo;
 import android.os.storage.StorageEventListener;
 import android.os.storage.StorageManager;
+import android.os.storage.VolumeActions;
 import android.os.storage.VolumeInfo;
 import android.os.storage.VolumeRecord;
 import android.provider.DocumentsContract;
@@ -72,6 +73,9 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
     private UsageProgressBarPreference mSummary;
     private Preference mMount;
     private Preference mFormatPublic;
+    // DiamaneOS: the volume's status outside its ready state, and Explore (VolumeActions)
+    private Preference mStatus;
+    private Preference mBrowse;
     @Nullable private Preference mRename;
     private Button mUnmount;
     private final StorageEventListener mStorageListener = new StorageEventListener() {
@@ -95,7 +99,7 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
 
     private boolean isVolumeValid() {
         return (mVolume != null) && (mVolume.getType() == VolumeInfo.TYPE_PUBLIC)
-                && mVolume.isMountedReadable();
+                && VolumeActions.showsPage(mVolume.getState());  // DiamaneOS: recoverable too
     }
 
     @Override
@@ -120,7 +124,12 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
             final String fsUuid = DocumentsContract.getRootId(rootUri);
             mVolume = mStorageManager.findVolumeByUuid(fsUuid);
         } else {
-            final String volId = getArguments().getString(VolumeInfo.EXTRA_VOLUME_ID);
+            String volId = getArguments() != null
+                    ? getArguments().getString(VolumeInfo.EXTRA_VOLUME_ID) : null;
+            if (volId == null) {
+                // DiamaneOS: SystemUI's storage notices name the volume in the activity's intent.
+                volId = getActivity().getIntent().getStringExtra(VolumeInfo.EXTRA_VOLUME_ID);
+            }
             if (volId != null) {
                 mVolume = mStorageManager.findVolumeById(volId);
             }
@@ -146,6 +155,9 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
         mUnmount.setText(R.string.storage_menu_unmount);
         mUnmount.setOnClickListener(mUnmountListener);
         mFormatPublic = buildAction(R.string.storage_menu_format_option);
+        mStatus = buildAction(com.android.internal.R.string.ext_media_status_mounted);
+        mStatus.setSelectable(false);
+        mBrowse = buildAction(com.android.internal.R.string.ext_media_browse_action);
 
         if (enableRenameInPublicVolumeSettings()) {
             mRename = buildAction(R.string.storage_menu_rename);
@@ -180,6 +192,14 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
 
         screen.removeAll();
 
+        // DiamaneOS: outside its ready state the page says what state the volume is in. The
+        // actions are those of its state (VolumeActions), as in its notice: Mount again, Explore
+        // when readable, Eject when mounted. Never Format for a read-only or recoverable volume.
+        if (mVolume.getState() != VolumeInfo.STATE_MOUNTED) {
+            mStatus.setTitle(VolumeActions.statusText(mVolume));
+            addPreference(mStatus);
+        }
+
         if (mVolume.isMountedReadable()) {
             addPreference(mSummary);
 
@@ -195,13 +215,18 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
             mSummary.setPercent(usedBytes, totalBytes);
         }
 
-        if (mVolume.getState() == VolumeInfo.STATE_UNMOUNTED) {
+        if (VolumeActions.allows(mVolume, VolumeActions.RETRY)) {
             addPreference(mMount);
         }
-        if (!mVolume.isMountedReadable()) {
-            mUnmount.setVisibility(View.GONE);
+        if (VolumeActions.allows(mVolume, VolumeActions.BROWSE)) {
+            addPreference(mBrowse);
         }
-        addPreference(mFormatPublic);
+        // Shown again once the volume is mounted after a retry.
+        mUnmount.setVisibility(VolumeActions.allows(mVolume, VolumeActions.EJECT)
+                ? View.VISIBLE : View.GONE);
+        if (VolumeActions.allows(mVolume, VolumeActions.FORMAT)) {
+            addPreference(mFormatPublic);
+        }
 
         if (enableRenameInPublicVolumeSettings() && mRename != null) {
             addPreference(mRename);
@@ -246,6 +271,8 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
         intent.putExtra(VolumeInfo.EXTRA_VOLUME_ID, mVolume.getId());
         if (pref == mMount) {
             new MountTask(getActivity(), mVolume).execute();
+        } else if (pref == mBrowse) {
+            startActivity(mVolume.buildBrowseIntent());  // DiamaneOS
         } else if (pref == mFormatPublic) {
             startActivity(intent);
         } else if (enableRenameInPublicVolumeSettings() && pref == mRename) {

@@ -20,6 +20,7 @@ import android.app.ActivityManager;
 import android.app.settings.SettingsEnums;
 import android.os.Bundle;
 import android.os.UserManager;
+import android.os.storage.VolumeActions;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
@@ -74,6 +75,9 @@ public class StorageWizardInit extends StorageWizardBase {
         if (savedInstanceState != null) {
             mPortable = savedInstanceState.getBoolean("IS_PORTABLE");
         }
+        if (!VolumeActions.newAdoptableStorage()) {
+            mPortable = true;  // DiamaneOS: no "use as internal storage"
+        }
         if(mPortable) {
             mFlipper.setDisplayedChild(0);
             setHeaderText(
@@ -84,7 +88,7 @@ public class StorageWizardInit extends StorageWizardBase {
             setNextButtonText(R.string.storage_wizard_init_v2_external_action);
             setBackButtonText(R.string.wizard_back_adoptable);
             setNextButtonVisibility(View.VISIBLE);
-            if (!mDisk.isAdoptable()) {
+            if (!mDisk.isAdoptable() || !VolumeActions.newAdoptableStorage()) {  // DiamaneOS
                 setBackButtonVisibility(View.GONE);
             }
         }
@@ -146,6 +150,7 @@ public class StorageWizardInit extends StorageWizardBase {
     }
 
     public void onNavigateInternal(View view) {
+        if (!VolumeActions.newAdoptableStorage()) return;  // DiamaneOS: never offered
         if (view != null) {
             // User made an explicit choice for internal
             FeatureFactory.getFeatureFactory().getMetricsFeatureProvider().action(this,

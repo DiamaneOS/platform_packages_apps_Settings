@@ -27,6 +27,7 @@ import android.os.UserManager;
 import android.os.storage.DiskInfo;
 import android.os.storage.StorageEventListener;
 import android.os.storage.StorageManager;
+import android.os.storage.VolumeActions;
 import android.os.storage.VolumeInfo;
 import android.os.storage.VolumeRecord;
 import android.provider.SearchIndexableResource;
@@ -128,6 +129,10 @@ public class StorageDashboardFragment extends DashboardFragment
                 case VolumeInfo.STATE_MOUNTED_READ_ONLY:
                 case VolumeInfo.STATE_UNMOUNTABLE:
                 case VolumeInfo.STATE_UNMOUNTED:
+                // DiamaneOS: cards the filesystem VM could not open, did not write back, waits for.
+                case VolumeInfo.STATE_UNOPENABLE:
+                case VolumeInfo.STATE_NOT_WRITTEN_BACK:
+                case VolumeInfo.STATE_WAITING_FOR_PLACE:
                 case VolumeInfo.STATE_EJECTING:
                     // Add mounted or unmountable storage in the list and show it on spinner.
                     // Unmountable storages are the storages which has a problem format and android
@@ -138,7 +143,10 @@ public class StorageDashboardFragment extends DashboardFragment
                     });
                     if (volumeState == VolumeInfo.STATE_MOUNTED
                             || volumeState == VolumeInfo.STATE_MOUNTED_READ_ONLY
-                            || volumeState == VolumeInfo.STATE_UNMOUNTABLE) {
+                            || volumeState == VolumeInfo.STATE_UNMOUNTABLE
+                            // DiamaneOS: listed, with Mount in its menu
+                            // (VolumeOptionMenuController)
+                            || VolumeActions.isRecoverable(volumeState)) {
                         mStorageEntries.add(changedStorageEntry);
                         if (changedStorageEntry.equals(mSelectedStorageEntry)) {
                             mSelectedStorageEntry = changedStorageEntry;
