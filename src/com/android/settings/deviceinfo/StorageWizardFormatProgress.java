@@ -132,7 +132,19 @@ public class StorageWizardFormatProgress extends StorageWizardBase {
                     }
 
                 } else {
-                    storage.partitionPublic(activity.mDisk.getId());
+                    // DiamaneOS: never refresh a stale confirmation to the disk currently at this ID.
+                    final Intent intent = activity.getIntent();
+                    final String generation = intent.getStringExtra(StorageErase.GENERATION);
+                    final long bytes = intent.getLongExtra(StorageErase.BYTES, 0);
+                    if (intent.hasExtra(StorageErase.RETRY)) {
+                        if (!StorageErase.consumeRetryConfirmation(intent)) {
+                            throw new IllegalStateException("The erase confirmation expired");
+                        }
+                        storage.partitionPublicRetryConfirmed(activity.mDisk.getId(), generation, bytes);
+                    } else {
+                        storage.partitionPublicConfirmed(activity.mDisk.getId(), generation, bytes,
+                                intent.getStringExtra(EXTRA_FORMAT_FORGET_UUID));
+                    }
                 }
                 return null;
             } catch (Exception e) {
@@ -158,11 +170,28 @@ public class StorageWizardFormatProgress extends StorageWizardBase {
                 return;
             }
 
+            if (e instanceof android.os.ServiceSpecificException
+                    && ((android.os.ServiceSpecificException) e).errorCode == 4001) {
+                Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();
+                activity.finishAffinity();
+                return;
+            }
             if (e != null) {
                 Log.e(TAG, "Failed to partition", e);
                 Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();
                 activity.finishAffinity();
                 return;
+            }
+
+            // DiamaneOS: completed mkfs awaiting readback is distinct from a failed format.
+            final StorageManager storage = activity.getSystemService(StorageManager.class);
+            for (VolumeInfo volume : storage.getVolumes()) {
+                if (activity.mDisk.getId().equals(volume.getDiskId())
+                        && volume.getState() == VolumeInfo.STATE_FORMATTED_UNVERIFIED) {
+                    Toast.makeText(activity, volume.getStateDescription(), Toast.LENGTH_LONG).show();
+                    activity.finishAffinity();
+                    return;
+                }
             }
 
             if (activity.mFormatPrivate) {

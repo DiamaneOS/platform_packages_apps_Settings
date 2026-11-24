@@ -3860,6 +3860,8 @@
     <string name="storage_internal_forget_confirm_title">Forget <xliff:g id="name" example="SD card">^1</xliff:g>?</string>
     <!-- Body of dialog confirming that user wants to forget an internal storage device [CHAR LIMIT=NONE]-->
     <string name="storage_internal_forget_confirm">All the apps, photos, and data stored on this <xliff:g id="name" example="SD card">^1</xliff:g> will be lost forever.</string>
+    <!-- Toast shown when the storage service refuses to forget a saved card. -->
+    <string name="storage_internal_forget_refused">Couldn\u2019t forget this storage.</string>
 
     <!-- Old body of dialog informing user about the storage used by the Android System [CHAR LIMIT=NONE]-->
     <string name="storage_detail_dialog_system">System includes files used to run Android version <xliff:g id="version" example="8.0">%s</xliff:g></string>

@@ -24,12 +24,14 @@ import android.os.Bundle;
 import android.os.storage.StorageManager;
 import android.os.storage.VolumeRecord;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
@@ -41,6 +43,8 @@ import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
 import com.android.settings.search.actionbar.SearchMenuController;
 
 public class PrivateVolumeForget extends InstrumentedFragment {
+    private static final String TAG = "PrivateVolumeForget";
+
     @VisibleForTesting
     static final String TAG_FORGET_CONFIRM = "forget_confirm";
 
@@ -110,6 +114,17 @@ public class PrivateVolumeForget extends InstrumentedFragment {
             dialog.show(parent.getFragmentManager(), TAG_FORGET_CONFIRM);
         }
 
+        @VisibleForTesting
+        static boolean tryForget(StorageManager storage, String fsUuid) {
+            try {
+                storage.forgetVolume(fsUuid);
+                return true;
+            } catch (IllegalStateException e) {
+                Log.w(TAG, "Storage service refused to forget the volume", e);
+                return false;
+            }
+        }
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Context context = getActivity();
@@ -128,8 +143,13 @@ public class PrivateVolumeForget extends InstrumentedFragment {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            storage.forgetVolume(fsUuid);
-                            getActivity().finish();
+                            // DiamaneOS: the card can return while this confirmation is open.
+                            if (tryForget(storage, fsUuid)) {
+                                getActivity().finish();
+                            } else {
+                                Toast.makeText(context, R.string.storage_internal_forget_refused,
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
             builder.setNegativeButton(R.string.cancel, null);

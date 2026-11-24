@@ -17,8 +17,14 @@
 
 package com.android.settings.deviceinfo;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
 import android.content.Context;
 import android.content.Intent;
+import android.os.storage.StorageManager;
 import android.os.storage.VolumeRecord;
 
 import androidx.test.InstrumentationRegistry;
@@ -38,7 +44,17 @@ import org.junit.runner.RunWith;
 public class PrivateVolumeForgetTest {
     @Rule
     public ActivityTestRule<Settings.PrivateVolumeForgetActivity> mActivityRule =
-            new ActivityTestRule<>(Settings.PrivateVolumeForgetActivity.class, true, true);
+            new ActivityTestRule<>(Settings.PrivateVolumeForgetActivity.class, true, false);
+
+    @Test
+    public void forgetConfirmationHandlesCardReturningAfterDialogOpened() {
+        StorageManager storage = mock(StorageManager.class);
+        assertTrue(PrivateVolumeForget.ForgetConfirmFragment.tryForget(storage, "absent"));
+        doThrow(new IllegalStateException("The saved partition identity is ambiguous"))
+                .when(storage).forgetVolume("returned");
+
+        assertFalse(PrivateVolumeForget.ForgetConfirmFragment.tryForget(storage, "returned"));
+    }
 
     @Test
     @Ignore

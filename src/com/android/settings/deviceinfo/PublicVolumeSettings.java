@@ -224,13 +224,18 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
         // Shown again once the volume is mounted after a retry.
         mUnmount.setVisibility(VolumeActions.allows(mVolume, VolumeActions.EJECT)
                 ? View.VISIBLE : View.GONE);
-        if (VolumeActions.allows(mVolume, VolumeActions.FORMAT)) {
+        // DiamaneOS: a fresh confirmation can replace a finished format awaiting verification.
+        if (VolumeActions.allows(mVolume, VolumeActions.FORMAT) || canOfferEraseAgain()) {
             addPreference(mFormatPublic);
         }
 
         if (enableRenameInPublicVolumeSettings() && mRename != null) {
             addPreference(mRename);
         }
+    }
+
+    private boolean canOfferEraseAgain() {
+        return StorageErase.canOfferRetry(mStorageManager, mVolume);
     }
 
     private void addPreference(Preference pref) {
@@ -274,7 +279,11 @@ public class PublicVolumeSettings extends SettingsPreferenceFragment {
         } else if (pref == mBrowse) {
             startActivity(mVolume.buildBrowseIntent());  // DiamaneOS
         } else if (pref == mFormatPublic) {
-            startActivity(intent);
+            if (canOfferEraseAgain()) {
+                StorageWizardFormatConfirm.showPublicRetry(getActivity(), mVolume.getDiskId());
+            } else {
+                startActivity(intent);
+            }
         } else if (enableRenameInPublicVolumeSettings() && pref == mRename) {
             StorageRenameFragment.show(this, mVolume);
         }

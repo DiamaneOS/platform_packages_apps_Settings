@@ -77,10 +77,7 @@ public class StorageWizardFormatSlow extends StorageWizardBase {
                     SettingsEnums.ACTION_STORAGE_BENCHMARK_FAST_CONTINUE);
         }
 
-        final String forgetUuid = getIntent().getStringExtra(EXTRA_FORMAT_FORGET_UUID);
-        if (!TextUtils.isEmpty(forgetUuid)) {
-            mStorage.forgetVolume(forgetUuid);
-        }
+        // DiamaneOS: conversion retains the adopted key and record until the user explicitly chooses Forget.
 
         final boolean offerMigrate;
         if (mFormatPrivate) {

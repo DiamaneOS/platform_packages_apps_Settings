@@ -140,6 +140,7 @@ public class VolumeOptionMenuController implements LifecycleObserver, OnCreateOp
         if (isRecoverable()) {  // DiamaneOS: Mount again, as on its page (VolumeActions)
             mMount.setVisible(
                     VolumeActions.allows(mStorageEntry.getVolumeInfo(), VolumeActions.RETRY));
+            mFormat.setVisible(canOfferEraseAgain());  // DiamaneOS: use a fresh confirmation
             return;
         }
         if (!mStorageEntry.isMounted()) {
@@ -216,8 +217,13 @@ public class VolumeOptionMenuController implements LifecycleObserver, OnCreateOp
         }
         if (menuId == R.id.storage_format) {
             if (mStorageEntry.isDiskInfoUnsupported() || mStorageEntry.isPublic()) {
-                StorageWizardFormatConfirm.showPublic(mFragment.getActivity(),
-                        mStorageEntry.getDiskId());
+                if (canOfferEraseAgain()) {
+                    StorageWizardFormatConfirm.showPublicRetry(mFragment.getActivity(),
+                            mStorageEntry.getDiskId());
+                } else {
+                    StorageWizardFormatConfirm.showPublic(mFragment.getActivity(),
+                            mStorageEntry.getDiskId());
+                }
                 return true;
             }
             return false;
@@ -275,6 +281,11 @@ public class VolumeOptionMenuController implements LifecycleObserver, OnCreateOp
     }
 
     /** DiamaneOS: a card the filesystem VM could not open, did not write back or waits for. */
+    private boolean canOfferEraseAgain() {
+        return mStorageEntry.isPublic() && StorageErase.canOfferRetry(
+                mContext.getSystemService(StorageManager.class), mStorageEntry.getVolumeInfo());
+    }
+
     private boolean isRecoverable() {
         return mStorageEntry.isPublic() && mStorageEntry.getVolumeInfo() != null
                 && VolumeActions.isRecoverable(mStorageEntry.getVolumeInfo().getState());

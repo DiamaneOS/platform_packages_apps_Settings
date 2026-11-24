@@ -132,6 +132,14 @@ public class StorageWizardInit extends StorageWizardBase {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // DiamaneOS: a wizard left open across a recovery state cannot keep offering erasure.
+        if (mDisk == null || !VolumeActions.canFormatDisk(mStorage.findDiskById(mDisk.id),
+                mStorage.getVolumes())) finish();
+    }
+
+    @Override
     public void onNavigateNext(View v) {
         if (mPortable) {
             onNavigateExternal(v);
