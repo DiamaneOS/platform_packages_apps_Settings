@@ -187,7 +187,7 @@ public class StorageWizardFormatProgress extends StorageWizardBase {
             final StorageManager storage = activity.getSystemService(StorageManager.class);
             for (VolumeInfo volume : storage.getVolumes()) {
                 if (activity.mDisk.getId().equals(volume.getDiskId())
-                        && volume.getState() == VolumeInfo.STATE_FORMATTED_UNVERIFIED) {
+                        && android.os.storage.VolumeActions.isFormatAwaitingVerification(volume.getState())) {
                     Toast.makeText(activity, volume.getStateDescription(), Toast.LENGTH_LONG).show();
                     activity.finishAffinity();
                     return;
