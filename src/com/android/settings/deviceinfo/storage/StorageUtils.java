@@ -105,7 +105,7 @@ public class StorageUtils {
      * A unsupported disk is the disk of problem format, android is not able to mount automatically.
      */
     public static boolean isDiskUnsupported(DiskInfo disk) {
-        return disk.volumeCount == 0 && disk.size > 0;
+        return disk.isFormatOffered() && disk.size > 0;  // DiamaneOS: vold's decision
     }
 
     /** Launches the fragment to forget a specified missing volume record. */

@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.UserManager;
 import android.os.storage.DiskInfo;
 import android.os.storage.StorageManager;
+import android.os.storage.VolumeActions;
 import android.os.storage.VolumeInfo;
 import android.util.Log;
 import android.view.Menu;
@@ -136,6 +137,11 @@ public class VolumeOptionMenuController implements LifecycleObserver, OnCreateOp
             mMount.setVisible(true);
             return;
         }
+        if (isRecoverable()) {  // DiamaneOS: Mount again, as on its page (VolumeActions)
+            mMount.setVisible(
+                    VolumeActions.allows(mStorageEntry.getVolumeInfo(), VolumeActions.RETRY));
+            return;
+        }
         if (!mStorageEntry.isMounted()) {
             return;
         }
@@ -159,7 +165,7 @@ public class VolumeOptionMenuController implements LifecycleObserver, OnCreateOp
         if (mStorageEntry.isPublic()) {
             mRename.setVisible(true);
             mUnmount.setVisible(true);
-            mFormatAsInternal.setVisible(true);
+            mFormatAsInternal.setVisible(VolumeActions.newAdoptableStorage());  // DiamaneOS
             return;
         }
     }
@@ -172,7 +178,8 @@ public class VolumeOptionMenuController implements LifecycleObserver, OnCreateOp
 
         final int menuId = menuItem.getItemId();
         if (menuId == R.id.storage_mount) {
-            if (mStorageEntry.isUnmounted()) {
+            if (mStorageEntry.isUnmounted() || (isRecoverable()  // DiamaneOS
+                    && VolumeActions.allows(mStorageEntry.getVolumeInfo(), VolumeActions.RETRY))) {
                 new MountTask(mFragment.getActivity(), mStorageEntry.getVolumeInfo()).execute();
                 return true;
             }
@@ -265,6 +272,12 @@ public class VolumeOptionMenuController implements LifecycleObserver, OnCreateOp
             return false;
         }
         return false;
+    }
+
+    /** DiamaneOS: a card the filesystem VM could not open, did not write back or waits for. */
+    private boolean isRecoverable() {
+        return mStorageEntry.isPublic() && mStorageEntry.getVolumeInfo() != null
+                && VolumeActions.isRecoverable(mStorageEntry.getVolumeInfo().getState());
     }
 
     public void setSelectedStorageEntry(StorageEntry storageEntry) {
