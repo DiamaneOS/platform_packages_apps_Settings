@@ -96,6 +96,13 @@ public class ProfileSelectStorageFragment extends ProfileSelectFragment {
                 case VolumeInfo.STATE_MOUNTED_READ_ONLY:
                 case VolumeInfo.STATE_UNMOUNTABLE:
                 case VolumeInfo.STATE_UNMOUNTED:
+                // DiamaneOS: cards the filesystem VM could not open, did not write back, waits for.
+                case VolumeInfo.STATE_UNOPENABLE:
+                case VolumeInfo.STATE_NOT_WRITTEN_BACK:
+                case VolumeInfo.STATE_WAITING_FOR_PLACE:
+                // DiamaneOS: refresh the selected card when format verification changes its actions.
+                case VolumeInfo.STATE_FORMATTED_UNVERIFIED:
+                case VolumeInfo.STATE_FORMAT_RESULT_UNVERIFIED:
                 case VolumeInfo.STATE_EJECTING:
                     // Add mounted or unmountable storage in the list and show it on spinner.
                     // Unmountable storages are the storages which has a problem format and android

@@ -40,20 +40,26 @@ public class StorageWizardFormatConfirm extends InstrumentedDialogFragment {
     private static final String TAG_FORMAT_WARNING = "format_warning";
 
     public static void showPublic(FragmentActivity activity, String diskId) {
-        show(activity, diskId, null, false);
+        show(activity, diskId, null, false, false);
     }
 
     public static void showPublic(FragmentActivity activity, String diskId, String forgetUuid) {
-        show(activity, diskId, forgetUuid, false);
+        show(activity, diskId, forgetUuid, false, false);
     }
 
     public static void showPrivate(FragmentActivity activity, String diskId) {
-        show(activity, diskId, null, true);
+        show(activity, diskId, null, true, false);
+    }
+
+    static void showPublicRetry(FragmentActivity activity, String diskId) {
+        show(activity, diskId, null, false, true);
     }
 
     private static void show(FragmentActivity activity, String diskId, String formatForgetUuid,
-            boolean formatPrivate) {
+            boolean formatPrivate, boolean retry) {
         final Bundle args = new Bundle();
+        // DiamaneOS: capture the selected medium before showing any erase action.
+        if (!StorageErase.capture(activity, diskId, args, retry)) return;
         args.putString(EXTRA_DISK_ID, diskId);
         args.putString(EXTRA_FORMAT_FORGET_UUID, formatForgetUuid);
         args.putBoolean(EXTRA_FORMAT_PRIVATE, formatPrivate);
@@ -80,6 +86,11 @@ public class StorageWizardFormatConfirm extends InstrumentedDialogFragment {
         final DiskInfo disk = context.getSystemService(StorageManager.class)
                 .findDiskById(diskId);
 
+        if (!StorageErase.allowed(context, diskId, args)) {
+            return new AlertDialog.Builder(context)
+                    .setMessage(R.string.storage_medium_changed)
+                    .setPositiveButton(android.R.string.ok, null).create();
+        }
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(TextUtils.expandTemplate(
                 getText(R.string.storage_wizard_format_confirm_v2_title),
@@ -103,10 +114,16 @@ public class StorageWizardFormatConfirm extends InstrumentedDialogFragment {
                 TextUtils.expandTemplate(getText(R.string.storage_menu_format_option),
                         disk.getShortDescription()),
                 (dialog, which) -> {
+                    if (!StorageErase.allowed(context, diskId, args)) return;
                     final Intent intent = new Intent(context, StorageWizardFormatProgress.class);
                     intent.putExtra(EXTRA_DISK_ID, diskId);
+                    intent.putExtra(StorageErase.GENERATION, args.getString(StorageErase.GENERATION));
+                    intent.putExtra(StorageErase.BYTES, args.getLong(StorageErase.BYTES));
                     intent.putExtra(EXTRA_FORMAT_FORGET_UUID, formatForgetUuid);
                     intent.putExtra(EXTRA_FORMAT_PRIVATE, formatPrivate);
+                    if (args.getBoolean(StorageErase.RETRY)) {
+                        StorageErase.attachRetryConfirmation(intent);
+                    }
                     context.startActivity(intent);
                 });
 

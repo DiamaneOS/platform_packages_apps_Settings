@@ -97,8 +97,10 @@ public class StorageUtils {
      */
     public static boolean isVolumeRecordMissed(StorageManager storageManager,
             VolumeRecord volumeRecord) {
-        return volumeRecord.getType() == VolumeInfo.TYPE_PRIVATE
-                && storageManager.findVolumeByUuid(volumeRecord.getFsUuid()) == null;
+        // DiamaneOS: reuse the stock missing-card row for retained converted records.
+        if (volumeRecord.getType() != VolumeInfo.TYPE_PRIVATE) return false;
+        return storageManager.getVolumes().stream().noneMatch(volume ->
+                android.os.storage.AdoptedVolumeIdentity.matches(volumeRecord, volume));
     }
 
     /**

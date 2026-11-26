@@ -69,12 +69,8 @@ public class PrivateVolumeFormat extends InstrumentedFragment {
     private final OnClickListener mConfirmListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            final Intent intent = new Intent(getActivity(), StorageWizardFormatProgress.class);
-            intent.putExtra(EXTRA_DISK_ID, mDisk.getId());
-            intent.putExtra(EXTRA_FORMAT_PRIVATE, false);
-            intent.putExtra(EXTRA_FORMAT_FORGET_UUID, mVolume.getFsUuid());
-            startActivity(intent);
-            getActivity().finish();
+            // DiamaneOS: capture the medium and recheck its current state at the erase confirmation.
+            StorageWizardFormatConfirm.showPublic(getActivity(), mDisk.getId(), mVolume.getFsUuid());
         }
     };
 }
