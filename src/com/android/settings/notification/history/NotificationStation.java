@@ -341,8 +341,9 @@ public class NotificationStation extends SettingsPreferenceFragment {
     }
 
     private Drawable loadIcon(HistoricalNotificationInfo info, StatusBarNotification sbn) {
-        Drawable draw = sbn.getNotification().getSmallIcon().loadDrawableAsUser(
-                sbn.getPackageContext(mContext), info.user);
+        // DiamaneOS: data and URI icons are made in the protected VM without a wait here and fill in.
+        Drawable draw = com.android.internal.diamaneos.cleancopies.VmIconLoads.loadAsUserNoWait(
+                sbn.getNotification().getSmallIcon(), sbn.getPackageContext(mContext), info.user);
         if (draw == null) {
             return null;
         }
